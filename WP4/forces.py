@@ -30,4 +30,8 @@ def drag_per_span(dynamic_pressure, drag_coefficient, chord):
 def pitching_moment_per_span(dynamic_pressure, moment_coefficient, chord):
     return dynamic_pressure * moment_coefficient * chord**2
 
+def lift_coefficient_AOA (CL_0, CL_10, CL_d, cl_lst_0, cl_lst_10):
+    cl_d_lst= cl_lst_0 + ((CL_d-CL_0)/(CL_10-CL_0)) * (cl_lst_10 - cl_lst_0)
+    return cl_d_lst 
+
 
