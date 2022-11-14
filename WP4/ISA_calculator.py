@@ -19,37 +19,37 @@ def troposphere(h):
     return t_1, p_1
 
 
-def tropopause(h):
-    p_2 = 22625.8 * exp((-g_0 / (R * 216.65)) * (h - 11000))
+def tropopause(h, t_1, p_1):
+    p_2 = p_1 * exp((-g_0 / (R * t_1)) * (h - 11000))
     return p_2
 
 
-def stratosphere(h):
-    t_3 = 216.65 + 0.0010 * (h - 20000)
-    p_3 = 5471.9 * (t_3 / 216.65) ** (-g_0 / (0.0010 * R))
+def stratosphere(h, t_1, p_2):
+    t_3 = t_1 + 0.0010 * (h - 20000)
+    p_3 = p_2 * (t_3 / t_1) ** (-g_0 / (0.0010 * R))
     return t_3, p_3
 
 
-def stratosphere2(h):
-    t_4 = 228.65 + 0.0028 * (h - 32000)
-    p_4 = 867.25 * (t_4 / 228.65) ** (-g_0 / (0.0028 * R))
+def stratosphere2(h, t_3, p_3):
+    t_4 = t_3 + 0.0028 * (h - 32000)
+    p_4 = p_3 * (t_4 / t_3) ** (-g_0 / (0.0028 * R))
     return t_4, p_4
 
 
-def stratopause(h):
-    p_5 = 110.77 * exp((-g_0 / (R * 270.65)) * (h - 47000))
+def stratopause(h, t_4, p_4):
+    p_5 = p_4 * exp((-g_0 / (R * t_4)) * (h - 47000))
     return p_5
 
 
-def mesosphere(h):
-    t_6 = 270.65 + -0.0028 * (h - 51000)
-    p_6 = 270.65 * (t_6 / 270.65) ** (-g_0 / (-0.0028 * R))
+def mesosphere(h, t_4, p_5):
+    t_6 = t_4 + -0.0028 * (h - 51000)
+    p_6 = p_5 * (t_6 / t_4) ** (-g_0 / (-0.0028 * R))
     return t_6, p_6
 
 
-def mesosphere2(h):
-    t_7 = 214.65 + -0.0020 * (h - 71000)
-    p_7 = 15.99 * (t_7 / 214.65) ** (-g_0 / (-0.0020 * R))
+def mesosphere2(h, t_6, p_6):
+    t_7 = t_6 + -0.0020 * (h - 71000)
+    p_7 = p_6 * (t_7 / t_6) ** (-g_0 / (-0.0020 * R))
     return t_7, p_7
 
 
@@ -74,86 +74,65 @@ def ISA(altitude, u=0):
     if 0 <= h <= 11000.0:
         t_1, p_1 = troposphere(h)
         temp = round(t_1, 2)
-        temp_C = round(t_1 - C_offset, 2)
         pressure = round(p_1, 1)
-        pressure_per = round(pressure / p_0 * 100, 1)
         density = round(get_density(t_1, pressure), 4)
-        density_per = round(density / rho_0 * 100, 1)
         speed_of_sound = round(local_speed_of_sound(t_1), 2)
     elif 11000.0 < h <= 20000:
         t_1, p_1 = troposphere(11000)
-        p_2 = tropopause(h)
+        p_2 = tropopause(h, t_1, p_1)
         temp = round(t_1, 2)
-        temp_C = round(t_1 - C_offset, 2)
         pressure = round(p_2, 1)
-        pressure_per = round(pressure / p_0 * 100, 1)
         density = round(get_density(t_1, pressure), 4)
-        density_per = round(density / rho_0 * 100, 1)
         speed_of_sound = round(local_speed_of_sound(t_1), 2)
     elif 20000 < h <= 32000:
         t_1, p_1 = troposphere(11000)
-        p_2 = tropopause(20000)
-        t_3, p_3 = stratosphere(h)
+        p_2 = tropopause(20000, t_1, p_1)
+        t_3, p_3 = stratosphere(h, t_1, p_2)
         temp = round(t_3, 2)
-        temp_C = round(t_3 - C_offset, 2)
         pressure = round(p_3, 2)
-        pressure_per = round(pressure / p_0 * 100, 1)
         density = round(get_density(t_3, pressure), 4)
-        density_per = round(density / rho_0 * 100, 1)
         speed_of_sound = round(local_speed_of_sound(t_3), 2)
     elif 32000 < h <= 47000:
         t_1, p_1 = troposphere(11000)
-        p_2 = tropopause(20000)
-        t_3, p_3 = stratosphere(32000)
+        p_2 = tropopause(20000, t_1, p_1)
+        t_3, p_3 = stratosphere(32000, t_1, p_2)
         t_4, p_4 = stratosphere2(h)
         temp = round(t_4, 2)
-        temp_C = round(t_4 - C_offset, 2)
         pressure = round(p_4, 2)
-        pressure_per = round(pressure / p_0 * 100, 1)
         density = round(get_density(t_4, pressure), 4)
-        density_per = round(density / rho_0 * 100, 1)
         speed_of_sound = round(local_speed_of_sound(t_4), 2)
     elif 47000 < h <= 51000:
         t_1, p_1 = troposphere(11000)
-        p_2 = tropopause(20000)
-        t_3, p_3 = stratosphere(32000)
-        t_4, p_4 = stratosphere2(47000)
+        p_2 = tropopause(20000, t_1, p_1)
+        t_3, p_3 = stratosphere(32000, t_1, p_2)
+        t_4, p_4 = stratosphere2(47000, t_3, p_3)
         p_5 = stratopause(h)
         temp = round(t_4, 2)
-        temp_C = round(t_4 - C_offset, 2)
         pressure = round(p_5, 2)
-        pressure_per = round(pressure / p_0 * 100, 1)
         density = round(get_density(t_4, pressure), 4)
-        density_per = round(density / rho_0 * 100, 1)
         speed_of_sound = round(local_speed_of_sound(t_4), 2)
     elif 51000 < h <= 71000:
         t_1, p_1 = troposphere(11000)
-        p_2 = tropopause(20000)
-        t_3, p_3 = stratosphere(32000)
-        t_4, p_4 = stratosphere2(47000)
-        p_5 = stratopause(51000)
+        p_2 = tropopause(20000, t_1, p_1)
+        t_3, p_3 = stratosphere(32000, t_1, p_2)
+        t_4, p_4 = stratosphere2(47000, t_3, p_3)
+        p_5 = stratopause(51000, t_4, p_4)
         t_6, p_6 = mesosphere(h)
         temp = round(t_6, 2)
-        temp_C = round(t_6 - C_offset, 2)
         pressure = round(p_6, 2)
-        pressure_per = round(pressure / p_0 * 100, 1)
         density = round(get_density(t_6, pressure), 4)
-        density_per = round(density / rho_0 * 100, 1)
         speed_of_sound = round(local_speed_of_sound(t_6), 2)
     elif 71000 < h <= 86000:
         t_1, p_1 = troposphere(11000)
-        p_2 = tropopause(20000)
-        t_3, p_3 = stratosphere(32000)
-        t_4, p_4 = stratosphere2(47000)
-        p_5 = stratopause(51000)
-        t_6, p_6 = mesosphere(71000)
+        p_2 = tropopause(20000, t_1, p_1)
+        t_3, p_3 = stratosphere(32000, t_1, p_2)
+        t_4, p_4 = stratosphere2(47000, t_3, p_3)
+        p_5 = stratopause(51000, t_4, p_4)
+        t_6, p_6 = mesosphere(71000, t_4, p_5)
         t_7, p_7 = mesosphere2(h)
         temp = round(t_7, 2)
-        temp_C = round(t_7 - C_offset, 2)
         pressure = round(p_7, 2)
-        pressure_per = round(pressure / p_0 * 100, 1)
         density = round(get_density(t_7, pressure), 4)
-        density_per = round(density / rho_0 * 100, 1)
         speed_of_sound = round(local_speed_of_sound(t_7), 2)
     else:
         print("This is not a valid altitude")
