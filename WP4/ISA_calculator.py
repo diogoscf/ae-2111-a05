@@ -63,11 +63,14 @@ def local_speed_of_sound(temp):
     return lss
 
 
-def ISA(altitude, u):
-    if u == 1:
+def ISA(altitude, u=0):
+    if u == 0:
         h = altitude
+    elif u ==1:
+        h = altitude *0.3048
     elif u ==2:
-        h = altitude *0.3048 /100
+        h = altitude * 0.3048 * 100
+
     if 0 <= h <= 11000.0:
         t_1, p_1 = troposphere(h)
         temp = round(t_1, 2)
@@ -162,3 +165,4 @@ def ISA(altitude, u):
     print(f"Density: \t\t{density} kg/m3 \t({density_per}% SL)")
     print(f"Local speed of sound: \t{speed_of_sound} m/s\n")
 
+print(ISA(100,2))
