@@ -9,4 +9,4 @@ cl_lst -> List of Cl values
 cd_lst -> List of Cd values
 cm_lst -> List of Cm values
 
-
+interpolater(y_pos, listtype) -> Interpolates data from XFLR files. Y_pos indicates the y_position of where you want to evaluate. listtype changes the list that is interpolated
