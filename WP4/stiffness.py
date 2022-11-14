@@ -12,8 +12,8 @@ WINGBOX = {
     "spar_thickness": 0.02, # meter
     "skin_thickness": 0.01, # meter
     "stringer_area": 0.003, # square meter
-    "stringers_top": [0.3,0.4,0.7],
-    "stringers_bottom": [0.3,0.4,0.7]
+    "stringers_top": [0.3,0.4,0.5,0.7],
+    "stringers_bottom": [0.3,0.4,0.5,0.7]
 }
 
 # Wing Parametric Description (values in SI)
@@ -47,7 +47,7 @@ rect_MMOI = lambda b,h: b*(h**3)/12
 def centroid(y):
     chord = ((WING["taper_ratio"] - 1)*abs(y) + 1) * WING["root_chord"]
     centroids = [] # list of (x,y,A)
-    spars = [WINGBOX["front_spar"], WINGBOX["rear_spar"], *[s[0] for s in WINGBOX["other_spars"] if s[1] >= abs(y)]]
+    spars = sorted([WINGBOX["front_spar"], WINGBOX["rear_spar"], *[s[0] for s in WINGBOX["other_spars"] if s[1] >= abs(y)]])
     # Spars
     for spar_pos in spars:
         h, y, *rest = airfoil_info(spar_pos)
@@ -66,13 +66,14 @@ def centroid(y):
 
     # Stringers
     for stringer in WINGBOX["stringers_top"]:
-        l_spar_idx = bisect.bisect(spars, stringer)
+        l_spar_idx = bisect.bisect_left(spars, stringer) - 1
+        print(spars, stringer, l_spar_idx)
         l_spar, r_spar = spars[l_spar_idx], spars[l_spar_idx + 1]
         y = np.interp(stringer, (l_spar, airfoil_info(l_spar)[2]), (r_spar, airfoil_info(r_spar)[2]))
         centroids.append([stringer*chord, y*chord, WINGBOX["stringer_area"]])
 
     for stringer in WINGBOX["stringers_bottom"]:
-        l_spar_idx = bisect.bisect(spars, stringer)
+        l_spar_idx = bisect.bisect_left(spars, stringer) - 1
         l_spar, r_spar = spars[l_spar_idx], spars[l_spar_idx + 1]
         y = np.interp(stringer, (l_spar, airfoil_info(l_spar)[3]), (r_spar, airfoil_info(r_spar)[3]))
         centroids.append([stringer*chord, y*chord, WINGBOX["stringer_area"]])
@@ -84,4 +85,4 @@ def centroid(y):
 
     return c_x, c_y
 
-print(centroid(0))
+print(centroid(1))
