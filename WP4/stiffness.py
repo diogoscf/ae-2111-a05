@@ -27,7 +27,7 @@ airfoil_file_path = os.path.join(os.path.dirname(__file__), "../KC-135 Winglet.d
 airfoil_data = np.genfromtxt(airfoil_file_path) # airfoil data points
 #print(airfoil_data)
 
-# Airfoil Thickness at a point x/c, returns thickness and camber as y/c
+# Airfoil Info at a point x/c, returns thickness, camber, upper and lower values (normalised to chord)
 def airfoil_info(x):
     upper = airfoil_data[0:(len(airfoil_data)-1)//2][::-1]
     lower = airfoil_data[(len(airfoil_data)-1)//2:len(airfoil_data)]
@@ -42,24 +42,29 @@ def airfoil_info(x):
 steiner = lambda A, d: A*(d**2)
 rect_MMOI = lambda b,h: b*(h**3)/12
 
+chord_y = lambda y: ((WING["taper_ratio"] - 1)*abs(y) + 1) * WING["root_chord"]
+
 # Centroid coordinates at a position y/(b/2) along the span (from wing root), using parameters in WINGBOX
 # Coordinates given with (0,0) at leading edge
 def centroid(y):
-    chord = ((WING["taper_ratio"] - 1)*abs(y) + 1) * WING["root_chord"]
+    chord = chord_y(y)
     centroids = [] # list of (x,y,A)
     spars = sorted([WINGBOX["front_spar"], WINGBOX["rear_spar"], *[s[0] for s in WINGBOX["other_spars"] if s[1] >= abs(y)]])
     # Spars
     for spar_pos in spars:
         h, y, *rest = airfoil_info(spar_pos)
         centroids.append([spar_pos*chord, y*chord, h*chord*spar_pos])
+
     # Skin Pieces
     for i in range(len(spars) - 1):
         start, end = spars[i], spars[i+1]
         y_start, y_end = airfoil_info(start)[2:], airfoil_info(end)[2:]
         x = (start+end)/2
+
         y_u = (y_start[0] + y_end[0])/2
         l_u = np.sqrt((end - start)**2 + (y_start[0] - y_end[0])**2)
         centroids.append([x*chord, y_u*chord, l_u*chord*WINGBOX["skin_thickness"]])
+
         y_l = (y_start[1] + y_end[1])/2
         l_l = np.sqrt((end - start)**2 + (y_start[1] - y_end[1])**2)
         centroids.append([x*chord, y_l*chord, l_l*chord*WINGBOX["skin_thickness"]])
@@ -67,7 +72,7 @@ def centroid(y):
     # Stringers
     for stringer in WINGBOX["stringers_top"]:
         l_spar_idx = bisect.bisect_left(spars, stringer) - 1
-        print(spars, stringer, l_spar_idx)
+        #print(spars, stringer, l_spar_idx)
         l_spar, r_spar = spars[l_spar_idx], spars[l_spar_idx + 1]
         y = np.interp(stringer, (l_spar, airfoil_info(l_spar)[2]), (r_spar, airfoil_info(r_spar)[2]))
         centroids.append([stringer*chord, y*chord, WINGBOX["stringer_area"]])
@@ -78,11 +83,21 @@ def centroid(y):
         y = np.interp(stringer, (l_spar, airfoil_info(l_spar)[3]), (r_spar, airfoil_info(r_spar)[3]))
         centroids.append([stringer*chord, y*chord, WINGBOX["stringer_area"]])
 
-    print(centroids)
     centroids = np.array(centroids)
     c_x = np.sum(centroids[:,0]*centroids[:,2]) / np.sum(centroids[:,2])
     c_y = np.sum(centroids[:,1]*centroids[:,2]) / np.sum(centroids[:,2])
 
     return c_x, c_y
 
-print(centroid(1))
+print(centroid(0))
+
+# Returns a list of enclosed areas in the wingbox at y/(b/2) along span
+def enclosed_areas(y):
+    areas = []
+    spars = sorted([WINGBOX["front_spar"], WINGBOX["rear_spar"], *[s[0] for s in WINGBOX["other_spars"] if s[1] >= abs(y)]])
+    for i in range(len(spars) - 1):
+        l_spar, r_spar = spars[i], spars[i+1]
+        l_height, r_height = airfoil_info(l_spar)[0], airfoil_info(r_spar)[0]
+        areas.append((chord_y(y)**2)*(r_spar - l_spar)*(l_height + r_height)/2)
+
+    return areas
