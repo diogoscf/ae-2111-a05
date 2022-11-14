@@ -5,9 +5,10 @@ import ISA_calculator
 import matplotlib.pyplot as plt 
 from scipy import integrate
 #Use XFLR.interpolater and XFLR.listtype
-density = ISA_calculator.ISA(100,2)[2]
+#Define denisty using ISa calculator
+density = ISA_calculator.ISA(310,2)[2]
 print(density)
-
+#
 velocity = 250
 dyn_p = 0.5*density*velocity**2
 
@@ -33,6 +34,8 @@ while i<22:
     M_lst.append(M_prime(i))
     y_lst.append(i)
     i+=0.01
+
+print(M_prime(10))
     
 Lift = sp.integrate.quad(L_prime, -22, 22)
 Drag = sp.integrate.quad(D_prime, -22, 22)
