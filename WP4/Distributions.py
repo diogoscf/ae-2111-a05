@@ -1,3 +1,4 @@
 import XFLR
-
-print(XFLR.interpolater(10,XFLR.cl_lst))
+import ISA_calculator
+#Use XFLR.interpolater and XFLR.listtype
+Density = ISA_calculator
