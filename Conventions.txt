@@ -6,10 +6,15 @@ NB:When importing variables or functions from another file, use filename.functio
 for_variables_use_underscores 
 also_for_names
 XFLRData -> Array of data from XFLR
-y_lst -> List of y values
-c_lst -> List of Chord lengths
-cl_lst -> List of Cl values
-cd_lst -> List of Cd values
-cm_lst -> List of Cm values
+y_lst_# -> List of y values at # deg AOA
+c_lst_# -> List of Chord lengths at # deg AOA
+cl_lst_# -> List of Cl values at # deg AOA
+cd_lst_# -> List of Cd values at # deg AOA
+cm_lst_# -> List of Cm values at # deg AOA
+CL_0 -> lift coefficient of the wing at 0 degrees AOA = 0.320243
+CL_10 -> lift coefficient of the wing at 10 degrees AOA = 1.115382
+CL_d -> lift coefficient at specific flight regime
 
 interpolater(y_pos, listtype) -> Interpolates data from XFLR files. Y_pos indicates the y_position of where you want to evaluate. listtype changes the list that is interpolated
+lift_distribution_specific_flight_regime -> returns a numpy array that contains the lift coefficient distribution along the wingspan in a certain flying regime; it takes as input CL_0, CL_10, CL_d, cl_lst_0, cl_lst_10
+AOA_specific_flight_regime ->
