@@ -1,8 +1,5 @@
 from math import exp
 
-print(
-    f"        **** ISA calculator **** \n\n1. Calculate ISA for altitude in meters (press ENTER for default)\n2. Calculate ISA for altitude in feet\n3. Calculate ISA for altitude in FL"
-)
 
 stop = False
 vui1 = False
@@ -66,37 +63,11 @@ def local_speed_of_sound(temp):
     return lss
 
 
-def main():
-    pass
-
-
-while not stop:
-    while not vui1:
-        try:
-            u = int(input("\n\nEnter your choice: ") or "1")
-            if u == 1 or u == 2 or u == 3:
-                vui1 = True
-            else:
-                print("Not a valid choice, try again")
-        except ValueError:
-            print("You made a typo. Enter 1, 2, or 3.")
-
-    while not vui2:
-        try:
-            h = float(input("Enter altitude: "))
-            if u == 1 or u == "":
-                h = h
-            elif u == 2:
-                h = h * 0.3048
-            else:
-                h = h * 100 * 0.3048
-            if 0 <= h <= 86000:
-                vui2 = True
-            else:
-                print("Not a valid altitude, try between 0 and 86 000 m.")
-        except ValueError:
-            print("You made a typo. Try a real number.")
-
+def ISA(altitude, u):
+    if u == 1:
+        h = altitude
+    elif u ==2:
+        h = altitude *0.3048 /100
     if 0 <= h <= 11000.0:
         t_1, p_1 = troposphere(h)
         temp = round(t_1, 2)
@@ -188,9 +159,3 @@ while not stop:
     print(f"Pressure: \t\t{pressure} Pa \t({pressure_per}% SL)")
     print(f"Density: \t\t{density} kg/m3 \t({density_per}% SL)")
     print(f"Local speed of sound: \t{speed_of_sound} m/s\n")
-
-    end = input("Do you want to run again? y/n: ")
-    if end == "y":
-        vui2 = False
-    else:
-        stop = True
