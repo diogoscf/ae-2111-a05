@@ -1,7 +1,7 @@
 Can we force everyone to use Black?
 
 for_variables_use_underscores
-
+XFLRData -> Array of data from XFLR
 y_lst -> List of y values
 c_lst -> List of Chord lengths
 cl_lst -> List of Cl values
