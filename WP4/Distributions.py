@@ -1,10 +1,15 @@
+import scipy as sp
+import numpy as np
 import XFLR
-#import ISA_calculator
+import ISA_calculator
 import matplotlib.pyplot as plt 
+from scipy import integrate
 #Use XFLR.interpolater and XFLR.listtype
-Density = 1
-velocity = 10
-dyn_p = 0.5*Density*velocity**2
+density = ISA_calculator.ISA(100,2)[2]
+print(density)
+
+velocity = 250
+dyn_p = 0.5*density*velocity**2
 
 
 
@@ -29,4 +34,9 @@ while i<22:
     y_lst.append(i)
     i+=0.01
     
-plt.plot(y_lst, D_lst)
+Lift = sp.integrate.quad(L_prime, -22, 22)
+Drag = sp.integrate.quad(D_prime, -22, 22)
+Moment =  sp.integrate.quad(M_prime, -22, 22)
+print(Lift)
+print(Drag)
+print(Moment)
