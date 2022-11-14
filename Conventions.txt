@@ -1,1 +1,7 @@
-Yes
+y_lst -> List of y values
+c_lst -> List of Chord lengths
+cl_lst -> List of Cl values
+cd_lst -> List of Cd values
+cm_lst -> List of Cm values
+
+
