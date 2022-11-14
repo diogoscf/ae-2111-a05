@@ -14,7 +14,7 @@ dyn_p = 0.5*density*velocity**2
 
 
 
-
+#Defines function to calculate force/moment per unit span.
 def L_prime(y_pos):
     return(XFLR.interpolater(y_pos, XFLR.cl_lst)*dyn_p*XFLR.interpolater(y_pos, XFLR.c_lst))
 
@@ -23,6 +23,7 @@ def M_prime(y_pos):
 
 def D_prime(y_pos):
     return(XFLR.interpolater(y_pos, XFLR.cd_lst)*dyn_p*XFLR.interpolater(y_pos, XFLR.c_lst))
+#This is used for plotting
 i=-22 
 y_lst = []
 D_lst=[]
@@ -36,7 +37,7 @@ while i<22:
     i+=0.01
 
 print(M_prime(10))
-    
+#Integrates to obtain total values over wing  
 Lift = sp.integrate.quad(L_prime, -22, 22)
 Drag = sp.integrate.quad(D_prime, -22, 22)
 Moment =  sp.integrate.quad(M_prime, -22, 22)
