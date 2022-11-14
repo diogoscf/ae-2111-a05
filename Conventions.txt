@@ -1,4 +1,5 @@
 Can we force everyone to use Black?
+Use python 3.11
 
 for_variables_use_underscores
 
