@@ -79,8 +79,8 @@ def centroid(y):
 
     print(centroids)
     centroids = np.array(centroids)
-    c_x = np.mean(centroids[:,0]*centroids[:,2]) / np.sum(centroids[:,2])
-    c_y = np.mean(centroids[:,1]*centroids[:,2]) / np.sum(centroids[:,2])
+    c_x = np.sum(centroids[:,0]*centroids[:,2]) / np.sum(centroids[:,2])
+    c_y = np.sum(centroids[:,1]*centroids[:,2]) / np.sum(centroids[:,2])
 
     return c_x, c_y
 
