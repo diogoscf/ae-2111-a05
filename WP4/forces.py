@@ -15,5 +15,17 @@ def dynamic_pressure(velocity, density):
     return 0.5 * density * velocity**2
 
 
-def lift_pu_span(dynamic_pressure, lift_coefficient, chord):
+def lift_per_span(dynamic_pressure, lift_coefficient, chord):
     return dynamic_pressure * lift_coefficient * chord
+
+
+def lift_coefficient(lift, dynamic_pressure, surface_area):
+    return lift / (dynamic_pressure * surface_area)
+
+
+def drag_per_span(dynamic_pressure, drag_coefficient, chord):
+    return dynamic_pressure * lift_coefficient * chord
+
+
+def pitching_moment_per_span():
+    pass
