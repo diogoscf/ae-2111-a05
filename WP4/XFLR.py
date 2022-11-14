@@ -20,8 +20,4 @@ def interpolater(y_pos, listtype):
     value = sp.interpolate.interp1d(y_lst, listtype, kind='cubic', fill_value="extrapolate")
     value = value(abs(y_pos))
     return(value)
-<<<<<<< Updated upstream:WP4/XFLR.py
-=======
 
-print(interpolater(10, cm_lst))
->>>>>>> Stashed changes:WP4/XFLR Importer.py
