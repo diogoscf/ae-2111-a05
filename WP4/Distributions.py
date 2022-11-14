@@ -1,14 +1,20 @@
+import scipy as sp
+import numpy as np
 import XFLR
-#import ISA_calculator
+import ISA_calculator
 import matplotlib.pyplot as plt 
+from scipy import integrate
 #Use XFLR.interpolater and XFLR.listtype
-Density = 1
-velocity = 10
-dyn_p = 0.5*Density*velocity**2
+#Define denisty using ISa calculator
+density = ISA_calculator.ISA(310,2)[2]
+print(density)
+#
+velocity = 250
+dyn_p = 0.5*density*velocity**2
 
 
 
-
+#Defines function to calculate force/moment per unit span.
 def L_prime(y_pos):
     return(XFLR.interpolater(y_pos, XFLR.cl_lst)*dyn_p*XFLR.interpolater(y_pos, XFLR.c_lst))
 
@@ -17,6 +23,7 @@ def M_prime(y_pos):
 
 def D_prime(y_pos):
     return(XFLR.interpolater(y_pos, XFLR.cd_lst)*dyn_p*XFLR.interpolater(y_pos, XFLR.c_lst))
+#This is used for plotting
 i=-22 
 y_lst = []
 D_lst=[]
@@ -28,5 +35,12 @@ while i<22:
     M_lst.append(M_prime(i))
     y_lst.append(i)
     i+=0.01
-    
-plt.plot(y_lst, D_lst)
+
+print(M_prime(10))
+#Integrates to obtain total values over wing  
+Lift = sp.integrate.quad(L_prime, -22, 22)
+Drag = sp.integrate.quad(D_prime, -22, 22)
+Moment =  sp.integrate.quad(M_prime, -22, 22)
+print(Lift)
+print(Drag)
+print(Moment)
