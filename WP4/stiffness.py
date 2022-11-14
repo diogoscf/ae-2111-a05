@@ -33,10 +33,10 @@ def airfoil_info(x):
     lower = airfoil_data[(len(airfoil_data)-1)//2:len(airfoil_data)]
     heights = np.array([(upper[i][0], upper[i][1] - lower[i][1]) for i in range(len(upper))])
     cambers = np.array([(upper[i][0], (upper[i][1] + lower[i][1])/2) for i in range(len(upper))])
-    h = sp.interpolate.interp1d(heights[:,0], heights[:,1],kind="linear")
-    c = sp.interpolate.interp1d(cambers[:,0], cambers[:,1],kind="linear")
-    u = sp.interpolate.interp1d(upper[:,0], upper[:,1],kind="linear")
-    l = sp.interpolate.interp1d(lower[:,0], lower[:,1],kind="linear")
+    h = sp.interpolate.interp1d(heights[:,0], heights[:,1],kind="linear")  # type: ignore
+    c = sp.interpolate.interp1d(cambers[:,0], cambers[:,1],kind="linear")  # type: ignore
+    u = sp.interpolate.interp1d(upper[:,0], upper[:,1],kind="linear")  # type: ignore
+    l = sp.interpolate.interp1d(lower[:,0], lower[:,1],kind="linear")  # type: ignore
     return h(x), c(x), u(x), l(x)
 
 steiner = lambda A, d: A*(d**2)
