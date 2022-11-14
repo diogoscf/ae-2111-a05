@@ -27,5 +27,7 @@ def drag_per_span(dynamic_pressure, drag_coefficient, chord):
     return dynamic_pressure * lift_coefficient * chord
 
 
-def pitching_moment_per_span():
-    pass
+def pitching_moment_per_span(dynamic_pressure, moment_coefficient, chord):
+    return dynamic_pressure * moment_coefficient * chord**2
+
+
