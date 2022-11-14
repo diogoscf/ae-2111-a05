@@ -14,7 +14,15 @@ cm_lst_# -> List of Cm values at # deg AOA
 CL_0 -> lift coefficient of the wing at 0 degrees AOA = 0.320243
 CL_10 -> lift coefficient of the wing at 10 degrees AOA = 1.115382
 CL_d -> lift coefficient at specific flight regime
+root_chord -> root chord length in meters
+taper_ratio -> taper ratio
+half_span -> half span of the wing
+spanwise_location -> spanwise location expressed in meters (always give positive values when used in functions)
 
 interpolater(y_pos, listtype) -> Interpolates data from XFLR files. Y_pos indicates the y_position of where you want to evaluate. listtype changes the list that is interpolated
+
 lift_distribution_specific_flight_regime -> returns a numpy array that contains the lift coefficient distribution along the wingspan in a certain flying regime; it takes as input CL_0, CL_10, CL_d, cl_lst_0, cl_lst_10
-AOA_specific_flight_regime ->
+
+AOA_specific_flight_regime -> return the angle of attack the airplane is flying at a certain flight regime in RADIANS; it takes as input CL_0, CL_10, CL_d
+
+chord -> return the length of the chord at a certain spanwise location in meters; it takes as input root_chord, taper_ratio, half_span, spanwise_location
