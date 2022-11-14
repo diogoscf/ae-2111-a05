@@ -155,7 +155,10 @@ def ISA(altitude, u):
     else:
         print("This is not a valid altitude")
 
+    return [temp, pressure, density, speed_of_sound]
+
     print(f"\nTemperature: \t\t{temp} K \t({temp_C} °C)")
     print(f"Pressure: \t\t{pressure} Pa \t({pressure_per}% SL)")
     print(f"Density: \t\t{density} kg/m3 \t({density_per}% SL)")
     print(f"Local speed of sound: \t{speed_of_sound} m/s\n")
+
