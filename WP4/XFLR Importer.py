@@ -3,7 +3,7 @@
 import scipy as sp
 import numpy as np 
 import matplotlib.pyplot as plt 
-from scipy import interpolate
+from scipy import interpolate 
 
 #Imports data, change "MainWing_alpha_zero_v_ten.txt" to "FILENAMEHERE" to change files.
 #Check is skip_header and skip_footer are appropriate in the new file. I think it'll be fine but just in case.
@@ -15,11 +15,10 @@ cl_lst = XFLRData[:,3]
 cd_lst = XFLRData[:,5]
 cm_lst = XFLRData[:,7]
 
-#List interpolater
-#def cl_interpolater(y_pos):
-y_pos=10
-cl_value = sp.interpolate.interpld(y_lst, cl_lst, kind='cubic', fill_value="extrapolate")
-cl_value = cl_value(y_pos)
-    
-#cl_interpolater(10)    
-print(cl_value)
+#List interpolater, y_post is wanted y postition, listtype is which value tou want to interpolate: cl_lst, cm_lst etc
+def interpolater(y_pos, listtype):
+    value = sp.interpolate.interp1d(y_lst, listtype, kind='cubic', fill_value="extrapolate")
+    value = value(y_pos)
+    return(value)
+
+
