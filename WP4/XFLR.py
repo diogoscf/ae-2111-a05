@@ -16,7 +16,7 @@ cl_lst = XFLRData[:, 3]
 cd_lst = XFLRData[:, 5]
 cm_lst = XFLRData[:, 7]
 
-# List interpolater, y_post is wanted y postition, listtype is which value tou want to interpolate: cl_lst, cm_lst etc
+
 def interpolater(y_pos, listtype):
     value = sp.interpolate.interp1d(
         y_lst, listtype, kind="cubic", fill_value="extrapolate"
