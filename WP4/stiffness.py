@@ -1,8 +1,9 @@
+import bisect
+import os
+
+import numpy as np
 import scipy as sp
 from scipy import interpolate
-import numpy as np
-import os
-import bisect
 
 # Parametric Description of Wingbox
 WINGBOX = {
