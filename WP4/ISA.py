@@ -1,9 +1,5 @@
 from math import exp
 
-
-stop = False
-vui1 = False
-vui2 = False
 T_0 = 288.15
 p_0 = 101325
 rho_0 = 1.225
@@ -63,13 +59,16 @@ def local_speed_of_sound(temp):
     return lss
 
 
-def ISA(altitude, u=0):
-    if u == 0:
-        h = altitude
-    elif u ==1:
-        h = altitude *0.3048
-    elif u ==2:
-        h = altitude * 0.3048 * 100
+def m(altitude):
+    return calculate(altitude)
+
+def ft(altitude):
+    return calculate(altitude * 0.3048)
+
+def fl(flight_level):
+    return calculate(flight_level * 0.3048 * 100)
+
+def calculate(h):
 
     if 0 <= h <= 11000.0:
         t_1, p_1 = troposphere(h)
