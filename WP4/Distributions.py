@@ -5,6 +5,7 @@ import ISA
 import matplotlib.pyplot as plt 
 from scipy import integrate
 from math import cos, sin, asin, radians
+import math 
 #Use XFLR.interpolater and XFLR.listtype
 #Define denisty using ISa calculator
 density = ISA.fl(310)[2]
@@ -13,7 +14,9 @@ density = ISA.fl(310)[2]
 velocity = 10
 dyn_p = 0.5*density*velocity**2
 Wing_Surface = 189.92
-
+AR = 10
+e = 0.51
+CD_0 = 0.028
 
 #Defines function to calculate force/moment per unit span.
 def L_prime_0(y_pos):
@@ -130,14 +133,20 @@ def M_prime(CM_d, y_pos, dyn_p):
      return Cm_at_y(CM_d, y_pos)*dyn_p*XFLR.interpolater(y_pos, XFLR.c_lst)**2
  
 def N_prime (CL_d, CD_d, y_pos, dyn_p):
-    return L_prime(CL_d, y_pos, dyn_p)*cos(radians(AOA_specific_flight_regime(CL_d))) + D_prime(CD_d, y_pos, dyn_p)*sin(AOA_specific_flight_regime(CL_d))
+    return L_prime(CL_d, y_pos, dyn_p)*cos(radians(AOA_specific_flight_regime(CL_d))) + D_prime(CD_d, y_pos, dyn_p)*sin(radians(AOA_specific_flight_regime(CL_d)))
 
 
-def plot_Normal_force(CL_d, CD_d, dyn_p):
-    y_pos = np.linspace(-21.79, 21.79, 1000)
+def plot_Normal_force(CL_d, dyn_p):
+    CD_d = CD_0 + CL_d**2/(math.pi*AR*e)
+    y_pos = np.linspace(0, 21.79, 1000)
     plt.plot(y_pos, N_prime(CL_d, CD_d, y_pos, dyn_p))
+<<<<<<< Updated upstream
 
 if __name__ == "__main__":
     plot_Normal_force(1, 0.04, 10000)
     plt.show()
+=======
+    
+plot_Normal_force(0, 10000)
+>>>>>>> Stashed changes
 
