@@ -50,7 +50,7 @@ def D_prime_10(y_pos):
 #Integrates to obtain total values over wing  
 #Lift_0 = sp.integrate.quad(L_prime_0, -22, 22)
 #Drag_0 = sp.integrate.quad(D_prime_0, -22, 22)
-Moment_0 =  sp.integrate.quad(M_prime_0, -21.8, 21.8)
+Moment_0 =  sp.integrate.quad(M_prime_0, -21.79, 21.79)
 #Calculates Coefficients
 CL_0 = 0.32024
 CD_0 = 0.003271
@@ -58,7 +58,7 @@ CM_0 = Moment_0[0]/(dyn_p*Wing_Surface*4.355)
 
 #Lift_10 = sp.integrate.quad(L_prime_10, -22, 22)
 #Drag_10 = sp.integrate.quad(D_prime_10, -22, 22)
-Moment_10 =  sp.integrate.quad(M_prime_10, -21.8, 21.8)
+Moment_10 =  sp.integrate.quad(M_prime_10, -21.79, 21.79)
 
 CL_10 = 1.1154
 CD_10 = 0.038375
@@ -94,15 +94,15 @@ def AOA_specific_flight_regime (CL_d): #result in radians
 #print(AOA_specific_flight_regime(1)*57.3)
 #Function to plot a lift distribution of any given CL
 def Plot_lift_distribution(CL_d):
-    y_pos = np.linspace(-21.8, 21.8, 100)
+    y_pos = np.linspace(-21.79, 21.79, 100)
     plt.plot(y_pos, XFLR.interpolater(y_pos, lift_distribution_specific_flight_regime(CL_d)))
 
 def Plot_drag_distribution(CD_d):
-    y_pos = np.linspace(-21.8, 21.8, 100)
+    y_pos = np.linspace(-21.79, 21.79, 100)
     plt.plot(y_pos, XFLR.interpolater(y_pos, drag_distribution_specific_flight_regime(CD_d)))
     
 def Plot_moment_distribution(CM_d):
-    y_pos = np.linspace(-21.8, 21.8, 100)
+    y_pos = np.linspace(-21.79, 21.79, 100)
     plt.plot(y_pos, XFLR.interpolater(y_pos, moment_distribution_specific_flight_regime(CM_d)))    
    
 
@@ -128,7 +128,14 @@ def D_prime(CD_d, y_pos, dyn_p):
 #M_prime for any given CM and position
 def M_prime(CM_d, y_pos, dyn_p):
      return Cm_at_y(CM_d, y_pos)*dyn_p*XFLR.interpolater(y_pos, XFLR.c_lst)**2
-     
-print(M_prime(-0.1, 10, 10000))
+ 
+def N_prime (CL_d, CD_d, y_pos, dyn_p):
+    return L_prime(CL_d, y_pos, dyn_p)*cos(radians(AOA_specific_flight_regime(CL_d))) + D_prime(CD_d, y_pos, dyn_p)*sin(AOA_specific_flight_regime(CL_d))
 
+
+def plot_Normal_force(CL_d, CD_d, dyn_p):
+    y_pos = np.linspace(-21.79, 21.79, 1000)
+    plt.plot(y_pos, N_prime(CL_d, CD_d, y_pos, dyn_p))
+    
+plot_Normal_force(1, 0.04, 10000)
 

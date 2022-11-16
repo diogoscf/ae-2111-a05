@@ -24,6 +24,12 @@ WING = {
     "taper_ratio": 0.27
 }
 
+#Wingbox Material Parameters (in SI)
+MAT = {
+    "E": 68.9E9, # pascal
+    "G": 26E9  # pascal
+}
+
 airfoil_file_path = os.path.join(os.path.dirname(__file__), "../KC-135 Winglet.dat")
 airfoil_data = np.genfromtxt(airfoil_file_path) # airfoil data points
 #print(airfoil_data)
@@ -160,6 +166,7 @@ print(torsional_constant(0))
 
 #Moment of inertia at a position y/(b/2) along the span
 def MOI(y):
+    y /= WING["span"]/2         #to get y/(b/2) 
     chord = ((WING["taper_ratio"] - 1)*abs(y) + 1) * WING["root_chord"]
     spar_position = [WINGBOX["front_spar"], WINGBOX["rear_spar"], *[s[0] for s in WINGBOX["other_spars"] if s[1] >= abs(y)]]
     centroid_y = centroid(y)
@@ -213,3 +220,17 @@ def MOI(y):
     return Ixx, Iyy
 
 print(MOI(0))
+
+#Functions M(x) and T(y) need to be imported from WP4.1
+
+def dvdy(y):
+    result = sp.integrate.quad(lambda x: -M(x)/(MAT["E"]*MOI(x)[1]),0,y)
+    return result[0]
+
+def v(y):
+    result = sp.integrate.quad(dvdy,0,y)[0]
+    return result[0]
+
+def theta(y):
+    result = sp.integrate.quad(lambda x: T(x)/(MAT["G"]*torsional_constant(x)),0,y)[0]
+    return result[0]
