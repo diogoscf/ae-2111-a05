@@ -108,18 +108,34 @@ def torsional_constant(y):
     areas = np.array(enclosed_areas(y, spars))
 
     if len(spars) == 2:
+        """
         start, end = spars[0], spars[1]
         y_start, y_end = airfoil_info(start)[2:], airfoil_info(end)[2:]
         hl, hr = airfoil_info(start)[0]*chord, airfoil_info(end)[0]*chord
         lu = np.sqrt((end - start)**2 + (y_start[0] - y_end[0])**2)*chord
         ll = np.sqrt((end - start)**2 + (y_start[1] - y_end[1])**2)*chord
         J = 4*(areas[0]**2) / (((hl+hr)/(WINGBOX["spar_thickness"])) + ((ll+lu)/(WINGBOX["skin_thickness"]))])))
+        """
+        front_spar = [spars[0], airfoil_info(spars[0])[0], *airfoil_info(spars[0])[2:]]
+        rear_spar = [spars[1], airfoil_info(spars[1])[0], *airfoil_info(spars[1])[2:]]
+        front_spar_h = front_spar[1]*chord
+        rear_spar_h = rear_spar[1]*chord
+        x_skin = abs((rear_spar[0] - front_spar[0]))*chord
+
+        y_skin_top = abs((front_spar[2] - rear_spar[2]))*chord     
+        l_skin_top = np.sqrt(y_skin_top**2 + x_skin**2)
+
+        y_skin_bottom = abs((front_spar[3] - rear_spar[3]))*chord
+        l_skin_bottom = np.sqrt(y_skin_bottom**2+x_skin**2)
+        
+        i = ((front_spar_h + rear_spar_h)/WINGBOX["spar_thickness"]) + ((l_skin_bottom + l_skin_top)/WINGBOX["skin_thickness"])
+        J = (4*(areas[0]**2))/i
         return J
     
     ncells = len(spars) - 1
     matrix = np.zeros((ncells+1, ncells+1))
     RHS = np.zeros(ncells+1)
-    matrix[-1,:] = 2*areas + [0]
+    matrix[-1,:] = np.append(2*areas, [0])
     RHS[-1] = 1
     for i in range(ncells):
         start, end = spars[i], spars[i+1]
@@ -140,7 +156,8 @@ def torsional_constant(y):
     J = 1/solution[-1]
     return J
 
-#print(torsional_constant(0))
+print(torsional_constant(0))
+
 #Moment of inertia at a position y/(b/2) along the span
 def MOI(y):
     chord = ((WING["taper_ratio"] - 1)*abs(y) + 1) * WING["root_chord"]
