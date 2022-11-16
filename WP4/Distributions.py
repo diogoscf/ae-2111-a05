@@ -140,14 +140,14 @@ def plot_Shear_distribution(CL_d, dyn_p):
     CD_d = CD_0 + CL_d**2/(math.pi*AR*e)
     y_pos = np.linspace(0, 21.79, 1000)
     plt.plot(y_pos, N_prime(CL_d, CD_d, y_pos, dyn_p))
-<<<<<<< Updated upstream
-=======
+
 
 def plot_Moment_distribution(CM_d, dyn_p):
     y_pos = np.linspace(0, 21.79, 1000)
     plt.plot(y_pos, M_prime(CM_d, y_pos, dyn_p))
     
-#def plot_Shear_diagram(CL_d, dyn_p):
+    
+def plot_Shear_diagram(CL_d, dyn_p):
     CD_d = CD_0 + CL_d**2/(math.pi*AR*e)
     y_pos = 0
     y_lst= []
@@ -159,6 +159,8 @@ def plot_Moment_distribution(CM_d, dyn_p):
         y_lst.append(y_pos)
         y_pos+=0.1
     plt.plot(y_lst, Shear)
+    
+    
 #def plot_Shear_diagram2(CL_d, dyn_p):
     CD_d = CD_0 + CL_d**2/(math.pi*AR*e)
     y_pos = 0
@@ -176,5 +178,5 @@ def plot_Moment_distribution(CM_d, dyn_p):
     plt.plot(y_lst, Shear) 
     return Shear
 #plot_Shear_diagram2(1, 10000)
->>>>>>> Stashed changes
+
 
