@@ -48,28 +48,28 @@ def D_prime_10(y_pos):
 
 #print(M_prime(10))
 #Integrates to obtain total values over wing  
-Lift_0 = sp.integrate.quad(L_prime_0, -22, 22)
-Drag_0 = sp.integrate.quad(D_prime_0, -22, 22)
-Moment_0 =  sp.integrate.quad(M_prime_0, -22, 22)
+#Lift_0 = sp.integrate.quad(L_prime_0, -22, 22)
+#Drag_0 = sp.integrate.quad(D_prime_0, -22, 22)
+Moment_0 =  sp.integrate.quad(M_prime_0, -21.8, 21.8)
 #Calculates Coefficients
-CL_0 = Lift_0[0]/(dyn_p*Wing_Surface)
-CD_0 = Drag_0[0]/(dyn_p*Wing_Surface)
-CM_0 = Moment_0[0]/(dyn_p*Wing_Surface)
+CL_0 = 0.32024
+CD_0 = 0.003271
+CM_0 = Moment_0[0]/(dyn_p*Wing_Surface*4.355)
 
-Lift_10 = sp.integrate.quad(L_prime_10, -22, 22)
-Drag_10 = sp.integrate.quad(D_prime_10, -22, 22)
-Moment_10 =  sp.integrate.quad(M_prime_10, -22, 22)
+#Lift_10 = sp.integrate.quad(L_prime_10, -22, 22)
+#Drag_10 = sp.integrate.quad(D_prime_10, -22, 22)
+Moment_10 =  sp.integrate.quad(M_prime_10, -21.8, 21.8)
 
-CL_10 = Lift_10[0]/(dyn_p*Wing_Surface)
-CD_10 = Drag_10[0]/(dyn_p*Wing_Surface)
-CM_10 = Moment_10[0]/(dyn_p*Wing_Surface)
+CL_10 = 1.1154
+CD_10 = 0.038375
+CM_10 = Moment_10[0]/(dyn_p*Wing_Surface*4.355)
 #Uncomment these to check values or use variable explorer
 #print (CL_0)
 #print (CD_0)
-#print (CM_0)
+print (CM_0)
 #print (CL_10)
 #print (CD_10)
-#print (CM_10)
+print (CM_10)
 
 
 #Functions to determine lift distribution and AoA of specific CL
@@ -84,14 +84,15 @@ def AOA_specific_flight_regime (CL_d): #result in radians
 #print(AOA_specific_flight_regime(1)*57.3)
 #Function to plot a lift distribution of any given CL
 def Plot_lift_distribution(CL_d):
-    y_pos = np.linspace(-22, 22, 100)
+    y_pos = np.linspace(-21.8, 21.8, 100)
     plt.plot(y_pos, XFLR.interpolater(y_pos, lift_distribution_specific_flight_regime(CL_d)))
 # Gives Cl at any y position for any given CL 
 def Cl_at_y(CL_d, y_pos):
      Cl = XFLR.interpolater(y_pos, lift_distribution_specific_flight_regime(CL_d))
      return Cl
  
+#def L_prime(CL_d, y_pos)
+    
 def drag_distribution_specific_flight_regime (CD_d):
-    cd_d_lst= XFLR.cd_lst_0 + ((CD_d-CL_0)/(CL_10-CL_0)) * (XFLR.cd_lst_10 - XFLR.cd_lst_0)
-    return cd_d_lst     
- 
+   cd_d_lst= XFLR.cd_lst_0 + ((CD_d-CD_0)/(CD_10-CD_0)) * (XFLR.cd_lst_10 - XFLR.cd_lst_0)
+   return cd_d_lst     
