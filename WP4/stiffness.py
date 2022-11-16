@@ -8,13 +8,13 @@ from scipy import interpolate
 # Parametric Description of Wingbox
 WINGBOX = {
     "front_spar": 0.2,
-    "rear_spar": 0.8,
+    "rear_spar": 0.65,
     "other_spars": [(0.3,0.4),(0.5,0.7)], # (x/c position value, y/(b/2) value of end of spar)
     "spar_thickness": 0.02, # meter
     "skin_thickness": 0.01, # meter
     "stringer_area": 0.003, # square meter
-    "stringers_top": [0.3,0.4,0.5,0.7],
-    "stringers_bottom": [0.3,0.4,0.5,0.7]
+    "stringers_top": [0.2,0.3,0.4,0.5],
+    "stringers_bottom": [0.2,0.3,0.4,0.5]
 }
 
 # Wing Parametric Description (values in SI)
@@ -96,7 +96,7 @@ def centroid(y):
 
     return c_x, c_y
 
-print(centroid(0))
+#print(centroid(0))
 
 # Returns a list of enclosed areas in the wingbox at y/(b/2) along span
 def enclosed_areas(y, spars):
@@ -162,7 +162,7 @@ def torsional_constant(y):
     J = 1/solution[-1]
     return J
 
-print(torsional_constant(0))
+#print(torsional_constant(0))
 
 #Moment of inertia at a position y/(b/2) along the span
 def MOI(y):
@@ -228,4 +228,4 @@ def MOI(y):
     
     return Ixx, Iyy
 
-print(MOI(0))
+print(centroid(1)[0]/chord_y(1), centroid(1)[1]/chord_y(1))
