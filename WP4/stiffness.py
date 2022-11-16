@@ -26,8 +26,8 @@ WING = {
 
 #Wingbox Material Parameters (in SI)
 MAT = {
-    "E": 1, # pascal
-    "G": 1  # pascal
+    "E": 68.9E9, # pascal
+    "G": 26E9  # pascal
 }
 
 airfoil_file_path = os.path.join(os.path.dirname(__file__), "../KC-135 Winglet.dat")
