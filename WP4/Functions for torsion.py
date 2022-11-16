@@ -26,8 +26,8 @@ def dtheta_dy2(A2,G,q1,q2,c,d,e,g,t1,t2):
     return dtheta_dy2
 '''
 
-def solve_three_eq(A1,A2,t1,t2,a,b,c,d,e,f,g,T):
-    matrix = np.array([2*A1, 2*A2,0],[((a+g)/t1)+((b+f)/t2),g/t1,-2*A1*G],[g/t1,((c+e)/t2)+((d+g)/t1),2*A2*G])
+def solve_three_eq(A1,A2,t1,t2,a,b,c,d,e,f,g,T,G):
+    matrix = np.array([[2*A1, 2*A2,0],[((a+g)/t1)+((b+f)/t2),g/t1,-2*A1*G],[g/t1,((c+e)/t2)+((d+g)/t1),2*A2*G]])
     righthandside = np.array([T,0,0])
     solution = np.linalg.solve(matrix,righthandside)
     q1 = solution[0]
