@@ -8,9 +8,9 @@ from math import cos, sin, asin, radians
 #Use XFLR.interpolater and XFLR.listtype
 #Define denisty using ISa calculator
 density = ISA.fl(310)[2]
-print(density)
+#print(density)
 #
-velocity = 250
+velocity = 10
 dyn_p = 0.5*density*velocity**2
 Wing_Surface = 189.92
 
@@ -90,3 +90,8 @@ def Plot_lift_distribution(CL_d):
 def Cl_at_y(CL_d, y_pos):
      Cl = XFLR.interpolater(y_pos, lift_distribution_specific_flight_regime(CL_d))
      return Cl
+ 
+def drag_distribution_specific_flight_regime (CD_d):
+    cd_d_lst= XFLR.cd_lst_0 + ((CD_d-CL_0)/(CL_10-CL_0)) * (XFLR.cd_lst_10 - XFLR.cd_lst_0)
+    return cd_d_lst     
+ 
