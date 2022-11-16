@@ -4,8 +4,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 #Functions M(x) and T(y) need to be imported from WP4.1
 
+rel = lambda y: y/(WING["span"]/2)
+
 def dvdy(y):
-    result = sp.integrate.quad(lambda x: -M(x)/(MAT["E"]*MOI(x)[1]),0,y)
+    result = sp.integrate.quad(lambda x: -M(x)/(MAT["E"]*MOI(rel(x))[1]),0,y)
     return result[0]
 
 def v(y):
@@ -18,9 +20,9 @@ plt.plot(x,y1)
 plt.show ()
 
 def theta(y):
-    result = sp.integrate.quad(lambda x: T(x)/(MAT["G"]*torsional_constant(x)),0,y)[0]
+    result = sp.integrate.quad(lambda x: T(x)/(MAT["G"]*torsional_constant(rel(x))),0,y)[0]
     return result[0]
 
 y2 = theta(x)
 plt.plot(x,y2)
-plt.show ()
+plt.show()

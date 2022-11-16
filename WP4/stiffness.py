@@ -166,7 +166,6 @@ print(torsional_constant(0))
 
 #Moment of inertia at a position y/(b/2) along the span
 def MOI(y):
-    y /= WING["span"]/2         #to get y/(b/2) 
     chord = ((WING["taper_ratio"] - 1)*abs(y) + 1) * WING["root_chord"]
     spar_position = [WINGBOX["front_spar"], WINGBOX["rear_spar"], *[s[0] for s in WINGBOX["other_spars"] if s[1] >= abs(y)]]
     centroid_y = centroid(y)
