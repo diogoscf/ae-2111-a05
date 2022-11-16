@@ -140,13 +140,4 @@ def plot_Normal_force(CL_d, dyn_p):
     CD_d = CD_0 + CL_d**2/(math.pi*AR*e)
     y_pos = np.linspace(0, 21.79, 1000)
     plt.plot(y_pos, N_prime(CL_d, CD_d, y_pos, dyn_p))
-<<<<<<< Updated upstream
-
-if __name__ == "__main__":
-    plot_Normal_force(1, 0.04, 10000)
-    plt.show()
-=======
-    
-plot_Normal_force(0, 10000)
->>>>>>> Stashed changes
 
