@@ -8,13 +8,6 @@ from math import sin, cos, pi
 import XFLR
 
 
-def normal_force_per_span(lift_per, drag_per, angle_of_attack):
-    return (
-        cos(radians(angle_of_attack)) * lift_per
-        + sin(radians(angle_of_attack)) * drag_per
-    )
-
-
 def shear_force_calc(cl_d):
     f_tab = []
     y_pos = np.linspace(0, 22, 100)
