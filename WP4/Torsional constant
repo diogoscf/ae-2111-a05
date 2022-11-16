@@ -1,4 +1,5 @@
 #Torsional constant (single-cell wing box option -> extend into multi!) @ chosen y/(b/2) location
+#use together with main 'stiffness' file but for now it's here 
 def J_1_cell(y):
     J_1_cell=[]
     if abs(y) > WINGBOX["other_spars"][0][1]:
