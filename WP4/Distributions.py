@@ -66,10 +66,10 @@ CM_10 = Moment_10[0]/(dyn_p*Wing_Surface*4.355)
 #Uncomment these to check values or use variable explorer
 #print (CL_0)
 #print (CD_0)
-print (CM_0)
+#print (CM_0)
 #print (CL_10)
 #print (CD_10)
-print (CM_10)
+#print (CM_10)
 
 
 #Functions to determine lift distribution and AoA of specific CL
@@ -121,12 +121,14 @@ def Cm_at_y(CM_d, y_pos):
 
 
 def L_prime(CL_d, y_pos, dyn_p):
-     Cl_at_y(CL_d, y_pos)*dyn_p*XFLR.interpolater(y_pos, XFLR.c_lst)   
+     return Cl_at_y(CL_d, y_pos)*dyn_p*XFLR.interpolater(y_pos, XFLR.c_lst)   
 #D_prime for any given CD and position
 def D_prime(CD_d, y_pos, dyn_p):
-     Cd_at_y(CD_d, y_pos)*dyn_p*XFLR.interpolater(y_pos, XFLR.c_lst)
+     return Cd_at_y(CD_d, y_pos)*dyn_p*XFLR.interpolater(y_pos, XFLR.c_lst)
 #M_prime for any given CM and position
 def M_prime(CM_d, y_pos, dyn_p):
-     Cm_at_y(CM_d, y_pos)*dyn_p*XFLR.interpolater(y_pos, XFLR.c_lst)**2
+     return Cm_at_y(CM_d, y_pos)*dyn_p*XFLR.interpolater(y_pos, XFLR.c_lst)**2
+     
+print(M_prime(-0.1, 10, 10000))
 
 
