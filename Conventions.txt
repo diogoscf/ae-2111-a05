@@ -5,9 +5,10 @@ NB:When importing variables or functions from another file, use filename.functio
 
 for_variables_use_underscores 
 also_for_names
-XFLRData -> Array of data from XFLR
-y_lst_# -> List of y values at # deg AOA
-c_lst_# -> List of Chord lengths at # deg AOA
+Variables:
+XFLRData_# -> Array of data from XFLR at # deg AOA
+y_lst -> List of y values 
+c_lst -> List of Chord lengths at 
 cl_lst_# -> List of Cl values at # deg AOA
 cd_lst_# -> List of Cd values at # deg AOA
 cm_lst_# -> List of Cm values at # deg AOA
@@ -18,7 +19,9 @@ root_chord -> root chord length in meters
 taper_ratio -> taper ratio
 half_span -> half span of the wing
 spanwise_location -> spanwise location expressed in meters (always give positive values when used in functions)
+Wing_Surface -> Wing Surface area (m^2)
 
+Functions:
 interpolater(y_pos, listtype) -> Interpolates data from XFLR files. Y_pos indicates the y_position of where you want to evaluate. listtype changes the list that is interpolated
 
 lift_distribution_specific_flight_regime -> returns a numpy array that contains the lift coefficient distribution along the wingspan in a certain flying regime; it takes as input CL_0, CL_10, CL_d, cl_lst_0, cl_lst_10
@@ -26,3 +29,8 @@ lift_distribution_specific_flight_regime -> returns a numpy array that contains 
 AOA_specific_flight_regime -> return the angle of attack the airplane is flying at a certain flight regime in RADIANS; it takes as input CL_0, CL_10, CL_d
 
 chord -> return the length of the chord at a certain spanwise location in meters; it takes as input root_chord, taper_ratio, half_span, spanwise_location
+^You also get chord from the interpolater usng c_lst
+
+Plot_lift_distribution(CL_d) -> plots the lift distribution of any given CL
+
+Cl_at_y(CL_d, y_pos) -> Gives local Cl for any given CL and y position
