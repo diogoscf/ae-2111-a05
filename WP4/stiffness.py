@@ -170,8 +170,8 @@ def MOI(y):
     for stringer in WINGBOX["stringers_top"]:
         l_spar_idx = bisect.bisect_left(spar_position, stringer) - 1
         l_spar, r_spar = spar_position[l_spar_idx], spar_position[l_spar_idx + 1]
-        y = np.interp(stringer, (l_spar, airfoil_info(l_spar)[2]), (r_spar, airfoil_info(r_spar)[2]))
-        position = (chord * stringer,chord * y)                                            #coordinates converted to meters 
+        y_coord = np.interp(stringer, (l_spar, airfoil_info(l_spar)[2]), (r_spar, airfoil_info(r_spar)[2]))
+        position = (chord * stringer,chord * y_coord)                                            #coordinates converted to meters 
         rel_position = (position[0] - centroid_y[0],position[1] - centroid_y[1])    #relative position to centroid
         Ixx += WINGBOX["stringer_area"] * (rel_position[0]**2)
         Iyy += WINGBOX["stringer_area"] * (rel_position[1]**2)
@@ -180,8 +180,8 @@ def MOI(y):
     for stringer in WINGBOX["stringers_bottom"]:
         l_spar_idx = bisect.bisect_left(spar_position, stringer) - 1
         l_spar, r_spar = spar_position[l_spar_idx], spar_position[l_spar_idx + 1]
-        y = np.interp(stringer, (l_spar, airfoil_info(l_spar)[2]), (r_spar, airfoil_info(r_spar)[2]))
-        position = (chord * stringer,chord * y)                                            #coordinates converted to meters 
+        y_coord = np.interp(stringer, (l_spar, airfoil_info(l_spar)[2]), (r_spar, airfoil_info(r_spar)[2]))
+        position = (chord * stringer,chord * y_coord)                                            #coordinates converted to meters 
         rel_position = (position[0] - centroid_y[0],position[1] - centroid_y[1])    #relative position to centroid
         Ixx += WINGBOX["stringer_area"] * (rel_position[0]**2)
         Iyy += WINGBOX["stringer_area"] * (rel_position[1]**2)
