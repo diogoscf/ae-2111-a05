@@ -30,7 +30,7 @@ def solve_three_eq(A1,A2,t1,t2,a,b,c,d,e,f,g,T):
     matrix = np.array([2*A1, 2*A2,0],[((a+g)/t1)+((b+f)/t2),g/t1,-2*A1*G],[g/t1,((c+e)/t2)+((d+g)/t1),2*A2*G])
     righthandside = np.array([T,0,0])
     solution = np.linalg.solve(matrix,righthandside)
-    A1 = solution[0]
-    A2 = solution[1]
+    q1 = solution[0]
+    q2 = solution[1]
     dtheta_dy = solution[2]
-    return A1, A2, dtheta_dy
+    return q1, q2, dtheta_dy
