@@ -76,7 +76,17 @@ print (CM_10)
 def lift_distribution_specific_flight_regime (CL_d):
     cl_d_lst= XFLR.cl_lst_0 + ((CL_d-CL_0)/(CL_10-CL_0)) * (XFLR.cl_lst_10 - XFLR.cl_lst_0)
     return cl_d_lst 
-    
+
+# Determines Cd dist at given CD
+def drag_distribution_specific_flight_regime (CD_d):
+   cd_d_lst= XFLR.cd_lst_0 + ((CD_d-CD_0)/(CD_10-CD_0)) * (XFLR.cd_lst_10 - XFLR.cd_lst_0)
+   return cd_d_lst  
+
+#determines Cm dist at given CM
+def moment_distribution_specific_flight_regime (CM_d):
+   cm_d_lst= XFLR.cm_lst_0 + ((CM_d-CM_0)/(CM_10-CM_0)) * (XFLR.cm_lst_10 - XFLR.cm_lst_0)
+   return cm_d_lst      
+
 
 def AOA_specific_flight_regime (CL_d): #result in radians
     return asin((CL_d-CL_0)/(CL_10-CL_0) * sin(radians(10)))*57.3
@@ -86,13 +96,37 @@ def AOA_specific_flight_regime (CL_d): #result in radians
 def Plot_lift_distribution(CL_d):
     y_pos = np.linspace(-21.8, 21.8, 100)
     plt.plot(y_pos, XFLR.interpolater(y_pos, lift_distribution_specific_flight_regime(CL_d)))
+
+def Plot_drag_distribution(CD_d):
+    y_pos = np.linspace(-21.8, 21.8, 100)
+    plt.plot(y_pos, XFLR.interpolater(y_pos, drag_distribution_specific_flight_regime(CD_d)))
+    
+def Plot_moment_distribution(CM_d):
+    y_pos = np.linspace(-21.8, 21.8, 100)
+    plt.plot(y_pos, XFLR.interpolater(y_pos, moment_distribution_specific_flight_regime(CM_d)))    
+   
+
 # Gives Cl at any y position for any given CL 
 def Cl_at_y(CL_d, y_pos):
      Cl = XFLR.interpolater(y_pos, lift_distribution_specific_flight_regime(CL_d))
      return Cl
- 
-#def L_prime(CL_d, y_pos)
-    
-def drag_distribution_specific_flight_regime (CD_d):
-   cd_d_lst= XFLR.cd_lst_0 + ((CD_d-CD_0)/(CD_10-CD_0)) * (XFLR.cd_lst_10 - XFLR.cd_lst_0)
-   return cd_d_lst     
+#Specific Cd at position at given CD
+def Cd_at_y(CD_d, y_pos):
+     Cd = XFLR.interpolater(y_pos, drag_distribution_specific_flight_regime(CD_d))
+     return Cd
+#L_prime for any given CL and position
+def Cm_at_y(CM_d, y_pos):
+     Cm = XFLR.interpolater(y_pos, moment_distribution_specific_flight_regime(CM_d))
+     return Cm
+
+
+def L_prime(CL_d, y_pos, dyn_p):
+     Cl_at_y(CL_d, y_pos)*dyn_p*XFLR.interpolater(y_pos, XFLR.c_lst)   
+#D_prime for any given CD and position
+def D_prime(CD_d, y_pos, dyn_p):
+     Cd_at_y(CD_d, y_pos)*dyn_p*XFLR.interpolater(y_pos, XFLR.c_lst)
+#M_prime for any given CM and position
+def M_prime(CM_d, y_pos, dyn_p):
+     Cm_at_y(CM_d, y_pos)*dyn_p*XFLR.interpolater(y_pos, XFLR.c_lst)**2
+
+
