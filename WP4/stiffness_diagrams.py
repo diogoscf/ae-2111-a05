@@ -10,7 +10,7 @@ def plot_diagram(x_vals, y_vals, xlab, ylab, plottitle):
     ax.grid()
     #plt.show()
 
-y_vals = np.linspace(-1,1,101)
+y_vals = np.linspace(-1,1,1001)
 
 moi = np.array([stiffness.MOI(y) for y in y_vals])
 plot_diagram(y_vals*stiffness.WING["span"]/2, moi[:,0], "y (m)", "Ixx (m^4)", "Moment of Inertia (x-axis) along wing span")
