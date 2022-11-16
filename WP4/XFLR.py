@@ -1,4 +1,5 @@
 # Import ALL THE PACKAGES
+import os
 import scipy as sp
 import numpy as np
 import matplotlib.pyplot as plt
@@ -6,8 +7,9 @@ from scipy import interpolate
 
 # Imports data, change "MainWing_alpha_zero_v_ten.txt" to "FILENAMEHERE" to change files.
 # Check is skip_header and skip_footer are appropriate in the new file. I think it'll be fine but just in case.
+XFLR_path = os.path.join(os.path.dirname(__file__), "./MainWing_alpha_zero_v_ten.txt")
 XFLRData = np.genfromtxt(
-    "MainWing_alpha_zero_v_ten.txt", skip_header=40, skip_footer=1029
+    XFLR_path, skip_header=40, skip_footer=1029
 )
 # Separates XFLRData into lists
 y_lst = XFLRData[:, 0]
@@ -23,4 +25,3 @@ def interpolater(y_pos, listtype):
     )
     value = value(abs(y_pos))
     return value
-
