@@ -128,7 +128,8 @@ def D_prime(CD_d, y_pos, dyn_p):
 #M_prime for any given CM and position
 def M_prime(CM_d, y_pos, dyn_p):
      return Cm_at_y(CM_d, y_pos)*dyn_p*XFLR.interpolater(y_pos, XFLR.c_lst)**2
+ 
      
-print(M_prime(-0.1, 10, 10000))
+
 
 
