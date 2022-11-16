@@ -1,0 +1,18 @@
+#Torsional constant (single-cell wing box option -> extend into multi!) @ chosen y/(b/2) location
+def J_1_cell(y):
+    J_1_cell=[]
+    if abs(y) > WINGBOX["other_spars"][0][1]:
+        #spar heights & skin lengths in SI
+        front_spar_h=airfoil_info(WINGBOX["front_spar"])[0]*chord_y(y)
+        rear_spar_h=airfoil_info(WINGBOX["rear_spar"])[0]*chord_y(y)
+        y_skin_top=abs((airfoil_info(WINGBOX["front_spar"])[2]-airfoil_info(WINGBOX["rear_spar"])[2]))*chord_y(y)
+        x_skin_top=abs((WINGBOX["rear_spar"]-WINGBOX["front_spar"]))*chord_y(y)
+        l_skin_top=(y_skin_top**2+x_skin_top**2)**0.5
+        y_skin_bottom=abs((airfoil_info(WINGBOX["front_spar"])[3]-airfoil_info(WINGBOX["rear_spar"])[3]))*chord_y(y)
+        x_skin_bottom=abs((WINGBOX["rear_spar"]-WINGBOX["front_spar"]))*chord_y(y)
+        l_skin_bottom=(y_skin_bottom**2+x_skin_bottom**2)**0.5
+        
+        i=(front_spar_h+rear_spar_h)/WINGBOX["spar_thickness"]+(l_skin_bottom+l_skin_top)/WINGBOX["skin_thickness"]
+        J=(4*enclosed_areas(y)[0]**2)/i
+        J_1_cell.append(J)
+    return J_1_cell
