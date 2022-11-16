@@ -15,7 +15,7 @@ def shear_force_diagram(cl_d):
     cl_max = 1.5
     y_pos = np.linspace(0, 22, 100)
     normal = Distributions.N_prime(
-        cl_d, 0.028 + cl_d**2 / (pi * 10 * 0.51), y_pos, Distributions.dyn_p
+        cl_d, 0.028 + cl_d**2 / (pi * 10 * 0.51), y_pos, 10000
     )
 
     plt.plot(y_pos, normal)
