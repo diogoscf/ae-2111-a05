@@ -1,12 +1,12 @@
 import scipy as sp
 import numpy as np
 import XFLR
-import ISA_calculator
+import ISA
 import matplotlib.pyplot as plt 
 from scipy import integrate
 #Use XFLR.interpolater and XFLR.listtype
 #Define denisty using ISa calculator
-density = ISA_calculator.ISA(310,2)[2]
+density = ISA.fl(310)[2]
 print(density)
 #
 velocity = 250
