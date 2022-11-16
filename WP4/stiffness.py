@@ -93,12 +93,51 @@ def centroid(y):
 print(centroid(0))
 
 # Returns a list of enclosed areas in the wingbox at y/(b/2) along span
-def enclosed_areas(y):
+def enclosed_areas(y, spars):
     areas = []
-    spars = sorted([WINGBOX["front_spar"], WINGBOX["rear_spar"], *[s[0] for s in WINGBOX["other_spars"] if s[1] >= abs(y)]])
     for i in range(len(spars) - 1):
         l_spar, r_spar = spars[i], spars[i+1]
         l_height, r_height = airfoil_info(l_spar)[0], airfoil_info(r_spar)[0]
         areas.append((chord_y(y)**2)*(r_spar - l_spar)*(l_height + r_height)/2)
 
     return areas
+
+def torsional_constant(y):
+    chord = chord_y(y)
+    spars = sorted([WINGBOX["front_spar"], WINGBOX["rear_spar"], *[s[0] for s in WINGBOX["other_spars"] if s[1] >= abs(y)]])
+    areas = np.array(enclosed_areas(y, spars))
+
+    if len(spars) == 2:
+        start, end = spars[0], spars[1]
+        y_start, y_end = airfoil_info(start)[2:], airfoil_info(end)[2:]
+        hl, hr = airfoil_info(start)[0]*chord, airfoil_info(end)[0]*chord
+        lu = np.sqrt((end - start)**2 + (y_start[0] - y_end[0])**2)*chord
+        ll = np.sqrt((end - start)**2 + (y_start[1] - y_end[1])**2)*chord
+        J = 4*(areas[0]**2) / (((hl+hr)/(WINGBOX["spar_thickness"])) + ((ll+lu)/(WINGBOX["skin_thickness"]))])))
+        return J
+    
+    ncells = len(spars) - 1
+    matrix = np.zeros((ncells+1, ncells+1))
+    RHS = np.zeros(ncells+1)
+    matrix[-1,:] = 2*areas + [0]
+    RHS[-1] = 1
+    for i in range(ncells):
+        start, end = spars[i], spars[i+1]
+        y_start, y_end = airfoil_info(start)[2:], airfoil_info(end)[2:]
+        hl, hr = airfoil_info(start)[0]*chord, airfoil_info(end)[0]*chord
+        lu = np.sqrt((end - start)**2 + (y_start[0] - y_end[0])**2)*chord
+        ll = np.sqrt((end - start)**2 + (y_start[1] - y_end[1])**2)*chord
+
+        matrix[i, i] = (1/(2*areas[i]))*(((hl+hr)/WINGBOX["spar_thickness"]) + ((lu+ll)/WINGBOX["skin_thickness"]))
+        if not i == 0:
+            matrix[i, i-1] = -1/(2*areas[i])*(hl/WINGBOX["spar_thickness"])
+        if not i == ncells - 1:
+            matrix[i, i+1] = -1/(2*areas[i])*(hr/WINGBOX["spar_thickness"])
+        
+        matrix[i,-1] = -1
+    
+    solution = np.linalg.solve(matrix,RHS)
+    J = 1/solution[-1]
+    return J
+
+print(torsional_constant(0))
