@@ -136,6 +136,8 @@ def N_prime (CL_d, CD_d, y_pos, dyn_p):
 def plot_Normal_force(CL_d, CD_d, dyn_p):
     y_pos = np.linspace(-21.79, 21.79, 1000)
     plt.plot(y_pos, N_prime(CL_d, CD_d, y_pos, dyn_p))
-    
-plot_Normal_force(1, 0.04, 10000)
+
+if __name__ == "__main__":
+    plot_Normal_force(1, 0.04, 10000)
+    plt.show()
 

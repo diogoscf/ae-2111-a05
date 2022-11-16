@@ -177,8 +177,8 @@ def MOI(y):
     for stringer in WINGBOX["stringers_top"]:
         l_spar_idx = bisect.bisect_left(spar_position, stringer) - 1
         l_spar, r_spar = spar_position[l_spar_idx], spar_position[l_spar_idx + 1]
-        y = np.interp(stringer, (l_spar, airfoil_info(l_spar)[2]), (r_spar, airfoil_info(r_spar)[2]))
-        position = (chord * stringer,chord * y)                                            #coordinates converted to meters 
+        y_coord = np.interp(stringer, (l_spar, airfoil_info(l_spar)[2]), (r_spar, airfoil_info(r_spar)[2]))
+        position = (chord * stringer,chord * y_coord)                                            #coordinates converted to meters 
         rel_position = (position[0] - centroid_y[0],position[1] - centroid_y[1])    #relative position to centroid
         Ixx += WINGBOX["stringer_area"] * (rel_position[0]**2)
         Iyy += WINGBOX["stringer_area"] * (rel_position[1]**2)
@@ -187,8 +187,8 @@ def MOI(y):
     for stringer in WINGBOX["stringers_bottom"]:
         l_spar_idx = bisect.bisect_left(spar_position, stringer) - 1
         l_spar, r_spar = spar_position[l_spar_idx], spar_position[l_spar_idx + 1]
-        y = np.interp(stringer, (l_spar, airfoil_info(l_spar)[2]), (r_spar, airfoil_info(r_spar)[2]))
-        position = (chord * stringer,chord * y)                                            #coordinates converted to meters 
+        y_coord = np.interp(stringer, (l_spar, airfoil_info(l_spar)[2]), (r_spar, airfoil_info(r_spar)[2]))
+        position = (chord * stringer,chord * y_coord)                                            #coordinates converted to meters 
         rel_position = (position[0] - centroid_y[0],position[1] - centroid_y[1])    #relative position to centroid
         Ixx += WINGBOX["stringer_area"] * (rel_position[0]**2)
         Iyy += WINGBOX["stringer_area"] * (rel_position[1]**2)
@@ -216,21 +216,17 @@ def MOI(y):
         b = WINGBOX["skin_thickness"]
         Ixx += a*b/12 * ((a*np.sin(theta))**2 + (b*np.cos(theta))**2) + a*b*(rel_position[0]**2)
         Iyy += a*b/12 * ((a*np.cos(theta))**2 + (b*np.sin(theta))**2) + a*b*(rel_position[1]**2)
+
+        #bottom element
+        center = ( (left_spar + right_spar)/2 , (airfoil_info(left_spar)[3] + airfoil_info(right_spar)[3])/2 )
+        theta = np.arctan((airfoil_info(left_spar)[3] - airfoil_info(right_spar)[3])/(left_spar - right_spar))
+        position = (chord * center[0], chord * center[1])
+        rel_position = (position[0] - centroid_y[0],position[1] - centroid_y[1])
+        a = np.sqrt((left_spar - right_spar)**2 + (airfoil_info(left_spar)[3] - airfoil_info(right_spar)[3])**2)
+        b = WINGBOX["skin_thickness"]
+        Ixx += a*b/12 * ((a*np.sin(theta))**2 + (b*np.cos(theta))**2) + a*b*(rel_position[0]**2)
+        Iyy += a*b/12 * ((a*np.cos(theta))**2 + (b*np.sin(theta))**2) + a*b*(rel_position[1]**2)
     
     return Ixx, Iyy
 
 print(MOI(0))
-
-#Functions M(x) and T(y) need to be imported from WP4.1
-
-def dvdy(y):
-    result = sp.integrate.quad(lambda x: -M(x)/(MAT["E"]*MOI(x)[1]),0,y)
-    return result[0]
-
-def v(y):
-    result = sp.integrate.quad(dvdy,0,y)[0]
-    return result[0]
-
-def theta(y):
-    result = sp.integrate.quad(lambda x: T(x)/(MAT["G"]*torsional_constant(x)),0,y)[0]
-    return result[0]
