@@ -220,17 +220,3 @@ def MOI(y):
     return Ixx, Iyy
 
 print(MOI(0))
-
-#Functions M(x) and T(y) need to be imported from WP4.1
-
-def dvdy(y):
-    result = sp.integrate.quad(lambda x: -M(x)/(MAT["E"]*MOI(x)[1]),0,y)
-    return result[0]
-
-def v(y):
-    result = sp.integrate.quad(dvdy,0,y)[0]
-    return result[0]
-
-def theta(y):
-    result = sp.integrate.quad(lambda x: T(x)/(MAT["G"]*torsional_constant(x)),0,y)[0]
-    return result[0]
