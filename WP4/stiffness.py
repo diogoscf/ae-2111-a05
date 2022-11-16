@@ -216,6 +216,16 @@ def MOI(y):
         b = WINGBOX["skin_thickness"]
         Ixx += a*b/12 * ((a*np.sin(theta))**2 + (b*np.cos(theta))**2) + a*b*(rel_position[0]**2)
         Iyy += a*b/12 * ((a*np.cos(theta))**2 + (b*np.sin(theta))**2) + a*b*(rel_position[1]**2)
+
+        #bottom element
+        center = ( (left_spar + right_spar)/2 , (airfoil_info(left_spar)[3] + airfoil_info(right_spar)[3])/2 )
+        theta = np.arctan((airfoil_info(left_spar)[3] - airfoil_info(right_spar)[3])/(left_spar - right_spar))
+        position = (chord * center[0], chord * center[1])
+        rel_position = (position[0] - centroid_y[0],position[1] - centroid_y[1])
+        a = np.sqrt((left_spar - right_spar)**2 + (airfoil_info(left_spar)[3] - airfoil_info(right_spar)[3])**2)
+        b = WINGBOX["skin_thickness"]
+        Ixx += a*b/12 * ((a*np.sin(theta))**2 + (b*np.cos(theta))**2) + a*b*(rel_position[0]**2)
+        Iyy += a*b/12 * ((a*np.cos(theta))**2 + (b*np.sin(theta))**2) + a*b*(rel_position[1]**2)
     
     return Ixx, Iyy
 
