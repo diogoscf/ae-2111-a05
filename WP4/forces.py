@@ -1,6 +1,6 @@
 import scipy as sp
 from scipy import interpolate
-from math import cos, sin
+from math import cos, sin, asin, radians
 
 
 def torque_inboard(torque_outboard, moment_outboard, sweep_angle):
@@ -35,7 +35,7 @@ def lift_distribution_specific_flight_regime (CL_0, CL_10, CL_d, cl_lst_0, cl_ls
     return cl_d_lst 
 
 def AOA_specific_flight_regime (CL_0, CL_10, CL_d): #result in radians
-    return mt.asin((CL_d-CL_0)/(CL_10-CL_0) * mt.sin(mt.radians(10)))
+    return asin((CL_d-CL_0)/(CL_10-CL_0) * sin(radians(10)))
     
 
 
