@@ -205,7 +205,7 @@ def interpolater2(y_pos, listtype):
     value = value(abs(y_pos))
     return value
 
-
+#Plots moment diagram 
 def plot_Moment_diagram (CL_d, dyn_p, P, P_y_pos, M, M_y_pos):
     y_pos=0
     y_lst2=[]
@@ -224,4 +224,4 @@ def plot_Moment_diagram (CL_d, dyn_p, P, P_y_pos, M, M_y_pos):
     plt.plot(y_lst2, Moment)
     print(Moment[-1])
     
-plot_Moment_diagram(1, 100000, 300000, 10, 5000000, 20)
+plot_Moment_diagram(1, 100000, 300000, 10, 25000000, 20)
