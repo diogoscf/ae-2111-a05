@@ -49,3 +49,8 @@ Cd_at_y(CD_d, y_pos) -> ^but drag
 
  Cm_at_y(CM_d, y_pos) -> ^but moment
 
+
+
+plot_Shear_diagram(CL_d, dyn_p, P, P_y_pos) -> plots shear force diagram for a given CL, dyn_p, point of magnitude P and the position it acts on.
+
+plot_Moment_diagram (CL_d, dyn_p, P, P_y_pos, M, M_y_pos) -> plots moment diagram for a given CL, dyn_p, point force of magnitude P, the position is acts and same for point moment of magnitude M
