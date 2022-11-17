@@ -167,8 +167,8 @@ def plot_Shear_diagram(CL_d, dyn_p, P, P_y_pos):
     
     plt.plot(y_lst, Shear)
     plt.show()
-    print(Shear[-1])
-    
+   # print(Shear[-1])
+    return(Shear)
 def plot_Shear_diagram2(CL_d, dyn_p):
     CD_d = CD_0 + CL_d**2/(math.pi*AR*e)
     y_pos = 0
@@ -185,6 +185,43 @@ def plot_Shear_diagram2(CL_d, dyn_p):
        y_pos+=0.1     
     plt.plot(y_lst, Shear) 
     return Shear
-plot_Shear_diagram(1, 10000, -300000, 10)
+#plot_Shear_diagram(1, 10000, -300000, 10)
+
+def make_y_list():
+    i=0
+    y_lst=[]
+    y=0
+    while i<218:
+        y_lst.append(y)
+        y+=0.1
+        i+=1
+    return (y_lst)
+
+def interpolater2(y_pos, listtype):
+    y_lst=make_y_list()
+    value = sp.interpolate.interp1d(
+        y_lst, listtype, kind="cubic", fill_value="extrapolate"
+    )
+    value = value(abs(y_pos))
+    return value
 
 
+def plot_Moment_diagram (CL_d, dyn_p, P, P_y_pos, M, M_y_pos):
+    y_pos=0
+    y_lst2=[]
+    Moment = []
+    Shear_list = plot_Shear_diagram(CL_d, dyn_p, P, P_y_pos)
+    while y_pos <= M_y_pos:
+        Moment_value = sp.integrate.quad(lambda y: interpolater2(y, Shear_list), y_pos, 21.79)[0]-M
+        y_pos+=0.1
+        y_lst2.append(y_pos)
+        Moment.append(Moment_value)
+    while y_pos > M_y_pos and y_pos <=21.8:
+        Moment_value = sp.integrate.quad(lambda y: interpolater2(y, Shear_list), y_pos, 21.79)[0]
+        y_pos+=0.1
+        y_lst2.append(y_pos)
+        Moment.append(Moment_value)
+    plt.plot(y_lst2, Moment)
+    print(Moment[-1])
+    
+plot_Moment_diagram(1, 100000, 300000, 10, 5000000, 20)
