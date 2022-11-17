@@ -131,42 +131,43 @@ def D_prime(CD_d, y_pos, dyn_p):
 #M_prime for any given CM and position
 def M_prime(CM_d, y_pos, dyn_p):
      return Cm_at_y(CM_d, y_pos)*dyn_p*XFLR.interpolater(y_pos, XFLR.c_lst)**2
- 
+#N_prime for any given CL, CD and position
 def N_prime (CL_d, CD_d, y_pos, dyn_p):
     return L_prime(CL_d, y_pos, dyn_p)*cos(radians(AOA_specific_flight_regime(CL_d))) + D_prime(CD_d, y_pos, dyn_p)*sin(radians(AOA_specific_flight_regime(CL_d)))
 
-
+#Plots shear distribution
 def plot_Shear_distribution(CL_d, dyn_p):
     CD_d = CD_0 + CL_d**2/(math.pi*AR*e)
     y_pos = np.linspace(0, 21.79, 1000)
     plt.plot(y_pos, N_prime(CL_d, CD_d, y_pos, dyn_p))
 
-
+#Plots moment distributions
 def plot_Moment_distribution(CM_d, dyn_p):
     y_pos = np.linspace(0, 21.79, 1000)
     plt.plot(y_pos, M_prime(CM_d, y_pos, dyn_p))
     
-    
-def plot_Shear_diagram(CL_d, dyn_p):
+#Makesa Shear force diagram. P is a point load, P_y_pos is it's position along the wingspan  
+def plot_Shear_diagram(CL_d, dyn_p, P, P_y_pos):
     CD_d = CD_0 + CL_d**2/(math.pi*AR*e)
     y_pos = 0
     y_lst= []
     Shear=[]
-    while  y_pos <= 10:
+    while  y_pos <= P_y_pos:
         
-        Shear_value=sp.integrate.quad(lambda y: N_prime(CL_d, CD_d, y, dyn_p), y_pos, 21.79)
-        Shear.append(Shear_value[0])
+        Shear_value=sp.integrate.quad(lambda y: N_prime(CL_d, CD_d, y, dyn_p), y_pos, 21.79)[0]-P
+        Shear.append(Shear_value)
         y_lst.append(y_pos)
         y_pos+=0.1
-    while  y_pos <= 21.8 and y_pos >10:
+    while  y_pos <= 21.8 and y_pos >P_y_pos:
         
-        Shear_value=sp.integrate.quad(lambda y: N_prime(CL_d, CD_d, y, dyn_p), y_pos, 21.79)[0]+300000
+        Shear_value=sp.integrate.quad(lambda y: N_prime(CL_d, CD_d, y, dyn_p), y_pos, 21.79)[0]
         Shear.append(Shear_value)
         y_lst.append(y_pos)
         y_pos+=0.1
     
     plt.plot(y_lst, Shear)
-    
+    plt.show()
+    print(Shear[-1])
     
 def plot_Shear_diagram2(CL_d, dyn_p):
     CD_d = CD_0 + CL_d**2/(math.pi*AR*e)
@@ -184,6 +185,6 @@ def plot_Shear_diagram2(CL_d, dyn_p):
        y_pos+=0.1     
     plt.plot(y_lst, Shear) 
     return Shear
-plot_Shear_diagram(1, 10000)
+plot_Shear_diagram(1, 10000, -300000, 10)
 
 
