@@ -206,25 +206,25 @@ def MOI(y):
         left_spar = spar_position[i]
         right_spar = spar_position[i+1]
 
+        t = WINGBOX["skin_thickness"]
+
         #top element
         center = ( (left_spar + right_spar)/2 , (airfoil_info(left_spar)[2] + airfoil_info(right_spar)[2])/2 )                              #center of skin element                              
         theta = np.arctan((airfoil_info(left_spar)[2] - airfoil_info(right_spar)[2])/(left_spar - right_spar))                              #angle to x-axis
-        position = (chord * center[0], chord * center[1])                                                                                   #coordinates converted to meters
+        position = (chord * center[0], chord * center[1]) # coordinates converted to meters
         rel_position = (position[0] - centroid_y[0],position[1] - centroid_y[1])                                                            #relative position to centroid
         w = np.sqrt((left_spar - right_spar)**2 + (airfoil_info(left_spar)[2] - airfoil_info(right_spar)[2])**2)
-        t = WINGBOX["skin_thickness"]
-        Ixx += (w**3)*b*np.sin(theta)**2/12 + w*t*(rel_position[1]**2)
-        Iyy += (w**3)*b*np.sin(theta)**2/12 + w*t*(rel_position[0]**2)
+        Ixx += (w**3)*t*np.sin(theta)**2/12 + w*t*(rel_position[1]**2)
+        Iyy += (w**3)*t*np.sin(theta)**2/12 + w*t*(rel_position[0]**2)
 
         #bottom element
         center = ( (left_spar + right_spar)/2 , (airfoil_info(left_spar)[3] + airfoil_info(right_spar)[3])/2 )
         theta = np.arctan((airfoil_info(left_spar)[3] - airfoil_info(right_spar)[3])/(left_spar - right_spar))
         position = (chord * center[0], chord * center[1])
         rel_position = (position[0] - centroid_y[0],position[1] - centroid_y[1])
-        a = np.sqrt((left_spar - right_spar)**2 + (airfoil_info(left_spar)[3] - airfoil_info(right_spar)[3])**2)
-        b = WINGBOX["skin_thickness"]
-        Ixx += (w**3)*b*np.sin(theta)**2/12 + w*t*(rel_position[1]**2)
-        Iyy += (w**3)*b*np.sin(theta)**2/12 + w*t*(rel_position[0]**2)
+        w = np.sqrt((left_spar - right_spar)**2 + (airfoil_info(left_spar)[3] - airfoil_info(right_spar)[3])**2)
+        Ixx += (w**3)*t*np.sin(theta)**2/12 + w*t*(rel_position[1]**2)
+        Iyy += (w**3)*t*np.sin(theta)**2/12 + w*t*(rel_position[0]**2)
     
     return Ixx, Iyy
 

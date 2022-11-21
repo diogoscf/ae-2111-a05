@@ -114,6 +114,9 @@ def lift_distribution_specific_flight_regime(CL_d):
     )
     return cl_d_lst
 
+def AOA_specific_flight_regime(CL_d):
+    return asin((CL_d - CL_0) / (CL_10 - CL_0) * sin(radians(10))) * 57.3
+
 
 # Determines Cd dist at given CD
 def drag_distribution_specific_flight_regime(CD_d):
@@ -131,8 +134,6 @@ def moment_distribution_specific_flight_regime(CM_d):
     return cm_d_lst
 
 
-def AOA_specific_flight_regime(CL_d):  # result in radians
-    return asin((CL_d - CL_0) / (CL_10 - CL_0) * sin(radians(10))) * 57.3
 
 
 # print(AOA_specific_flight_regime(1)*57.3)
@@ -213,7 +214,30 @@ def plot_Moment_distribution(CM_d, dyn_p):
 
 # Makesa Shear force diagram. P is a point load, P_y_pos is it's position along the wingspan
 def plot_Shear_diagram(CL_d, dyn_p, P, P_y_pos):
-    CD_d = CD_0 + CL_d**2 / (math.pi * AR * e)
+    CD_d = CD_0 + CL_d**2/(math.pi*AR*e)
+    y_pos = 0
+    y_lst= []
+    Shear=[]
+    while  y_pos <= P_y_pos:
+        
+        Shear_value=sp.integrate.quad(lambda y: N_prime(CL_d, CD_d, y, dyn_p), y_pos, 21.79)[0]-P
+        Shear.append(Shear_value)
+        y_lst.append(y_pos)
+        y_pos+=0.1
+    while  y_pos <= 21.8 and y_pos >P_y_pos:
+        
+        Shear_value=sp.integrate.quad(lambda y: N_prime(CL_d, CD_d, y, dyn_p), y_pos, 21.79)[0]
+        Shear.append(Shear_value)
+        y_lst.append(y_pos)
+        y_pos+=0.1
+    
+    plt.plot(y_lst, Shear)
+    plt.show()
+    print(Shear[-1])
+    print(Shear[0])
+    return(Shear)
+#def plot_Shear_diagram2(CL_d, dyn_p):
+    CD_d = CD_0 + CL_d**2/(math.pi*AR*e)
     y_pos = 0
     y_lst = []
     Shear = []
@@ -305,7 +329,22 @@ def plot_Moment_diagram(CL_d, dyn_p, P, P_y_pos, M, M_y_pos):
         Moment.append(Moment_value)
     plt.plot(y_lst2, Moment)
     print(Moment[-1])
+    print(Moment[0])
+    
+def plot_normal_diagram (Thrust, Position, Angle):
+    y_pos=0
+    y_lst2=[] 
+    Compression_lst = []
+    while y_pos <= Position:
+        y_pos+=0.1
+        y_lst2.append(y_pos)
+        Compression_lst.append(-Thrust*sin(radians(Angle)))
+    while y_pos >Position and y_pos <=21.8 :
+        y_pos+=0.1
+        y_lst2.append(y_pos)
+        Compression_lst.append(0)
+    plt.plot(y_lst2, Compression_lst)
+        
+    
+plot_normal_diagram(300000, 10, 32)
 
-
-if __name__ == "__main__":
-    plot_Moment_diagram(1, 100000, 300000, 10, 5000000, 20)
