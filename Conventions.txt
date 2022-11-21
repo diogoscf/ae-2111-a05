@@ -55,3 +55,5 @@ plot_Shear_diagram(CL_d, dyn_p, P, P_y_pos) -> plots shear force diagram for a g
 
 plot_Moment_diagram (CL_d, dyn_p, P, P_y_pos, M, M_y_pos) -> plots moment diagram for a given CL, dyn_p, point force of magnitude P, the position is acts and same for point moment of magnitude M
 Note: plot_Moment_diagram also plots the corresponding shear force diagram.
+
+plor_normal_diagram (Thrust, Position, angle) -> PLots a normal force diagram
