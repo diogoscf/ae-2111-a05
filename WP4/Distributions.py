@@ -114,6 +114,9 @@ def lift_distribution_specific_flight_regime(CL_d):
     )
     return cl_d_lst
 
+def AOA_specific_flight_regime(CL_d):
+    return asin((CL_d - CL_0) / (CL_10 - CL_0) * sin(radians(10))) * 57.3
+
 
 # Determines Cd dist at given CD
 def drag_distribution_specific_flight_regime(CD_d):
@@ -131,8 +134,6 @@ def moment_distribution_specific_flight_regime(CM_d):
     return cm_d_lst
 
 
-def AOA_specific_flight_regime(CL_d):  # result in radians
-    return asin((CL_d - CL_0) / (CL_10 - CL_0) * sin(radians(10))) * 57.3
 
 
 # print(AOA_specific_flight_regime(1)*57.3)
@@ -235,7 +236,7 @@ def plot_Shear_diagram(CL_d, dyn_p, P, P_y_pos):
     print(Shear[-1])
     print(Shear[0])
     return(Shear)
-def plot_Shear_diagram2(CL_d, dyn_p):
+#def plot_Shear_diagram2(CL_d, dyn_p):
     CD_d = CD_0 + CL_d**2/(math.pi*AR*e)
     y_pos = 0
     y_lst = []
