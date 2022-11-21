@@ -167,7 +167,8 @@ def plot_Shear_diagram(CL_d, dyn_p, P, P_y_pos):
     
     plt.plot(y_lst, Shear)
     plt.show()
-   # print(Shear[-1])
+    print(Shear[-1])
+    print(Shear[0])
     return(Shear)
 def plot_Shear_diagram2(CL_d, dyn_p):
     CD_d = CD_0 + CL_d**2/(math.pi*AR*e)
@@ -223,5 +224,21 @@ def plot_Moment_diagram (CL_d, dyn_p, P, P_y_pos, M, M_y_pos):
         Moment.append(Moment_value)
     plt.plot(y_lst2, Moment)
     print(Moment[-1])
+    print(Moment[0])
     
-plot_Moment_diagram(1, 100000, 300000, 10, 5000000, 20)
+def plot_normal_diagram (Thrust, Position, Angle):
+    y_pos=0
+    y_lst2=[] 
+    Compression_lst = []
+    while y_pos <= Position:
+        y_pos+=0.1
+        y_lst2.append(y_pos)
+        Compression_lst.append(-Thrust*sin(radians(Angle)))
+    while y_pos >Position and y_pos <=21.8 :
+        y_pos+=0.1
+        y_lst2.append(y_pos)
+        Compression_lst.append(0)
+    plt.plot(y_lst2, Compression_lst)
+        
+    
+plot_normal_diagram(300000, 10, 32)
