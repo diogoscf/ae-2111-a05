@@ -1,5 +1,6 @@
 import scipy as sp
 from stiffness import *
+from params import *
 import matplotlib.pyplot as plt
 import numpy as np
 #Functions M(x) and T(y) need to be imported from WP4.1

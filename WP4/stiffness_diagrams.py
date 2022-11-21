@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 import stiffness
+from params import *
 
 def plot_diagram(x_vals, y_vals, xlab, ylab, plottitle):
     fig, ax = plt.subplots()
