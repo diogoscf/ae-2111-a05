@@ -60,9 +60,8 @@ def moment_diagram(cl_d, point_loads=[], load_factor=1, y_pos=y_space):
 
 
 def distance_flexural_axis(y):
-    root_chord = WING["root_chord"]
-    tip_chord = WING["root_chord"] * WING["taper_ratio"]
-    return ((tip_chord - root_chord) / (2 * halfspan)) * y + root_chord / 4
+    chord_y = lambda y: (((WING["taper_ratio"] - 1)/(halfspan))*abs(y) + 1) * WING["root_chord"]
+    return chord_y(y) / 4
 
 
 def torque_calc(cl_d, point_loads=[], load_factor=1, y_pos=y_space):

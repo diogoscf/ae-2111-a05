@@ -205,4 +205,4 @@ def MOI(y):
     
     return Ixx, Iyy
 
-print(centroid(1)[0]/chord_y(1), centroid(1)[1]/chord_y(1))
+# print(centroid(1)[0]/chord_y(1), centroid(1)[1]/chord_y(1))
