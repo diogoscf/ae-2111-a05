@@ -9,13 +9,15 @@ from Diagrams import moment_calc, torque_calc
 
 rel = lambda y: y/(WING["span"]/2)
 
-CL_d = 1
+CL_d = CRIT["cld"]
+load_factor = CRIT["load_factor"]
+ptloads = CRIT["point_loads"]
 points = 100
 
 y_vals = np.linspace(0, WING["span"]/2, points)
-m_vals = moment_calc(CL_d, [], y_vals)
+m_vals = moment_calc(CL_d, ptloads, load_factor, y_vals)
 m_estimate = sp.interpolate.interp1d(y_vals,m_vals,kind="cubic",fill_value="extrapolate")
-t_vals = torque_calc(CL_d, [], y_vals)
+t_vals = torque_calc(CL_d, ptloads, load_factor, y_vals)
 t_estimate = sp.interpolate.interp1d(y_vals,t_vals,kind="cubic",fill_value="extrapolate")
 
 def M(y):

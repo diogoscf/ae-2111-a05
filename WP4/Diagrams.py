@@ -41,7 +41,7 @@ def moment_calc(cl_d, point_loads=[], load_factor=1, y_pos=y_space):
     y_tab = []
     function_m = sp.interpolate.interp1d(
         y_pos,
-        shear_force_calc(cl_d, point_loads, load_factor),
+        shear_force_calc(cl_d, point_loads, load_factor, y_pos),
         kind="cubic",
         fill_value="extrapolate",
     )
@@ -94,4 +94,4 @@ def torque_diagram(cl_d, point_loads=[], load_factor=1, y_pos=y_space):
 if __name__ == "__main__":
     # shear_force_diagram(1, (), 1)
     # moment_diagram(1, (), 2.5)
-    # torque_diagram(1, [(35000, 8.374)])
+    torque_diagram(1, [(35000, 8.374)])
