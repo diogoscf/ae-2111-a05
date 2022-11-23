@@ -38,7 +38,7 @@ def moment_calc(cl_d, point_loads=[], y_pos=y_space):
     y_tab = []
     function_m = sp.interpolate.interp1d(
         y_pos,
-        shear_force_calc(cl_d, point_loads),
+        shear_force_calc(cl_d, point_loads, y_pos),
         kind="cubic",
         fill_value="extrapolate",
     )
@@ -67,15 +67,16 @@ def torque_calc(cl_d, point_loads=[], y_pos=y_space):
     normal = Distributions.N_prime(
         cl_d, (0.028 + cl_d ** 2 / (pi * 10 * 0.51)), y_pos, 10000
     )
-    function = lambda y: sp.interpolate.interp1d(
+    intpl = sp.interpolate.interp1d(
         y_pos, normal, kind="cubic", fill_value="extrapolate"
-    )(y) * distance_flexural_axis(y)
+    )
+    function = lambda y: intpl(y) * distance_flexural_axis(y)
     for y in y_pos:
         estimate_t, _ = sp.integrate.quad(function, y, y_pos[-1])
         for load, pos in point_loads:
             if y <= pos:
                 estimate_t += load
-        t_tab.append(-estimate_t)
+        t_tab.append(estimate_t)
     return t_tab
 
 def torque_diagram(cl_d, point_loads=[], y_pos=y_space):
