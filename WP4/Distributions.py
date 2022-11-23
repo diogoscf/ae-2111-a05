@@ -345,6 +345,6 @@ def plot_normal_diagram (Thrust, Position, Angle):
         Compression_lst.append(0)
     plt.plot(y_lst2, Compression_lst)
         
-    
-plot_normal_diagram(300000, 10, 32)
+if __name__ == "__main__":   
+    plot_normal_diagram(300000, 10, 32)
 
