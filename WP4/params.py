@@ -22,3 +22,10 @@ MAT = {
     "E": 68.9E9, # pascal
     "G": 26E9  # pascal
 }
+
+# Critical Load Parameters (in SI)
+CRIT = {
+    "load_factor": 1,
+    "point_loads": [],
+    "cld": 1
+}

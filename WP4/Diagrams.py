@@ -43,7 +43,7 @@ def moment_calc(cl_d, point_loads=[], load_factor=1, y_pos=y_space):
     y_tab = []
     function_m = sp.interpolate.interp1d(
         y_pos,
-        shear_force_calc(cl_d, point_loads, load_factor),
+        shear_force_calc(cl_d, point_loads, load_factor, y_pos),
         kind="cubic",
         fill_value="extrapolate",
     )
