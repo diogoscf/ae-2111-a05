@@ -139,12 +139,14 @@ def moment_distribution_specific_flight_regime(CM_d):
 # print(AOA_specific_flight_regime(1)*57.3)
 # Function to plot a lift distribution of any given CL
 def Plot_lift_distribution(CL_d):
-    y_pos = np.linspace(-21.79, 21.79, 100)
+    y_pos = np.linspace(0, 21.79, 100)
     plt.plot(
         y_pos, XFLR.interpolater(y_pos, lift_distribution_specific_flight_regime(CL_d))
     )
-
-
+    plt.xlabel("y(m)")
+    plt.ylabel("Cl(-)")
+    plt.title("Lift distribution")
+    
 def Plot_drag_distribution(CD_d):
     y_pos = np.linspace(-21.79, 21.79, 100)
     plt.plot(
@@ -347,4 +349,5 @@ def plot_normal_diagram (Thrust, Position, Angle):
         
 if __name__ == "__main__":   
     plot_normal_diagram(300000, 10, 32)
+    Plot_lift_distribution(1)
 
