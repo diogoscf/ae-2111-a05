@@ -29,49 +29,49 @@ rect_MMOI = lambda b,h: b*(h**3)/12
 chord_y = lambda y: ((WING["taper_ratio"] - 1)*abs(y) + 1) * WING["root_chord"]
 
 # Centroid coordinates at a position y/(b/2) along the span (from wing root), using parameters in WINGBOX
-# Coordinates given with (0,0) at leading edge
+# Coordinates given with (x,z) = (0,0) at leading edge (camber line)
 def centroid(y):
     chord = chord_y(y)
-    centroids = [] # list of (x,y,A)
+    centroids = [] # list of (x,z,A)
     spars = sorted([WINGBOX["front_spar"], WINGBOX["rear_spar"], *[s[0] for s in WINGBOX["other_spars"] if s[1] >= abs(y)]])
     # Spars
     for spar_pos in spars:
-        h, y, *rest = airfoil_info(spar_pos)
-        centroids.append([spar_pos*chord, y*chord, h*chord*spar_pos])
+        h, z, *rest = airfoil_info(spar_pos)
+        centroids.append([spar_pos*chord, z*chord, h*chord*WINGBOX["spar_thickness"]])
 
     # Skin Pieces
     for i in range(len(spars) - 1):
         start, end = spars[i], spars[i+1]
-        y_start, y_end = airfoil_info(start)[2:], airfoil_info(end)[2:]
+        z_start, z_end = airfoil_info(start)[2:], airfoil_info(end)[2:]
         x = (start+end)/2
 
-        y_u = (y_start[0] + y_end[0])/2
-        l_u = np.sqrt((end - start)**2 + (y_start[0] - y_end[0])**2)
-        centroids.append([x*chord, y_u*chord, l_u*chord*WINGBOX["skin_thickness"]])
+        z_u = (z_start[0] + z_end[0])/2
+        l_u = np.sqrt((end - start)**2 + (z_start[0] - z_end[0])**2)
+        centroids.append([x*chord, z_u*chord, l_u*chord*WINGBOX["skin_thickness"]])
 
-        y_l = (y_start[1] + y_end[1])/2
-        l_l = np.sqrt((end - start)**2 + (y_start[1] - y_end[1])**2)
-        centroids.append([x*chord, y_l*chord, l_l*chord*WINGBOX["skin_thickness"]])
+        z_l = (z_start[1] + z_end[1])/2
+        l_l = np.sqrt((end - start)**2 + (z_start[1] - z_end[1])**2)
+        centroids.append([x*chord, z_l*chord, l_l*chord*WINGBOX["skin_thickness"]])
 
     # Stringers
     for stringer in WINGBOX["stringers_top"]:
         l_spar_idx = bisect.bisect_left(spars, stringer) - 1
         #print(spars, stringer, l_spar_idx)
         l_spar, r_spar = spars[l_spar_idx], spars[l_spar_idx + 1]
-        y = np.interp(stringer, (l_spar, airfoil_info(l_spar)[2]), (r_spar, airfoil_info(r_spar)[2]))
-        centroids.append([stringer*chord, y*chord, WINGBOX["stringer_area"]])
+        z = np.interp(stringer, (l_spar, r_spar), (airfoil_info(l_spar)[2], airfoil_info(r_spar)[2]))
+        centroids.append([stringer*chord, z*chord, WINGBOX["stringer_area"]])
 
     for stringer in WINGBOX["stringers_bottom"]:
         l_spar_idx = bisect.bisect_left(spars, stringer) - 1
         l_spar, r_spar = spars[l_spar_idx], spars[l_spar_idx + 1]
-        y = np.interp(stringer, (l_spar, airfoil_info(l_spar)[3]), (r_spar, airfoil_info(r_spar)[3]))
-        centroids.append([stringer*chord, y*chord, WINGBOX["stringer_area"]])
+        z = np.interp(stringer, (l_spar, r_spar), (airfoil_info(l_spar)[3], airfoil_info(r_spar)[3]))
+        centroids.append([stringer*chord, z*chord, WINGBOX["stringer_area"]])
 
     centroids = np.array(centroids)
     c_x = np.sum(centroids[:,0]*centroids[:,2]) / np.sum(centroids[:,2])
-    c_y = np.sum(centroids[:,1]*centroids[:,2]) / np.sum(centroids[:,2])
+    c_z = np.sum(centroids[:,1]*centroids[:,2]) / np.sum(centroids[:,2])
 
-    return c_x, c_y
+    return c_x, c_z
 
 #print(centroid(0))
 
@@ -91,28 +91,12 @@ def torsional_constant(y):
     areas = np.array(enclosed_areas(y, spars))
 
     if len(spars) == 2:
-        """
         start, end = spars[0], spars[1]
         y_start, y_end = airfoil_info(start)[2:], airfoil_info(end)[2:]
         hl, hr = airfoil_info(start)[0]*chord, airfoil_info(end)[0]*chord
         lu = np.sqrt((end - start)**2 + (y_start[0] - y_end[0])**2)*chord
         ll = np.sqrt((end - start)**2 + (y_start[1] - y_end[1])**2)*chord
-        J = 4*(areas[0]**2) / (((hl+hr)/(WINGBOX["spar_thickness"])) + ((ll+lu)/(WINGBOX["skin_thickness"]))])))
-        """
-        front_spar = [spars[0], airfoil_info(spars[0])[0], *airfoil_info(spars[0])[2:]]
-        rear_spar = [spars[1], airfoil_info(spars[1])[0], *airfoil_info(spars[1])[2:]]
-        front_spar_h = front_spar[1]*chord
-        rear_spar_h = rear_spar[1]*chord
-        x_skin = abs((rear_spar[0] - front_spar[0]))*chord
-
-        y_skin_top = abs((front_spar[2] - rear_spar[2]))*chord     
-        l_skin_top = np.sqrt(y_skin_top**2 + x_skin**2)
-
-        y_skin_bottom = abs((front_spar[3] - rear_spar[3]))*chord
-        l_skin_bottom = np.sqrt(y_skin_bottom**2+x_skin**2)
-        
-        i = ((front_spar_h + rear_spar_h)/WINGBOX["spar_thickness"]) + ((l_skin_bottom + l_skin_top)/WINGBOX["skin_thickness"])
-        J = (4*(areas[0]**2))/i
+        J = 4*(areas[0]**2) / (((hl+hr)/(WINGBOX["spar_thickness"])) + ((ll+lu)/(WINGBOX["skin_thickness"])))
         return J
     
     ncells = len(spars) - 1
@@ -122,10 +106,10 @@ def torsional_constant(y):
     RHS[-1] = 1
     for i in range(ncells):
         start, end = spars[i], spars[i+1]
-        y_start, y_end = airfoil_info(start)[2:], airfoil_info(end)[2:]
+        z_start, z_end = airfoil_info(start)[2:], airfoil_info(end)[2:]
         hl, hr = airfoil_info(start)[0]*chord, airfoil_info(end)[0]*chord
-        lu = np.sqrt((end - start)**2 + (y_start[0] - y_end[0])**2)*chord
-        ll = np.sqrt((end - start)**2 + (y_start[1] - y_end[1])**2)*chord
+        lu = np.sqrt((end - start)**2 + (z_start[0] - z_end[0])**2)*chord
+        ll = np.sqrt((end - start)**2 + (z_start[1] - z_end[1])**2)*chord
 
         matrix[i, i] = (1/(2*areas[i]))*(((hl+hr)/WINGBOX["spar_thickness"]) + ((lu+ll)/WINGBOX["skin_thickness"]))
         if not i == 0:
@@ -139,70 +123,70 @@ def torsional_constant(y):
     J = 1/solution[-1]
     return J
 
-#print(torsional_constant(0))
+print(torsional_constant(1))
 
 #Moment of inertia at a position y/(b/2) along the span
 def MOI(y):
     chord = ((WING["taper_ratio"] - 1)*abs(y) + 1) * WING["root_chord"]
-    spar_position = sorted([WINGBOX["front_spar"], WINGBOX["rear_spar"], *[s[0] for s in WINGBOX["other_spars"] if s[1] >= abs(y)]])
+    spars = sorted([WINGBOX["front_spar"], WINGBOX["rear_spar"], *[s[0] for s in WINGBOX["other_spars"] if s[1] >= abs(y)]])
     centroid_y = centroid(y)
     Ixx = 0
-    Iyy = 0
+    Izz = 0
 
     #for top stringers
     for stringer in WINGBOX["stringers_top"]:
-        l_spar_idx = bisect.bisect_left(spar_position, stringer) - 1
-        l_spar, r_spar = spar_position[l_spar_idx], spar_position[l_spar_idx + 1]
-        y_coord = np.interp(stringer, (l_spar, airfoil_info(l_spar)[2]), (r_spar, airfoil_info(r_spar)[2]))
-        position = (chord * stringer,chord * y_coord)                                            #coordinates converted to meters 
-        rel_position = (position[0] - centroid_y[0],position[1] - centroid_y[1])    #relative position to centroid
+        l_spar_idx = bisect.bisect_left(spars, stringer) - 1
+        l_spar, r_spar = spars[l_spar_idx], spars[l_spar_idx + 1]
+        z_coord = np.interp(stringer, (l_spar, r_spar), (airfoil_info(l_spar)[2], airfoil_info(r_spar)[2]))
+        position = (chord * stringer, chord * z_coord)                                            #coordinates converted to meters 
+        rel_position = (position[0] - centroid_y[0], position[1] - centroid_y[1])    #relative position to centroid
         Ixx += WINGBOX["stringer_area"] * (rel_position[1]**2)
-        Iyy += WINGBOX["stringer_area"] * (rel_position[0]**2)
+        Izz += WINGBOX["stringer_area"] * (rel_position[0]**2)
     
     #for bottom stringers
     for stringer in WINGBOX["stringers_bottom"]:
-        l_spar_idx = bisect.bisect_left(spar_position, stringer) - 1
-        l_spar, r_spar = spar_position[l_spar_idx], spar_position[l_spar_idx + 1]
-        y_coord = np.interp(stringer, (l_spar, airfoil_info(l_spar)[2]), (r_spar, airfoil_info(r_spar)[2]))
-        position = (chord * stringer,chord * y_coord)                                            #coordinates converted to meters 
-        rel_position = (position[0] - centroid_y[0],position[1] - centroid_y[1])    #relative position to centroid
+        l_spar_idx = bisect.bisect_left(spars, stringer) - 1
+        l_spar, r_spar = spars[l_spar_idx], spars[l_spar_idx + 1]
+        z_coord = np.interp(stringer, (l_spar, r_spar), (airfoil_info(l_spar)[3], airfoil_info(r_spar)[3]))
+        position = (chord * stringer,chord * z_coord)                                            #coordinates converted to meters 
+        rel_position = (position[0] - centroid_y[0], position[1] - centroid_y[1])    #relative position to centroid
         Ixx += WINGBOX["stringer_area"] * (rel_position[1]**2)
-        Iyy += WINGBOX["stringer_area"] * (rel_position[0]**2)
+        Izz += WINGBOX["stringer_area"] * (rel_position[0]**2)
 
     #for spars
-    for x in spar_position:
+    for x in spars:
         position = (chord * x, chord * airfoil_info(x)[1])                          #coordinates converted to meters 
-        rel_position = (position[0] - centroid_y[0],position[1] - centroid_y[1])    #relative position to centroid
-        a = WINGBOX["spar_thickness"]
-        b = airfoil_info(x)[0]
-        Ixx += a*(b**3)/12 + a*b*(rel_position[1]**2)
-        Iyy += (a**3)*b/12 + a*b*(rel_position[0]**2)
+        rel_position = (position[0] - centroid_y[0], position[1] - centroid_y[1])    #relative position to centroid
+        t = WINGBOX["spar_thickness"]
+        h = airfoil_info(x)[0] * chord
+        Ixx += t*(h**3)/12 + t*h*(rel_position[1]**2)
+        Izz += (t**3)*h/12 + t*h*(rel_position[0]**2)
 
     #for skin
-    for i in range(len(spar_position)-1):
-        left_spar = spar_position[i]
-        right_spar = spar_position[i+1]
+    for i in range(len(spars)-1):
+        left_spar = spars[i]
+        right_spar = spars[i+1]
 
         t = WINGBOX["skin_thickness"]
 
         #top element
-        center = ( (left_spar + right_spar)/2 , (airfoil_info(left_spar)[2] + airfoil_info(right_spar)[2])/2 )                              #center of skin element                              
-        theta = np.arctan((airfoil_info(left_spar)[2] - airfoil_info(right_spar)[2])/(left_spar - right_spar))                              #angle to x-axis
+        center = ((left_spar + right_spar)/2 , (airfoil_info(left_spar)[2] + airfoil_info(right_spar)[2])/2)                              #center of skin element                              
+        theta = np.arctan((airfoil_info(right_spar)[2] - airfoil_info(left_spar)[2])/(right_spar - left_spar))                              #angle to x-axis
         position = (chord * center[0], chord * center[1]) # coordinates converted to meters
-        rel_position = (position[0] - centroid_y[0],position[1] - centroid_y[1])                                                            #relative position to centroid
-        w = np.sqrt((left_spar - right_spar)**2 + (airfoil_info(left_spar)[2] - airfoil_info(right_spar)[2])**2)
-        Ixx += (w**3)*t*np.sin(theta)**2/12 + w*t*(rel_position[1]**2)
-        Iyy += (w**3)*t*np.sin(theta)**2/12 + w*t*(rel_position[0]**2)
+        rel_position = (position[0] - centroid_y[0], position[1] - centroid_y[1])                                                            #relative position to centroid
+        w = (np.sqrt((left_spar - right_spar)**2 + (airfoil_info(left_spar)[2] - airfoil_info(right_spar)[2])**2))*chord
+        Ixx += (w**3)*t*(np.sin(theta)**2)/12 + w*t*(rel_position[1]**2)
+        Izz += (w**3)*t*(np.cos(theta)**2)/12 + w*t*(rel_position[0]**2)
 
         #bottom element
-        center = ( (left_spar + right_spar)/2 , (airfoil_info(left_spar)[3] + airfoil_info(right_spar)[3])/2 )
-        theta = np.arctan((airfoil_info(left_spar)[3] - airfoil_info(right_spar)[3])/(left_spar - right_spar))
+        center = ((left_spar + right_spar)/2 , (airfoil_info(left_spar)[3] + airfoil_info(right_spar)[3])/2)
+        theta = np.arctan((airfoil_info(right_spar)[3] - airfoil_info(left_spar)[3])/(right_spar - left_spar))
         position = (chord * center[0], chord * center[1])
         rel_position = (position[0] - centroid_y[0],position[1] - centroid_y[1])
-        w = np.sqrt((left_spar - right_spar)**2 + (airfoil_info(left_spar)[3] - airfoil_info(right_spar)[3])**2)
-        Ixx += (w**3)*t*np.sin(theta)**2/12 + w*t*(rel_position[1]**2)
-        Iyy += (w**3)*t*np.sin(theta)**2/12 + w*t*(rel_position[0]**2)
+        w = (np.sqrt((left_spar - right_spar)**2 + (airfoil_info(left_spar)[3] - airfoil_info(right_spar)[3])**2))*chord
+        Ixx += (w**3)*t*(np.sin(theta)**2)/12 + w*t*(rel_position[1]**2)
+        Izz += (w**3)*t*(np.cos(theta)**2)/12 + w*t*(rel_position[0]**2)
     
-    return Ixx, Iyy
+    return Ixx, Izz
 
 # print(centroid(1)[0]/chord_y(1), centroid(1)[1]/chord_y(1))
