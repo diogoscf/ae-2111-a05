@@ -99,7 +99,7 @@ def distance_flexural_axis(y):
 
 def torque_calc(cl_d, point_loads=[], load_factor=1, dyn_p=10000, y_pos=y_space):
     t_tab = []
-    normal = Distributions.N_prime(cl_d, (0.028 + cl_d**2 / (pi * 10 * 0.51)), dyn_p, y_pos)
+    normal = Distributions.N_prime(cl_d, (0.028 + cl_d**2 / (pi * 10 * 0.51)), y_pos, dyn_p)
     intpl = sp.interpolate.interp1d(y_pos, normal, kind="cubic", fill_value="extrapolate")
     function = lambda y: intpl(y) * distance_flexural_axis(y)
     for y in y_pos:

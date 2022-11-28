@@ -45,5 +45,5 @@ plt.xlim([0, chord])
 plt.ylim([-chord/4, chord/4])
 plt.show()
 
-print(MOI(y))
+#print(MOI(y))
 

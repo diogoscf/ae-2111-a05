@@ -56,6 +56,9 @@ def v(y):
     return result
 
 def plot_diagram_threshold(x_vals, y_vals, maxval, xlab, ylab, plottitle):
+    if np.max(y_vals) < maxval:
+        plot_diagram(x_vals, y_vals, xlab, ylab, plottitle)
+        return
     fig, ax = plt.subplots()
 
     cmap = ListedColormap(["blue", "red"])
@@ -79,11 +82,18 @@ def theta(y):
     return result
 
 
+def plot_diagram(x_vals, y_vals, xlab, ylab, plottitle):
+    fig, ax = plt.subplots()
+    ax.plot(x_vals, y_vals)
+    ax.set(xlabel=xlab, ylabel=ylab, title=plottitle)
+    ax.grid()
+
+
 if __name__ == "__main__":
     v_vals = [v(y) for y in y_vals]
     plot_diagram_threshold(y_vals, v_vals, 0.15*WING["span"], "y (m)", "v (m)", "Deflection along wing span")
 
     th_vals = [theta(y)*180/(np.pi) for y in y_vals]
-    plot_diagram_threshold(y_vals, th_vals, 15, "y (m)", "θ (°)", "Twist angle along wing span")
+    plot_diagram_threshold(y_vals, th_vals, 10, "y (m)", "θ (°)", "Twist angle along wing span")
 
     plt.show()
