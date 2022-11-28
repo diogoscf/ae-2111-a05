@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import bisect
 
-from stiffness import airfoil_info, airfoil_data, chord_y
+from stiffness import airfoil_info, airfoil_data, chord_y, centroid, MOI
 
 y = 0
 chord = chord_y(y)
@@ -14,11 +14,16 @@ ax.plot(airfoil_data[:,0]*chord, airfoil_data[:,1]*chord, color="black") # Airfo
 
 spars = sorted([WINGBOX["front_spar"], WINGBOX["rear_spar"], *[s[0] for s in WINGBOX["other_spars"] if s[1] >= abs(y)]])
 
+show_centroids = False
+
 for i, s in enumerate(spars):
     ax.plot((s*chord, s*chord), [airfoil_info(s)[2]*chord, airfoil_info(s)[3]*chord], color="red") # Spars
+    if show_centroids: ax.plot(chord * s, chord * airfoil_info(s)[1], marker="x", color="black")
     if i < len(spars)-1:
         ax.plot((s*chord, spars[i+1]*chord), [airfoil_info(s)[2]*chord, airfoil_info(spars[i+1])[2]*chord], color="red") # Top Skin
+        if show_centroids: ax.plot(chord*(s + spars[i+1])/2 , chord*(airfoil_info(s)[2] + airfoil_info(spars[i+1])[2])/2, marker="x", color="black")
         ax.plot((s*chord, spars[i+1]*chord), [airfoil_info(s)[3]*chord, airfoil_info(spars[i+1])[3]*chord], color="red") # Bottom Skin
+        if show_centroids: ax.plot(chord*(s + spars[i+1])/2 , chord*(airfoil_info(s)[3] + airfoil_info(spars[i+1])[3])/2, marker="x", color="black")
 
 for stringer in WINGBOX["stringers_top"]:
     l_spar_idx = bisect.bisect_left(spars, stringer) - 1
@@ -32,7 +37,13 @@ for stringer in WINGBOX["stringers_bottom"]:
     z = np.interp(stringer, (l_spar, r_spar), (airfoil_info(l_spar)[3], airfoil_info(r_spar)[3]))
     ax.plot(stringer*chord, z*chord, marker="o", color="blue") # Bottom Stringers
 
+centroid = centroid(y)
+ax.plot(centroid[0], centroid[1], marker="x", color="green") # Centroid
+ax.plot(centroid[0], centroid[1]-0.05, marker="$C.G.$", color="green")
+
 plt.xlim([0, chord])
 plt.ylim([-chord/4, chord/4])
 plt.show()
+
+print(MOI(y))
 
