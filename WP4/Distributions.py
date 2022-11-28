@@ -352,11 +352,3 @@ def plot_normal_diagram (Thrust, Position, Angle):
     plt.plot(y_lst2, Compression_lst)
         
 
-if __name__ == "__main__":   
-    #plot_normal_diagram(300000, 10, 32)
-    Plot_lift_distribution(1)
-    #Plot_lift_distribution(1)
-    #Plot_drag_distribution(0.04)
-    #Plot_moment_distribution(-0.1)
-    
-
