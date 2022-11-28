@@ -122,9 +122,15 @@ def torque_diagram(cl_d, point_loads=[], load_factor=1, dyn_p=10000, y_pos=y_spa
 
 
 if __name__ == "__main__":
-    shear_force_diagram(0.908, [engine_mass], [wing_mass], 3.75, 3703.338805)
-    shear_force_diagram(0.908, [engine_mass], [wing_mass], 3.75, 8328.245793)
-    shear_force_diagram(0.908, [engine_mass], [wing_mass], 3.75, 4838.801824)
-    shear_force_diagram(2.27, [engine_mass], [wing_mass], -1.5, 1481.335522)
-    shear_force_diagram(2.27, [engine_mass], [wing_mass], -1.5, 3331.298316)
-    shear_force_diagram(2.27, [engine_mass], [wing_mass], -1.5, 1935.52073)
+    # shear_force_diagram(0.908, [engine_mass], [wing_mass], 3.75, 3703.338805)
+    # shear_force_diagram(0.908, [engine_mass], [wing_mass], 3.75, 8328.245793)
+    # shear_force_diagram(0.908, [engine_mass], [wing_mass], 3.75, 4838.801824)
+    # shear_force_diagram(2.27, [engine_mass], [wing_mass], -1.5, 1481.335522)
+    # shear_force_diagram(2.27, [engine_mass], [wing_mass], -1.5, 3331.298316)
+    # shear_force_diagram(2.27, [engine_mass], [wing_mass], -1.5, 1935.52073)
+    print(shear_force_calc(0.908, [engine_mass], [wing_mass], 3.75, 3703.338805)[0])
+    print(shear_force_calc(0.908, [engine_mass], [wing_mass], 3.75, 8328.245793)[0])
+    print(shear_force_calc(0.908, [engine_mass], [wing_mass], 3.75, 4838.801824)[0])
+    print(shear_force_calc(2.27, [engine_mass], [wing_mass], -1.5, 1481.335522)[0])
+    print(shear_force_calc(2.27, [engine_mass], [wing_mass], -1.5, 3331.298316)[0])
+    print(shear_force_calc(2.27, [engine_mass], [wing_mass], -1.5, 1935.52073)[0])
