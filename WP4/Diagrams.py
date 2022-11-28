@@ -96,13 +96,8 @@ def torque_diagram(cl_d, point_loads=[], load_factor=1, y_pos=y_space):
     plt.show()
 
 
-<<<<<<< Updated upstream
 if __name__ == "__main__":
     shear_force_diagram(CRIT["cld"], CRIT["point_loads"], CRIT["load_factor"])
     # moment_diagram(1, (), 2.5)
     #torque_diagram(1, [(35000, 8.374)], 1)
     # pass
-=======
-#moment_diagram(1)
-torque_diagram(1, [(35000, 8.374)])
->>>>>>> Stashed changes
