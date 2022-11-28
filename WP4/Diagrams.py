@@ -8,10 +8,11 @@ from math import pi
 import Distributions
 from params import *
 
+G = 9.80665
 halfspan = WING["span"] / 2
 y_space = np.linspace(0, halfspan, 300)
-wing_mass = (-199.8707 * UNIV["g"], 4355.183221 * UNIV["g"])
-engine_mass = (7277 * UNIV["g"], 8.374)
+wing_mass = (-199.8707 * G, 4355.183221 * G)
+engine_mass = (7277 * G, 8.374)
 
 
 def shear_force_calc(
