@@ -143,24 +143,28 @@ def Plot_lift_distribution(CL_d):
     plt.plot(
         y_pos, XFLR.interpolater(y_pos, lift_distribution_specific_flight_regime(CL_d))
     )
-    plt.xlabel("y(m)")
-    plt.ylabel("Cl(-)")
+    plt.xlabel("y[m]")
+    plt.ylabel("Cl[-]")
     plt.title("Lift distribution")
     
 def Plot_drag_distribution(CD_d):
-    y_pos = np.linspace(-21.79, 21.79, 100)
+    y_pos = np.linspace(0, 21.79, 100)
     plt.plot(
         y_pos, XFLR.interpolater(y_pos, drag_distribution_specific_flight_regime(CD_d))
     )
-
+    plt.xlabel("y [m]")
+    plt.ylabel("Cd [-]")
+    plt.title("Drag distribution")
 
 def Plot_moment_distribution(CM_d):
-    y_pos = np.linspace(-21.79, 21.79, 100)
+    y_pos = np.linspace(0, 21.79, 100)
     plt.plot(
         y_pos,
         XFLR.interpolater(y_pos, moment_distribution_specific_flight_regime(CM_d)),
     )
-
+    plt.xlabel("y [m]")
+    plt.ylabel("Cm [-]")
+    plt.title("Moment distribution")
 
 # Gives Cl at any y position for any given CL
 def Cl_at_y(CL_d, y_pos):
@@ -347,7 +351,14 @@ def plot_normal_diagram (Thrust, Position, Angle):
         Compression_lst.append(0)
     plt.plot(y_lst2, Compression_lst)
         
+<<<<<<< Updated upstream
 if __name__ == "__main__":   
     plot_normal_diagram(300000, 10, 32)
     Plot_lift_distribution(1)
+=======
+    
+#Plot_lift_distribution(1)
+#Plot_drag_distribution(0.04)
+Plot_moment_distribution(-0.1)
+>>>>>>> Stashed changes
 
