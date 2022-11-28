@@ -123,7 +123,7 @@ def torsional_constant(y):
     J = 1/solution[-1]
     return J
 
-print(torsional_constant(1))
+#print(torsional_constant(1))
 
 #Moment of inertia at a position y/(b/2) along the span
 def MOI(y):
@@ -152,6 +152,7 @@ def MOI(y):
         rel_position = (position[0] - centroid_y[0], position[1] - centroid_y[1])    #relative position to centroid
         Ixx += WINGBOX["stringer_area"] * (rel_position[1]**2)
         Izz += WINGBOX["stringer_area"] * (rel_position[0]**2)
+        #print(stringer, l_spar, r_spar, rel_position)
 
     #for spars
     for x in spars:

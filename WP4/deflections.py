@@ -29,7 +29,7 @@ def T(y):
 Ixx_vals = np.array([stiffness.MOI(rel(y))[0] for y in y_vals])
 Ixx_estimate = sp.interpolate.interp1d(y_vals,Ixx_vals,kind="cubic",fill_value="extrapolate")
 
-print(Ixx_vals)
+#print(Ixx_vals)
 
 J_vals = np.array([stiffness.torsional_constant(rel(y)) for y in y_vals])
 J_estimate = sp.interpolate.interp1d(y_vals,J_vals,kind="cubic",fill_value="extrapolate")
