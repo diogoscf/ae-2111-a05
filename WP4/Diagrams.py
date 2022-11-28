@@ -44,7 +44,7 @@ def shear_force_diagram(
         cl_d, point_loads, distributed_loads, load_factor, y_pos
     )
     plt.plot(y_pos, shear_force)
-    plt.title(f"Shear force at a cl of {cl_d}")
+    plt.title(f"Shear force at cl: {cl_d} and n: {load_factor}")
     plt.xlabel("y [m]")
     plt.ylabel("Shear force [N]")
     plt.show()
@@ -72,7 +72,7 @@ def moment_diagram(
 ):
     moments = moment_calc(cl_d, point_loads, distributed_loads, load_factor, y_pos)
     plt.plot(y_pos, moments)
-    plt.title(f"Moment at a cl of {cl_d}")
+    plt.title(f"Moment at cl: {cl_d} and n: {load_factor}")
     plt.xlabel("y [m]")
     plt.ylabel("Moment [Nm]")
     plt.show()
@@ -108,7 +108,7 @@ def torque_calc(cl_d, point_loads=[], load_factor=1, y_pos=y_space):
 def torque_diagram(cl_d, point_loads=[], load_factor=1, y_pos=y_space):
     torque = torque_calc(cl_d, point_loads, load_factor, y_pos)
     plt.plot(y_pos, torque)
-    plt.title(f"Torque at a cl of {cl_d}")
+    plt.title(f"Torque at cl: {cl_d} and n: {load_factor}")
     plt.xlabel("y [m]")
     plt.ylabel("Torque [Nm]")
     plt.show()
