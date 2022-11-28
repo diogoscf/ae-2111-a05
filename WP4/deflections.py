@@ -15,12 +15,13 @@ CL_d = CRIT["cld"]
 load_factor = CRIT["load_factor"]
 ptloads = CRIT["point_loads"]
 distloads = CRIT["distributed_loads"]
+dynp = CRIT["dynp"]
 points = 300
 
 y_vals = np.linspace(0, WING["span"]/2, points)
-m_vals = moment_calc(CL_d, ptloads, distloads, load_factor, y_vals)
+m_vals = moment_calc(CL_d, ptloads, distloads, load_factor, dynp, y_vals)
 m_estimate = sp.interpolate.interp1d(y_vals,m_vals,kind="cubic",fill_value="extrapolate")
-t_vals = torque_calc(CL_d, ptloads, load_factor, y_vals)
+t_vals = torque_calc(CL_d, ptloads, load_factor, dynp, y_vals)
 t_estimate = sp.interpolate.interp1d(y_vals,t_vals,kind="cubic",fill_value="extrapolate")
 
 def M(y):
@@ -68,7 +69,7 @@ def plot_diagram_threshold(x_vals, y_vals, maxval, xlab, ylab, plottitle):
     ax.add_collection(lc)
     ax.set_xlim(np.min(x_vals), np.max(x_vals))
     ax.set_ylim(np.min(y_vals)*1.1, np.max(y_vals)*1.1)
-    
+
     ax.set(xlabel=xlab, ylabel=ylab, title=plottitle)
     ax.grid()
     ax.axhline(maxval, color='k', ls='--')

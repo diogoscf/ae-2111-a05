@@ -38,5 +38,6 @@ CRIT = {
     "load_factor": 3.75,
     "distributed_loads": [(-199.8707 * G, 4355.183221 * G)], # Wing Mass
     "point_loads": [(7277 * G, 8.374)], # Engine Mass
-    "cld": 0.9
+    "cld": 0.9,
+    "dynp": 4838.801824
 }
