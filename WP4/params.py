@@ -9,18 +9,15 @@ WINGBOX = {
         (0.3, 0.4),
         (0.5, 0.7),
     ],  # (x/c position value, y/(b/2) value of end of spar)
-    "spar_thickness": 0.02,  # meter
-    "skin_thickness": 0.01,  # meter
-    "stringer_area": 0.003,  # square meter
-    "stringers_top": [0.2, 0.3, 0.4, 0.5],
-    "stringers_bottom": [0.2, 0.3, 0.4, 0.5],
+    "spar_thickness": 8e-3,  # meter
+    "skin_thickness": 8e-3,  # meter
+    "stringer_area": 60e-6,  # square meter
+    "stringers_top": [0.25, 0.3, 0.4, 0.5, 0.6],
+    "stringers_bottom": [0.25, 0.3, 0.4, 0.5, 0.6],
 }
 
 # Wingbox Material Parameters (in SI)
 MAT = {"E": 68.9e9, "G": 26e9}  # pascal  # pascal
 
 # Critical Load Parameters (in SI)
-CRIT = {"load_factor": 1, "point_loads": [], "cld": 1}
-
-# Universal constants (in SI)
-UNIV = {"g": 9.80665}  # m/s^2
+CRIT = {"load_factor": 3.75, "point_loads": [], "cld": 1}
