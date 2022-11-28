@@ -46,7 +46,7 @@ def shear_force_diagram(
     dyn_p=10000,
     y_pos=y_space,
 ):
-    shear_force = shear_force_calc(cl_d, point_loads, distributed_loads, load_factor, y_pos, dyn_p)
+    shear_force = shear_force_calc(cl_d, point_loads, distributed_loads, load_factor, dyn_p, y_pos)
     plt.plot(y_pos, shear_force)
     plt.title(f"Shear force at cl: {cl_d} n: {load_factor}, and dyn_p: {dyn_p}")
     plt.xlabel("y [m]")
@@ -65,7 +65,7 @@ def moment_calc(
     y_tab = []
     function_m = sp.interpolate.interp1d(
         y_pos,
-        shear_force_calc(cl_d, point_loads, distributed_loads, load_factor, y_pos, dyn_p),
+        shear_force_calc(cl_d, point_loads, distributed_loads, load_factor, dyn_p, y_pos),
         kind="cubic",
         fill_value="extrapolate",
     )
@@ -84,7 +84,7 @@ def moment_diagram(
     dyn_p=10000,
     y_pos=y_space,
 ):
-    moments = moment_calc(cl_d, point_loads, distributed_loads, load_factor, y_pos, dyn_p)
+    moments = moment_calc(cl_d, point_loads, distributed_loads, load_factor, dyn_p, y_pos)
     plt.plot(y_pos, moments)
     plt.title(f"Moment at cl: {cl_d}, n: {load_factor}, and dyn_p: {dyn_p}")
     plt.xlabel("y [m]")
@@ -99,7 +99,7 @@ def distance_flexural_axis(y):
 
 def torque_calc(cl_d, point_loads=[], load_factor=1, dyn_p=10000, y_pos=y_space):
     t_tab = []
-    normal = Distributions.N_prime(cl_d, (0.028 + cl_d**2 / (pi * 10 * 0.51)), y_pos, dyn_p)
+    normal = Distributions.N_prime(cl_d, (0.028 + cl_d**2 / (pi * 10 * 0.51)), dyn_p, y_pos)
     intpl = sp.interpolate.interp1d(y_pos, normal, kind="cubic", fill_value="extrapolate")
     function = lambda y: intpl(y) * distance_flexural_axis(y)
     for y in y_pos:
@@ -113,7 +113,7 @@ def torque_calc(cl_d, point_loads=[], load_factor=1, dyn_p=10000, y_pos=y_space)
 
 
 def torque_diagram(cl_d, point_loads=[], load_factor=1, dyn_p=10000, y_pos=y_space):
-    torque = torque_calc(cl_d, point_loads, load_factor, y_pos, dyn_p)
+    torque = torque_calc(cl_d, point_loads, load_factor, dyn_p, y_pos)
     plt.plot(y_pos, torque)
     plt.title(f"Torque at cl: {cl_d}, n: {load_factor}, and dyn_p: {dyn_p}")
     plt.xlabel("y [m]")
