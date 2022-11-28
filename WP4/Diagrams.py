@@ -8,11 +8,16 @@ from math import pi
 import Distributions
 from params import *
 
+G = 9.80665
 halfspan = WING["span"] / 2
 y_space = np.linspace(0, halfspan, 300)
+wing_mass = (-199.8707 * G, 4355.183221 * G)
+engine_mass = (7277 * G, 8.374)
 
 
-def shear_force_calc(cl_d, point_loads=[], load_factor=1, y_pos=y_space):
+def shear_force_calc(
+    cl_d, point_loads=[], distributed_loads=[], load_factor=1, y_pos=y_space
+):
     f_tab = []
     normal = Distributions.N_prime(
         cl_d, (0.028 + cl_d**2 / (pi * 10 * 0.51)), y_pos, 10000
@@ -25,25 +30,33 @@ def shear_force_calc(cl_d, point_loads=[], load_factor=1, y_pos=y_space):
         estimate_f *= load_factor
         for load, pos in point_loads:
             if y <= pos:
-                estimate_f -= load
+                estimate_f -= load * load_factor
+        for a, b in distributed_loads:
+            estimate_f -= (a * y + b) * load_factor
         f_tab.append(-estimate_f)
     return f_tab
 
 
-def shear_force_diagram(cl_d, point_loads=[], load_factor=1, y_pos=y_space):
-    shear_force = shear_force_calc(cl_d, point_loads, load_factor, y_pos)
+def shear_force_diagram(
+    cl_d, point_loads=[], distributed_loads=[wing_mass], load_factor=1, y_pos=y_space
+):
+    shear_force = shear_force_calc(
+        cl_d, point_loads, distributed_loads, load_factor, y_pos
+    )
     plt.plot(y_pos, shear_force)
-    plt.title(f"Shear force at a cl of {cl_d}")
+    plt.title(f"Shear force at cl: {cl_d} and n: {load_factor}")
     plt.xlabel("y [m]")
     plt.ylabel("Shear force [N]")
     plt.show()
 
 
-def moment_calc(cl_d, point_loads=[], load_factor=1, y_pos=y_space):
+def moment_calc(
+    cl_d, point_loads=[], distributed_loads=[], load_factor=1, y_pos=y_space
+):
     y_tab = []
     function_m = sp.interpolate.interp1d(
         y_pos,
-        shear_force_calc(cl_d, point_loads, load_factor, y_pos),
+        shear_force_calc(cl_d, point_loads, distributed_loads, load_factor, y_pos),
         kind="cubic",
         fill_value="extrapolate",
     )
@@ -54,17 +67,22 @@ def moment_calc(cl_d, point_loads=[], load_factor=1, y_pos=y_space):
     return y_tab
 
 
-def moment_diagram(cl_d, point_loads=[], load_factor=1, y_pos=y_space):
-    moments = moment_calc(cl_d, point_loads, load_factor, y_pos)
+def moment_diagram(
+    cl_d, point_loads=[], distributed_loads=[], load_factor=1, y_pos=y_space
+):
+    moments = moment_calc(cl_d, point_loads, distributed_loads, load_factor, y_pos)
     plt.plot(y_pos, moments)
-    plt.title(f"Moment at a cl of {cl_d}")
+    plt.title(f"Moment at cl: {cl_d} and n: {load_factor}")
     plt.xlabel("y [m]")
     plt.ylabel("Moment [Nm]")
     plt.show()
 
 
 def distance_flexural_axis(y):
-    chord_y = lambda y: (((WING["taper_ratio"] - 1)/(halfspan))*abs(y) + 1) * WING["root_chord"]
+    chord_y = (
+        lambda y: (((WING["taper_ratio"] - 1) / (halfspan)) * abs(y) + 1)
+        * WING["root_chord"]
+    )
     return chord_y(y) / 4
 
 
@@ -90,14 +108,19 @@ def torque_calc(cl_d, point_loads=[], load_factor=1, y_pos=y_space):
 def torque_diagram(cl_d, point_loads=[], load_factor=1, y_pos=y_space):
     torque = torque_calc(cl_d, point_loads, load_factor, y_pos)
     plt.plot(y_pos, torque)
-    plt.title(f"Torque at a cl of {cl_d}")
+    plt.title(f"Torque at cl: {cl_d} and n: {load_factor}")
     plt.xlabel("y [m]")
     plt.ylabel("Torque [Nm]")
     plt.show()
 
 
 if __name__ == "__main__":
-    shear_force_diagram(CRIT["cld"], CRIT["point_loads"], CRIT["load_factor"])
-    # moment_diagram(1, (), 2.5)
-    #torque_diagram(1, [(35000, 8.374)], 1)
-    # pass
+    shear_force_diagram(1, [engine_mass], [wing_mass], 1)
+    # print(shear_force_calc(1, (), [wing_mass], 1)[0])
+    # print(shear_force_calc(1, (), (), 1)[0])
+    # moment_diagram(1, (), (), 2.5)
+    # moment_diagram(1, (), (wing_mass), 2.5)
+    # print(moment_calc(1, (), [wing_mass], 2.5)[0])
+    # print(moment_calc(1, (), (), 2.5)[0])
+    # torque_diagram(1, [(35000, 8.374)], 1)
+    # print(halfspan)
