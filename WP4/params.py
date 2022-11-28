@@ -1,5 +1,9 @@
 # Wing Parametric Description (values in SI)
-WING = {"span": 43.58, "root_chord": 6.86, "taper_ratio": 0.27}  # meter  # meter
+WING = {
+    "span": 43.58, # meter
+    "root_chord": 6.86, # meter
+    "taper_ratio": 0.27
+} 
 
 def distribute_stringers(fspar, rspar, nstringers):
     stringers = []
@@ -20,7 +24,10 @@ WINGBOX = {
 }
 
 # Wingbox Material Parameters (in SI)
-MAT = {"E": 68.9e9, "G": 26e9}  # pascal  # pascal
+MAT = {
+    "E": 68.9E9, # pascal
+    "G": 26E9 # pascal
+} 
 
 # Critical Load Parameters (in SI)
 CRIT = {
