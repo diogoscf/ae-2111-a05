@@ -7,55 +7,30 @@ import numpy as np
 import stiffness
 from params import *
 from Diagrams import moment_calc, torque_calc
-#Functions M(x) and T(y) need to be imported from WP4.1
 
 rel = lambda y: y/(WING["span"]/2)
 
 CL_d = CRIT["cld"]
 load_factor = CRIT["load_factor"]
-ptloads = CRIT["point_loads"]
-distloads = CRIT["distributed_loads"]
+point_loads = CRIT["point_loads"]
+distributed_loads = CRIT["distributed_loads"]
 dynp = CRIT["dynp"]
 points = 300
 
 y_vals = np.linspace(0, WING["span"]/2, points)
-m_vals = moment_calc(CL_d, ptloads, distloads, load_factor, dynp, y_vals)
-m_estimate = sp.interpolate.interp1d(y_vals,m_vals,kind="cubic",fill_value="extrapolate")
-t_vals = torque_calc(CL_d, ptloads, load_factor, dynp, y_vals)
-t_estimate = sp.interpolate.interp1d(y_vals,t_vals,kind="cubic",fill_value="extrapolate")
 
-def M(y):
-    return m_estimate(y)
-
-def T(y):
-    return t_estimate(y)
-
-Ixx_vals = np.array([stiffness.MOI(rel(y))[0] for y in y_vals])
-Ixx_estimate = sp.interpolate.interp1d(y_vals,Ixx_vals,kind="cubic",fill_value="extrapolate")
-
-#print(Ixx_vals)
-
-J_vals = np.array([stiffness.torsional_constant(rel(y)) for y in y_vals])
-J_estimate = sp.interpolate.interp1d(y_vals,J_vals,kind="cubic",fill_value="extrapolate")
-
-def MOI(y):
-    return Ixx_estimate(y)
-
-def torsional_constant(y):
-    return J_estimate(y)
-
-def dvdy(y):
+def dvdy(y, M, MOI):
     result, _ = sp.integrate.quad(lambda x: -M(x)/(MAT["E"]*MOI(x)),0,y)
     return result
 
-dv_vals = np.array([dvdy(y) for y in y_vals])
-dv_estimate = sp.interpolate.interp1d(y_vals,dv_vals,kind="cubic",fill_value="extrapolate")
-
-def v(y):
-    result, _ = sp.integrate.quad(dv_estimate,0,y)
+def v(y, dvdy_func):
+    result, _ = sp.integrate.quad(dvdy_func,0,y)
     return result
 
 def plot_diagram_threshold(x_vals, y_vals, maxval, xlab, ylab, plottitle):
+    if np.max(y_vals) < maxval:
+        plot_diagram(x_vals, y_vals, maxval, xlab, ylab, plottitle)
+        return
     fig, ax = plt.subplots()
 
     cmap = ListedColormap(["blue", "red"])
@@ -72,18 +47,51 @@ def plot_diagram_threshold(x_vals, y_vals, maxval, xlab, ylab, plottitle):
 
     ax.set(xlabel=xlab, ylabel=ylab, title=plottitle)
     ax.grid()
-    ax.axhline(maxval, color='k', ls='--')
+    if np.max(y_vals) >= maxval or (np.max(y_vals) > 0 and abs(np.min(y_vals)) < abs(np.max(y_vals))):
+        ax.axhline(maxval, color='k', ls='--')
+    if np.min(y_vals) <= -maxval or (np.min(y_vals) < 0 and abs(np.min(y_vals)) > abs(np.max(y_vals))):
+        ax.axhline(-maxval, color='k', ls='--')
 
-def theta(y):
-    result, _ = sp.integrate.quad(lambda x: T(x)/(MAT["G"]*torsional_constant(x)),0,y)
+def theta(y, T, J):
+    result, _ = sp.integrate.quad(lambda p: T(p)/(MAT["G"]*J(p)),0,y)
     return result
 
 
+def plot_diagram(x_vals, y_vals, maxval, xlab, ylab, plottitle):
+    fig, ax = plt.subplots()
+    ax.plot(x_vals, y_vals)
+    ax.set(xlabel=xlab, ylabel=ylab, title=plottitle)
+
+    if np.max(y_vals) > 0 and abs(np.min(y_vals)) < abs(np.max(y_vals)):
+        ax.axhline(maxval, color='k', ls='--')
+    if np.min(y_vals) < 0 and abs(np.min(y_vals)) > abs(np.max(y_vals)):
+        ax.axhline(-maxval, color='k', ls='--')
+    ax.grid()
+
+def plot_deflection(Cld, ptloads, distloads, load_factor, dynp, yspace=y_vals):
+    m_vals = moment_calc(Cld, ptloads, distloads, load_factor, dynp, yspace)
+    m_estimate = sp.interpolate.interp1d(yspace,m_vals,kind="cubic",fill_value="extrapolate")
+
+    Ixx_vals = np.array([stiffness.MOI(rel(y))[0] for y in yspace])
+    Ixx_estimate = sp.interpolate.interp1d(yspace,Ixx_vals,kind="cubic",fill_value="extrapolate")
+
+    dv_vals = np.array([dvdy(y, m_estimate, Ixx_estimate) for y in y_vals])
+    dv_estimate = sp.interpolate.interp1d(y_vals,dv_vals,kind="cubic",fill_value="extrapolate")
+
+    v_vals = [v(y, dv_estimate) for y in y_vals]
+    plot_diagram_threshold(y_vals, v_vals, 0.15*WING["span"], "y (m)", "v (m)", f"Deflection along wing span at load factor {load_factor}")
+
+def plot_twist(Cld, ptloads, load_factor, dynp, yspace=y_vals):
+    t_vals = torque_calc(Cld, ptloads, load_factor, dynp, yspace)
+    t_estimate = sp.interpolate.interp1d(yspace,t_vals,kind="cubic",fill_value="extrapolate")
+
+    J_vals = np.array([stiffness.torsional_constant(rel(y)) for y in yspace])
+    J_estimate = sp.interpolate.interp1d(yspace,J_vals,kind="cubic",fill_value="extrapolate")
+
+    th_vals = [theta(y, t_estimate, J_estimate)*180/(np.pi) for y in y_vals]
+    plot_diagram_threshold(y_vals, th_vals, 10, "y (m)", "θ (°)", f"Twist angle along wing span at load factor {load_factor}")
+
 if __name__ == "__main__":
-    v_vals = [v(y) for y in y_vals]
-    plot_diagram_threshold(y_vals, v_vals, 0.15*WING["span"], "y (m)", "v (m)", "Deflection along wing span")
-
-    th_vals = [theta(y)*180/(np.pi) for y in y_vals]
-    plot_diagram_threshold(y_vals, th_vals, 15, "y (m)", "θ (°)", "Twist angle along wing span")
-
+    plot_deflection(CL_d, point_loads, distributed_loads, load_factor, dynp)
+    plot_twist(2.27, point_loads, -1.5, 1481.335522)
     plt.show()
