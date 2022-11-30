@@ -92,10 +92,10 @@ def torsional_constant(y):
 
     if len(spars) == 2:
         start, end = spars[0], spars[1]
-        y_start, y_end = airfoil_info(start)[2:], airfoil_info(end)[2:]
+        z_start, z_end = airfoil_info(start)[2:], airfoil_info(end)[2:]
         hl, hr = airfoil_info(start)[0]*chord, airfoil_info(end)[0]*chord
-        lu = np.sqrt((end - start)**2 + (y_start[0] - y_end[0])**2)*chord
-        ll = np.sqrt((end - start)**2 + (y_start[1] - y_end[1])**2)*chord
+        lu = np.sqrt((end - start)**2 + (z_start[0] - z_end[0])**2)*chord
+        ll = np.sqrt((end - start)**2 + (z_start[1] - z_end[1])**2)*chord
         J = 4*(areas[0]**2) / (((hl+hr)/(WINGBOX["spar_thickness"])) + ((ll+lu)/(WINGBOX["skin_thickness"])))
         return J
     
@@ -191,3 +191,4 @@ def MOI(y):
     return Ixx, Izz
 
 # print(centroid(1)[0]/chord_y(1), centroid(1)[1]/chord_y(1))
+# print(MOI(1)[0]/MOI(0)[0])

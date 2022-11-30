@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import bisect
 
-from stiffness import airfoil_info, airfoil_data, chord_y, centroid, MOI
+from stiffness import airfoil_info, airfoil_data, chord_y, centroid
 
 y = 0
 chord = chord_y(y)
@@ -29,13 +29,13 @@ for stringer in WINGBOX["stringers_top"]:
     l_spar_idx = bisect.bisect_left(spars, stringer) - 1
     l_spar, r_spar = spars[l_spar_idx], spars[l_spar_idx + 1]
     z = np.interp(stringer, (l_spar, r_spar), (airfoil_info(l_spar)[2], airfoil_info(r_spar)[2]))
-    ax.plot(stringer*chord, z*chord, marker="o", color="blue") # Top Stringers
+    ax.plot(stringer*chord, z*chord, marker=".", color="blue") # Top Stringers
 
 for stringer in WINGBOX["stringers_bottom"]:
     l_spar_idx = bisect.bisect_left(spars, stringer) - 1
     l_spar, r_spar = spars[l_spar_idx], spars[l_spar_idx + 1]
     z = np.interp(stringer, (l_spar, r_spar), (airfoil_info(l_spar)[3], airfoil_info(r_spar)[3]))
-    ax.plot(stringer*chord, z*chord, marker="o", color="blue") # Bottom Stringers
+    ax.plot(stringer*chord, z*chord, marker=".", color="blue") # Bottom Stringers
 
 centroid = centroid(y)
 ax.plot(centroid[0], centroid[1], marker="x", color="green") # Centroid
