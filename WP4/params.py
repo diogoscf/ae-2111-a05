@@ -30,7 +30,7 @@ CRIT = {
     "load_factor": 3.75,
     "distributed_loads": [(-199.8707 * G, 4355.183221 * G)], # Wing Mass
     "point_loads": [(7277 * G, 8.374)], # Engine Mass
-    "point_torques": [(375000* 2, 8.374)], # Engine Thrust (applied at 2 m from the centroid)
+    "point_torques": [(375000 * 2, 8.374)], # Engine Thrust (applied at 2 m from the centroid)
     "cld": 0.908,
     "dynp": 8328.245793
 }
