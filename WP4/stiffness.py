@@ -28,9 +28,33 @@ rect_MMOI = lambda b,h: b*(h**3)/12
 
 chord_y = lambda y: ((WING["taper_ratio"] - 1)*abs(y) + 1) * WING["root_chord"]
 
+def distribute_stringers(fspar, rspar, nstringers):
+    stringers = []
+    if nstringers == 0: return stringers
+    dist = (rspar - fspar) / nstringers
+    for i in range(nstringers):
+        stringers.append(fspar + (i+(1/2))*dist)
+    return stringers
+
+def stringers(y):
+    fspar, rspar = WINGBOX["front_spar"], WINGBOX["rear_spar"]
+    nstringers_top, nstringers_bottom = 0, 0
+    for n, loc in WINGBOX["stringers_top"]:
+        if y <= loc:
+            nstringers_top = n
+            break
+    for n, loc in WINGBOX["stringers_bottom"]:
+        if y <= loc:
+            nstringers_bottom = n
+            break
+    stringers_top = distribute_stringers(fspar, rspar, nstringers_top)
+    stringers_bottom = distribute_stringers(fspar, rspar, nstringers_bottom)
+
+    return stringers_top, stringers_bottom
+
 # Centroid coordinates at a position y/(b/2) along the span (from wing root), using parameters in WINGBOX
 # Coordinates given with (x,z) = (0,0) at leading edge (camber line)
-def centroid(y):
+def centroid(y, stringers_top=[], stringers_bottom=[]):
     chord = chord_y(y)
     centroids = [] # list of (x,z,A)
     spars = sorted([WINGBOX["front_spar"], WINGBOX["rear_spar"], *[s[0] for s in WINGBOX["other_spars"] if s[1] >= abs(y)]])
@@ -54,14 +78,14 @@ def centroid(y):
         centroids.append([x*chord, z_l*chord, l_l*chord*WINGBOX["skin_thickness"]])
 
     # Stringers
-    for stringer in WINGBOX["stringers_top"]:
+    for stringer in stringers_top:
         l_spar_idx = bisect.bisect_left(spars, stringer) - 1
         #print(spars, stringer, l_spar_idx)
         l_spar, r_spar = spars[l_spar_idx], spars[l_spar_idx + 1]
         z = np.interp(stringer, (l_spar, r_spar), (airfoil_info(l_spar)[2], airfoil_info(r_spar)[2]))
         centroids.append([stringer*chord, z*chord, WINGBOX["stringer_area"]])
 
-    for stringer in WINGBOX["stringers_bottom"]:
+    for stringer in stringers_bottom:
         l_spar_idx = bisect.bisect_left(spars, stringer) - 1
         l_spar, r_spar = spars[l_spar_idx], spars[l_spar_idx + 1]
         z = np.interp(stringer, (l_spar, r_spar), (airfoil_info(l_spar)[3], airfoil_info(r_spar)[3]))
@@ -127,14 +151,15 @@ def torsional_constant(y):
 
 #Moment of inertia at a position y/(b/2) along the span
 def MOI(y):
+    stringers_top, stringers_bottom = stringers(y)
     chord = ((WING["taper_ratio"] - 1)*abs(y) + 1) * WING["root_chord"]
     spars = sorted([WINGBOX["front_spar"], WINGBOX["rear_spar"], *[s[0] for s in WINGBOX["other_spars"] if s[1] >= abs(y)]])
-    centroid_y = centroid(y)
+    centroid_y = centroid(y, stringers_top, stringers_bottom)
     Ixx = 0
     Izz = 0
 
     # for top stringers
-    for stringer in WINGBOX["stringers_top"]:
+    for stringer in stringers_top:
         l_spar_idx = bisect.bisect_left(spars, stringer) - 1
         l_spar, r_spar = spars[l_spar_idx], spars[l_spar_idx + 1]
         z_coord = np.interp(stringer, (l_spar, r_spar), (airfoil_info(l_spar)[2], airfoil_info(r_spar)[2]))
@@ -144,7 +169,7 @@ def MOI(y):
         Izz += WINGBOX["stringer_area"] * (rel_position[0]**2)
     
     # for bottom stringers
-    for stringer in WINGBOX["stringers_bottom"]:
+    for stringer in stringers_bottom:
         l_spar_idx = bisect.bisect_left(spars, stringer) - 1
         l_spar, r_spar = spars[l_spar_idx], spars[l_spar_idx + 1]
         z_coord = np.interp(stringer, (l_spar, r_spar), (airfoil_info(l_spar)[3], airfoil_info(r_spar)[3]))
