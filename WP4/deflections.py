@@ -21,11 +21,15 @@ points = 300
 y_vals = np.linspace(0, WING["span"]/2, points)
 
 def dvdy(y, M, MOI):
-    result, _ = sp.integrate.quad(lambda x: -M(x)/(MAT["E"]*MOI(x)),0,y)
+    result, _ = sp.integrate.quad(lambda x: -M(x)/(MAT["E"]*MOI(x)),0,y,limit=100)
     return result
 
 def v(y, dvdy_func):
     result, _ = sp.integrate.quad(dvdy_func,0,y)
+    return result
+
+def theta(y, T, J):
+    result, _ = sp.integrate.quad(lambda p: T(p)/(MAT["G"]*J(p)),0,y,limit=100)
     return result
 
 def plot_diagram_threshold(x_vals, y_vals, maxval, xlab, ylab, plottitle):
@@ -52,11 +56,6 @@ def plot_diagram_threshold(x_vals, y_vals, maxval, xlab, ylab, plottitle):
         ax.axhline(maxval, color='k', ls='--')
     if np.min(y_vals) <= -maxval or (np.min(y_vals) < 0 and abs(np.min(y_vals)) > abs(np.max(y_vals))):
         ax.axhline(-maxval, color='k', ls='--')
-
-def theta(y, T, J):
-    result, _ = sp.integrate.quad(lambda p: T(p)/(MAT["G"]*J(p)),0,y)
-    return result
-
 
 def plot_diagram(x_vals, y_vals, maxval, xlab, ylab, plottitle):
     fig, ax = plt.subplots()

@@ -5,14 +5,6 @@ WING = {
     "taper_ratio": 0.27
 } 
 
-def distribute_stringers(fspar, rspar, nstringers):
-    stringers = []
-    if nstringers == 0: return stringers
-    dist = (rspar - fspar) / nstringers
-    for i in range(nstringers):
-        stringers.append(fspar + (i+(1/2))*dist)
-    return stringers
-
 # Parametric Description of Wingbox
 WINGBOX = {
     "front_spar": 0.2,
@@ -21,8 +13,8 @@ WINGBOX = {
     "spar_thickness": 8E-3, # meter
     "skin_thickness": 5E-3, # meter
     "stringer_area": 120E-6, # square meter
-    "stringers_top": distribute_stringers(0.2, 0.65, 30),
-    "stringers_bottom": distribute_stringers(0.2, 0.65, 30)
+    "stringers_top": [(30, 0.5), (20, 1)], # Ordered List: (nstringers, y/(b/2) value of end) - start is end of previous or root
+    "stringers_bottom": [(30, 0.5), (20, 1)] # same as above
 }
 
 # Wingbox Material Parameters (in SI)
