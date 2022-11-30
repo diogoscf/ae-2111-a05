@@ -13,6 +13,7 @@ rel = lambda y: y/(WING["span"]/2)
 CL_d = CRIT["cld"]
 load_factor = CRIT["load_factor"]
 point_loads = CRIT["point_loads"]
+point_torques = CRIT["point_torques"]
 distributed_loads = CRIT["distributed_loads"]
 dynp = CRIT["dynp"]
 points = 300
@@ -93,5 +94,5 @@ def plot_twist(Cld, ptloads, load_factor, dynp, yspace=y_vals):
 
 if __name__ == "__main__":
     plot_deflection(CL_d, point_loads, distributed_loads, load_factor, dynp)
-    plot_twist(2.27, point_loads, -1.5, 1481.335522)
+    plot_twist(CL_d, point_torques, load_factor, dynp)
     plt.show()
