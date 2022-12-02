@@ -2,19 +2,20 @@
 WING = {
     "span": 43.58, # meter
     "root_chord": 6.86, # meter
-    "taper_ratio": 0.27
+    "taper_ratio": 0.27,
+    "LE_sweep": 39.2, # deg
 } 
 
 # Parametric Description of Wingbox
 WINGBOX = {
     "front_spar": 0.2,
     "rear_spar": 0.65,
-    "other_spars": [(0.3,0.4),(0.4,0.7)], # (x/c position value, y/(b/2) value of end of spar)
-    "spar_thickness": 8E-3, # meter
-    "skin_thickness": 5E-3, # meter
-    "stringer_area": 120E-6, # square meter
-    "stringers_top": [(30, 0.5), (20, 1)], # Ordered List: (nstringers, y/(b/2) value of end) - start is end of previous or root
-    "stringers_bottom": [(30, 0.5), (20, 1)] # same as above
+    "other_spars": [(0.25,0.7),(0.3,0.7),(0.4,0.5),(0.5,0.5)], # (x/c position value, y/(b/2) value of end of spar)
+    "spar_thickness": 20E-3, # meter
+    "skin_thickness": 20E-3, # meter
+    "stringer_area": 60E-6, # square meter
+    "stringers_top": [(100, 0.4), (50, 0.7), (30, 1)], # *Ordered* List: (nstringers, y/(b/2) value of end) - start is end of previous or root
+    "stringers_bottom": [(100, 0.4), (50, 0.7), (30, 1)] # same as above
 }
 
 # Wingbox Material Parameters (in SI)
