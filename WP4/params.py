@@ -11,13 +11,12 @@ WINGBOX = {
     "front_spar": 0.2,
     "rear_spar": 0.65,
     "other_spars": [
-        (0.25, 0.5),
         (0.3, 1),
         (0.4, 0.4),
-        (0.5, 0.5),
+        (0.5, 1),
     ],  # (x/c position value, y/(b/2) value of end of spar)
-    "spar_thickness": (12e-3, 10e-3),  # (t_root, t_tip) interpolated linearly. [meter]
-    "skin_thickness": (10e-3, 7e-3),  # (t_root, t_tip) interpolated linearly. [meter]
+    "spar_thickness": (25e-3, 10e-3),  # (t_root, t_tip) interpolated linearly. [meter]
+    "skin_thickness": (9.5e-3, 9.5e-3),  # (t_root, t_tip) interpolated linearly. [meter]
     "stringer_area": 60e-6,  # square meter
     "stringers_top": [(0, 0.4), (0, 0.7), (0, 1)],  # *Ordered* List: (nstringers, y/(b/2) value of end) - start is end of previous or root
     "stringers_bottom": [(0, 0.4), (0, 0.7), (0, 1)],  # same as above
