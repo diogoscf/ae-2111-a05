@@ -134,7 +134,7 @@ def moment_distribution_specific_flight_regime(CM_d):
     return cm_d_lst
 
 def CM_at_AOA(AOA):
-    Cm_d_lst = sin(radians(AOA))/sin(radians(10))*(XFLR.cm_lst_10 - XFLR.cm_lst_0)+ XFLR.cm_lst_0
+    Cm_d_lst = sin(radians(10))/sin(radians(AOA))*(XFLR.cm_lst_10 - XFLR.cm_lst_0)+ XFLR.cm_lst_0
     return Cm_d_lst
 
 # print(AOA_specific_flight_regime(1)*57.3)
