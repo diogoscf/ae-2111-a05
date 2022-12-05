@@ -130,6 +130,6 @@ def plot_twist(Cld, ptloads, load_factor, dynp, yspace=y_vals):
 
 
 if __name__ == "__main__":
-    plot_deflection(CL_d, point_loads, distributed_loads, load_factor, dynp)
+    #plot_deflection(CL_d, point_loads, distributed_loads, load_factor, dynp)
     plot_twist(CL_d, point_torques, load_factor, dynp)
     plt.show()

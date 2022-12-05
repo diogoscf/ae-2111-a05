@@ -50,10 +50,10 @@ def shear_force_diagram(
 ):
     shear_force = shear_force_calc(cl_d, point_loads, distributed_loads, load_factor, dyn_p, y_pos)
     if ax:
-        ax.plot(y_pos, shear_force, label=f"Cl: {cl_d}, n: {load_factor}, and q_∞: {round(dyn_p, 1)}")
+        ax.plot(y_pos, shear_force, label=f"$C_L$: {cl_d}, n: {load_factor}, and $q_∞$: {round(dyn_p, 1)}")
     else:
         plt.plot(y_pos, shear_force)
-        plt.title(f"Shear force at cl: {cl_d} n: {load_factor}, and dyn_p: {round(dyn_p, 1)}")
+        plt.title(f"Shear force at $C_L$: {cl_d}, n: {load_factor}, and $q_∞$: {round(dyn_p, 1)}")
         plt.xlabel("y [m]")
         plt.ylabel("Shear force [N]")
         plt.grid()
@@ -93,10 +93,10 @@ def moment_diagram(
 ):
     moments = moment_calc(cl_d, point_loads, distributed_loads, load_factor, dyn_p, y_pos)
     if ax:
-        ax.plot(y_pos, moments, label=f"Cl: {cl_d}, n: {load_factor}, and q_∞: {round(dyn_p, 1)}")
+        ax.plot(y_pos, moments, label=f"$C_L$: {cl_d}, n: {load_factor}, and $q_∞$: {round(dyn_p, 1)}")
     else:
         plt.plot(y_pos, moments)
-        plt.title(f"Moment at cl: {cl_d}, n: {load_factor}, and dyn_p: {round(dyn_p, 1)}")
+        plt.title(f"Moment at $C_L$: {cl_d}, n: {load_factor}, and $q_∞$: {round(dyn_p, 1)}")
         plt.xlabel("y [m]")
         plt.ylabel("Moment [Nm]")
         plt.grid()
@@ -105,7 +105,7 @@ def moment_diagram(
 
 def distance_flexural_axis(y):
     chord_y = lambda y: (((WING["taper_ratio"] - 1) / (halfspan)) * abs(y) + 1) * WING["root_chord"]
-    return chord_y(y) / 4
+    return chord_y(y) * 0.25
 
 
 
@@ -129,10 +129,10 @@ def torque_calc(cl_d, point_loads=[], load_factor=1, dyn_p=10000, y_pos=y_space)
 def torque_diagram(cl_d, point_loads=[], load_factor=1, dyn_p=10000, ax=False, y_pos=y_space):
     torque = torque_calc(cl_d, point_loads, load_factor, dyn_p, y_pos)
     if ax:
-        ax.plot(y_pos, torque, label=f"Cl: {cl_d}, n: {load_factor}, and q_∞: {round(dyn_p, 1)}")
+        ax.plot(y_pos, torque, label=f"$C_L$: {cl_d}, n: {load_factor}, and $q_∞$: {round(dyn_p, 1)}")
     else:
         plt.plot(y_pos, torque)
-        plt.title(f"Torque at cl: {cl_d}, n: {load_factor}, and dyn_p: {round(dyn_p, 1)}")
+        plt.title(f"Torque at $C_L$: {cl_d}, $n$: {load_factor}, and $q_∞$: {round(dyn_p, 1)}")
         plt.xlabel("y [m]")
         plt.ylabel("Torque [Nm]")
         plt.grid()
