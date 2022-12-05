@@ -133,8 +133,9 @@ def moment_distribution_specific_flight_regime(CM_d):
     )
     return cm_d_lst
 
-
-
+def CM_at_AOA(AOA):
+    Cm_d_lst = sin(radians(AOA))/sin(radians(10))*(XFLR.cm_lst_10 - XFLR.cm_lst_0)+ XFLR.cm_lst_0
+    return Cm_d_lst
 
 # print(AOA_specific_flight_regime(1)*57.3)
 # Function to plot a lift distribution of any given CL
@@ -156,7 +157,7 @@ def Plot_drag_distribution(CD_d):
     plt.ylabel("Cd [-]")
     plt.title("Drag distribution")
 
-def Plot_moment_distribution(CM_d):
+def Plot_moment_distribution(CM_d): #Pitching moment
     y_pos = np.linspace(0, 21.79, 100)
     plt.plot(
         y_pos,
@@ -165,6 +166,17 @@ def Plot_moment_distribution(CM_d):
     plt.xlabel("y [m]")
     plt.ylabel("Cm [-]")
     plt.title("Moment distribution")
+    
+    
+def Plot_moment_distribution_at_CL(CL_d): #Pitching Moment
+    y_pos = np.linspace(0, 21.79, 100)
+    plt.plot(
+        y_pos,
+        XFLR.interpolater(y_pos, CM_at_AOA(AOA_specific_flight_regime(CL_d))),
+    )
+    plt.xlabel("y [m]")
+    plt.ylabel("Cm [-]")
+    plt.title("Moment distribution")    
 
 # Gives Cl at any y position for any given CL
 def Cl_at_y(CL_d, y_pos):
