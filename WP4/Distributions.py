@@ -168,15 +168,26 @@ def Plot_moment_distribution(CM_d): #Pitching moment
     plt.title("Moment distribution")
     
     
-def Plot_moment_distribution_at_CL(CL_d): #Pitching Moment
+def Plot_moment_distribution_at_AOA(AOA): #Pitching Moment
     y_pos = np.linspace(0, 21.79, 100)
     plt.plot(
         y_pos,
-        XFLR.interpolater(y_pos, CM_at_AOA(AOA_specific_flight_regime(CL_d))),
+        XFLR.interpolater(y_pos, CM_at_AOA(AOA)),
     )
     plt.xlabel("y [m]")
     plt.ylabel("Cm [-]")
     plt.title("Moment distribution")    
+    
+def Plot_moment_distribution_at_CL(CL_d): #Pitching Moment
+    AOA = AOA_specific_flight_regime(CL_d)
+    y_pos = np.linspace(0, 21.79, 100)
+    plt.plot(
+        y_pos,
+        XFLR.interpolater(y_pos, CM_at_AOA(AOA)),
+    )
+    plt.xlabel("y [m]")
+    plt.ylabel("Cm [-]")
+    plt.title("Moment distribution")        
 
 # Gives Cl at any y position for any given CL
 def Cl_at_y(CL_d, y_pos):
