@@ -97,6 +97,8 @@ def plot_deflection(Cld, ptloads, distloads, load_factor, dynp, yspace=y_vals):
     )
 
     v_vals = [v(y, dv_estimate) for y in y_vals]
+    print(v_vals[-1])
+    #print(v(y_vals[-1], dv_estimate))
     plot_diagram_threshold(
         y_vals,
         v_vals,
@@ -130,6 +132,6 @@ def plot_twist(Cld, ptloads, load_factor, dynp, yspace=y_vals):
 
 
 if __name__ == "__main__":
-    #plot_deflection(CL_d, point_loads, distributed_loads, load_factor, dynp)
+    plot_deflection(CL_d, point_loads, distributed_loads, load_factor, dynp)
     plot_twist(CL_d, point_torques, load_factor, dynp)
     plt.show()
