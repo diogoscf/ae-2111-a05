@@ -70,7 +70,7 @@ def plot_diagram_threshold(x_vals, y_vals, maxval, xlab, ylab, plottitle):
 
 def plot_diagram(x_vals, y_vals, maxval, xlab, ylab, plottitle):
     fig, ax = plt.subplots()
-    ax.plot(x_vals, y_vals)
+    ax.plot(x_vals, y_vals, color="blue")
     ax.set(xlabel=xlab, ylabel=ylab, title=plottitle)
 
     if np.max(y_vals) > 0 and abs(np.min(y_vals)) < abs(np.max(y_vals)):
@@ -97,8 +97,7 @@ def plot_deflection(Cld, ptloads, distloads, load_factor, dynp, yspace=y_vals):
     )
 
     v_vals = [v(y, dv_estimate) for y in y_vals]
-    print(v_vals[-1])
-    #print(v(y_vals[-1], dv_estimate))
+    print(v_vals[-1], f"{100*v_vals[-1]/WING['span']:.2f}%")
     plot_diagram_threshold(
         y_vals,
         v_vals,
@@ -121,6 +120,7 @@ def plot_twist(Cld, ptloads, load_factor, dynp, yspace=y_vals):
     )
 
     th_vals = [theta(y, t_estimate, J_estimate) * 180 / (np.pi) for y in y_vals]
+    print(th_vals[-1])
     plot_diagram_threshold(
         y_vals,
         th_vals,

@@ -5,7 +5,7 @@ import bisect
 
 from stiffness import airfoil_info, airfoil_data, chord_y, centroid, stringers
 
-y = 0
+y = 1
 chord = chord_y(y)
 
 fig, ax = plt.subplots(figsize=(12, 6))

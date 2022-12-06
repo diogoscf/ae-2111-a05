@@ -58,7 +58,7 @@ def stringers(y):
 def centroid(y, stringers_top=[], stringers_bottom=[]):
     chord = chord_y(y)
     t_spar = thickness_y(y, *WINGBOX["spar_thickness"])
-    t_skin = thickness_y(y, *WINGBOX["skin_thickness"])
+    t_skin = WINGBOX["skin_thickness"]
     centroids = [] # list of (x,z,A)
     spars = sorted([WINGBOX["front_spar"], WINGBOX["rear_spar"], *[s[0] for s in WINGBOX["other_spars"] if s[1] >= abs(y)]])
     # Spars
@@ -115,7 +115,7 @@ def enclosed_areas(y, spars):
 def torsional_constant(y):
     chord = chord_y(y)
     t_spar = thickness_y(y, *WINGBOX["spar_thickness"])
-    t_skin = thickness_y(y, *WINGBOX["skin_thickness"])
+    t_skin = WINGBOX["skin_thickness"]
     spars = sorted([WINGBOX["front_spar"], WINGBOX["rear_spar"], *[s[0] for s in WINGBOX["other_spars"] if s[1] >= abs(y)]])
     areas = np.array(enclosed_areas(y, spars))
 
@@ -197,7 +197,7 @@ def MOI(y):
     for i in range(len(spars)-1):
         left_spar = spars[i]
         right_spar = spars[i+1]
-        t = thickness_y(y, *WINGBOX["skin_thickness"])
+        t = WINGBOX["skin_thickness"]
 
         # top element
         center = ((left_spar + right_spar)/2 , (airfoil_info(left_spar)[2] + airfoil_info(right_spar)[2])/2)                              #center of skin element                              
