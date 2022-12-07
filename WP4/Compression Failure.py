@@ -2,6 +2,7 @@ from params import *
 from stiffness import *
 from Diagrams import moment_calc
 from deflections import *
+import matplotlib.pyplot as plt
 
 CL_d = CRIT["cld"]
 load_factor = CRIT["load_factor"]
@@ -12,6 +13,9 @@ dynp = CRIT["dynp"]
 points = 300
 y_vals = np.linspace(0, WING["span"] / 2, points)
 halfspan = WING["span"] / 2
+sigma_yield = 276e6
+yspace=y_vals
+M_lst = moment_calc(CL_d, point_loads, distributed_loads, load_factor, dynp, yspace)
 def stringer_c(h,w,t):
     y_bar = (h/2*h*t + w*t*t/2)/((w+h)*t)
     return y_bar
@@ -93,11 +97,30 @@ def MOI(y):
 def sigma_y(y, yspace=y_vals): 
     chord_y = lambda y: (((WING["taper_ratio"] - 1) / (halfspan)) * abs(y) + 1) * WING["root_chord"] 
     z = chord_y(y/halfspan) * 0.0796/2
+    
     if y == 0:
-        M = moment_calc(CL_d, point_loads, distributed_loads, load_factor, dynp, yspace)[0]
+        M = M_lst[0]
     else:
-        M = moment_calc(CL_d, point_loads, distributed_loads, load_factor, dynp, yspace)[int(round(y*halfspan*300/(WING["span"]/2),0))-1]
+        M = M_lst[int(round(y*halfspan*300/(WING["span"]/2),0))-1]
     sigma_y = M*z/MOI(y/halfspan)[0]
     return sigma_y
 
-print(sigma_y(0.1)/1000000)
+def mos(y):
+    mos = sigma_yield/abs(sigma_y(y))
+    return mos
+
+def mos_plot():
+    y=0
+    i=0
+    a=0
+    mos_lst=[]
+    y_lst=[]
+    while i <=150 and a<=1:
+        a= mos(y)
+        i+=1
+        mos_lst.append(a)
+        y_lst.append(y*halfspan)
+        y+=1/300
+    plt.plot(y_lst,mos_lst)
+
+mos_plot()
