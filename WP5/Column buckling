@@ -1,4 +1,4 @@
-
+#numbers below are arbitrary
 STRINGER = {
     "vertical_l": 100, #mm
     "horizontal_l": 100, #mm
