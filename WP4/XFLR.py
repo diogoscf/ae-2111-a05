@@ -15,14 +15,14 @@ XFLRData_10 = np.genfromtxt(XFLR10_path, skip_header=40, skip_footer=1029)
 
 
 # Separates XFLRData into lists
-y_lst = XFLRData_0[:, 0]
-c_lst = XFLRData_0[:, 1]
-cl_lst_0 = XFLRData_0[:, 3]
-cd_lst_0 = XFLRData_0[:, 5]
-cm_lst_0 = XFLRData_0[:, 7]
-cl_lst_10 = XFLRData_10[:, 3]
-cd_lst_10 = XFLRData_10[:, 5]
-cm_lst_10 = XFLRData_10[:, 7]
+y_lst = XFLRData_0[:, 0] # Spanwise position
+c_lst = XFLRData_0[:, 1] # Chord length
+cl_lst_0 = XFLRData_0[:, 3] # Lift coefficient (AoA = 0 deg)
+cd_lst_0 = XFLRData_0[:, 5] # Drag coefficient (AoA = 0 deg)
+cm_lst_0 = XFLRData_0[:, 7] # Moment coefficient (AoA = 0 deg)
+cl_lst_10 = XFLRData_10[:, 3] # Moment coefficient (AoA = 10 deg)
+cd_lst_10 = XFLRData_10[:, 5] # Moment coefficient (AoA = 10 deg)
+cm_lst_10 = XFLRData_10[:, 7] # Moment coefficient (AoA = 10 deg)
 
 
 def interpolater(y_pos, listtype):

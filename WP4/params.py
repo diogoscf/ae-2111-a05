@@ -11,26 +11,26 @@ WINGBOX = {
     "front_spar": 0.2,
     "rear_spar": 0.65,
     "other_spars": [
-        (0.25, 0.7),
-        (0.3, 0.7),
-        (0.4, 0.5),
-        (0.5, 0.5),
+        (0.25, 0.4),
+        (0.3, 1),
+        (0.35, 0.4),
+        (0.4, 1),
+        (0.45, 0.4),
+        (0.5, 1),
+        (0.55, 0.4),
+        (0.6, 1),
     ],  # (x/c position value, y/(b/2) value of end of spar)
-    "spar_thickness": 20e-3,  # meter
-    "skin_thickness": 20e-3,  # meter
-    "stringer_area": 60e-6,  # square meter
-    "stringers_top": [
-        (100, 0.4),
-        (50, 0.7),
-        (30, 1),
-    ],  # *Ordered* List: (nstringers, y/(b/2) value of end) - start is end of previous or root
-    "stringers_bottom": [(100, 0.4), (50, 0.7), (30, 1)],  # same as above
+    "spar_thickness": (37.5e-3, 15e-3),  # (t_root, t_tip) interpolated linearly. [meter]
+    "skin_thickness": 10e-3,  # meter
+    "stringer_area": 480e-6,  # square meter
+    "stringers_top": [(30, 0.4), (20, 0.65), (10, 1)],  # *Ordered* List: (nstringers, y/(b/2) value of end) - start is end of previous or root
+    "stringers_bottom": [(30, 0.4), (20, 0.65), (10, 1)]  # same as above
 }
 
 # Wingbox Material Parameters (in SI)
-MAT = {"E": 68.9e9, "G": 26e9}  # pascal  # pascal
+MAT = {"E": 68.9e9, "G": 26e9}  # both in pascal
 
-G = 9.80665
+G = 9.80665 # m/s^2
 
 # Critical Load Parameters (in SI)
 CRIT = {

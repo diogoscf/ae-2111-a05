@@ -27,6 +27,7 @@ steiner = lambda A, d: A*(d**2)
 rect_MMOI = lambda b,h: b*(h**3)/12
 
 chord_y = lambda y: ((WING["taper_ratio"] - 1)*abs(y) + 1) * WING["root_chord"]
+thickness_y = lambda y, tr, tt: (tt - tr)*abs(y) + tr
 
 def distribute_stringers(fspar, rspar, nstringers):
     stringers = []
@@ -56,12 +57,14 @@ def stringers(y):
 # Coordinates given with (x,z) = (0,0) at leading edge (camber line)
 def centroid(y, stringers_top=[], stringers_bottom=[]):
     chord = chord_y(y)
+    t_spar = thickness_y(y, *WINGBOX["spar_thickness"])
+    t_skin = WINGBOX["skin_thickness"]
     centroids = [] # list of (x,z,A)
     spars = sorted([WINGBOX["front_spar"], WINGBOX["rear_spar"], *[s[0] for s in WINGBOX["other_spars"] if s[1] >= abs(y)]])
     # Spars
     for spar_pos in spars:
         h, z, *rest = airfoil_info(spar_pos)
-        centroids.append([spar_pos*chord, z*chord, h*chord*WINGBOX["spar_thickness"]])
+        centroids.append([spar_pos*chord, z*chord, h*chord*t_spar])
 
     # Skin Pieces
     for i in range(len(spars) - 1):
@@ -71,11 +74,11 @@ def centroid(y, stringers_top=[], stringers_bottom=[]):
 
         z_u = (z_start[0] + z_end[0])/2
         l_u = np.sqrt((end - start)**2 + (z_start[0] - z_end[0])**2)
-        centroids.append([x*chord, z_u*chord, l_u*chord*WINGBOX["skin_thickness"]])
+        centroids.append([x*chord, z_u*chord, l_u*chord*t_skin])
 
         z_l = (z_start[1] + z_end[1])/2
         l_l = np.sqrt((end - start)**2 + (z_start[1] - z_end[1])**2)
-        centroids.append([x*chord, z_l*chord, l_l*chord*WINGBOX["skin_thickness"]])
+        centroids.append([x*chord, z_l*chord, l_l*chord*t_skin])
 
     # Stringers
     for stringer in stringers_top:
@@ -111,6 +114,8 @@ def enclosed_areas(y, spars):
 
 def torsional_constant(y):
     chord = chord_y(y)
+    t_spar = thickness_y(y, *WINGBOX["spar_thickness"])
+    t_skin = WINGBOX["skin_thickness"]
     spars = sorted([WINGBOX["front_spar"], WINGBOX["rear_spar"], *[s[0] for s in WINGBOX["other_spars"] if s[1] >= abs(y)]])
     areas = np.array(enclosed_areas(y, spars))
 
@@ -120,7 +125,7 @@ def torsional_constant(y):
         hl, hr = airfoil_info(start)[0]*chord, airfoil_info(end)[0]*chord
         lu = np.sqrt((end - start)**2 + (z_start[0] - z_end[0])**2)*chord
         ll = np.sqrt((end - start)**2 + (z_start[1] - z_end[1])**2)*chord
-        J = 4*(areas[0]**2) / (((hl+hr)/(WINGBOX["spar_thickness"])) + ((ll+lu)/(WINGBOX["skin_thickness"])))
+        J = 4*(areas[0]**2) / (((hl+hr)/(t_spar)) + ((ll+lu)/(t_skin)))
         return J
     
     ncells = len(spars) - 1
@@ -135,11 +140,11 @@ def torsional_constant(y):
         lu = np.sqrt((end - start)**2 + (z_start[0] - z_end[0])**2)*chord
         ll = np.sqrt((end - start)**2 + (z_start[1] - z_end[1])**2)*chord
 
-        matrix[i, i] = (1/(2*areas[i]))*(((hl+hr)/WINGBOX["spar_thickness"]) + ((lu+ll)/WINGBOX["skin_thickness"]))
+        matrix[i, i] = (1/(2*areas[i]))*(((hl+hr)/t_spar) + ((lu+ll)/t_skin))
         if not i == 0:
-            matrix[i, i-1] = -1/(2*areas[i])*(hl/WINGBOX["spar_thickness"])
+            matrix[i, i-1] = -1/(2*areas[i])*(hl/t_spar)
         if not i == ncells - 1:
-            matrix[i, i+1] = -1/(2*areas[i])*(hr/WINGBOX["spar_thickness"])
+            matrix[i, i+1] = -1/(2*areas[i])*(hr/t_spar)
         
         matrix[i,-1] = -1
     
@@ -183,7 +188,7 @@ def MOI(y):
     for x in spars:
         position = (chord * x, chord * airfoil_info(x)[1]) # coordinates converted to meters 
         rel_position = (position[0] - centroid_y[0], position[1] - centroid_y[1]) # relative position to centroid
-        t = WINGBOX["spar_thickness"]
+        t = thickness_y(y, *WINGBOX["spar_thickness"])
         h = airfoil_info(x)[0] * chord
         Ixx += t*(h**3)/12 + t*h*(rel_position[1]**2)
         Izz += (t**3)*h/12 + t*h*(rel_position[0]**2)
@@ -192,7 +197,6 @@ def MOI(y):
     for i in range(len(spars)-1):
         left_spar = spars[i]
         right_spar = spars[i+1]
-
         t = WINGBOX["skin_thickness"]
 
         # top element
