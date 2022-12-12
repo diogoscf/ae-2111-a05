@@ -11,6 +11,7 @@ STRINGER = {
     "thickness": 5, #mm
     "number": [60,40,20],
     "area_(wanted)": 480, #mm^2
+    "E_AL6061-T6": 68*10**9 #Pa
 }
 
 WING = {
@@ -27,7 +28,7 @@ horizontal_l = b
 thickness = t
 number = N
 area_(wanted) = A
-'''
+
 
 #calculation in mm
 def MOI(t,A):
@@ -48,7 +49,7 @@ for t in np.arange(0.1,20,0.2):
 plt.plot(xtab,y1tab)
 plt.show()
 print(y1tab)
-
+'''
 #area of one stringer
 vl,hl=STRINGER["vertical_l"],STRINGER["horizontal_l"]
 t=STRINGER["thickness"]
@@ -94,7 +95,7 @@ def crit_buckling_str(y):
 #?    o_cr_all=o_cr * n #o_cr of one stringer times number of stringers
     return o_cr
     
-print(crit_buckling_str(0.3),"MPa")
+#print(crit_buckling_str(0.3),"MPa")
 
 #applied stress & margin of saftey part
 o_cr_lst=[]
@@ -102,7 +103,7 @@ y_lst=[]
 
 o_app_lst=[100,95,90,80,80,75,70,60,50,40,30,25,20,10,5]
 o_app_lst=np.array(o_app_lst)
-print(len(o_app_lst))
+#print(len(o_app_lst))
 
 dy=1/len(o_app_lst)
 y=0
@@ -112,8 +113,8 @@ for i in range(0,len(o_app_lst)):
     y=y+dy
   
 o_cr_lst=np.array(o_cr_lst)
-print(len(o_cr_lst))
-print(y_lst)
+#print(len(o_cr_lst))
+#print(y_lst)
 
 m_of_s=np.divide(o_cr_lst,o_app_lst)
 #print(m_of_s)
