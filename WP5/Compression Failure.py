@@ -1,9 +1,15 @@
+import sys
+import os
+
+sys.path.insert(1, os.path.join(os.path.dirname(__file__), "../WP4/"))
+
 from params import *
 from stiffness import *
 from Diagrams import moment_calc
 from deflections import *
 import matplotlib.pyplot as plt
-
+from plot_wingbox import *
+    
 CL_d = CRIT["cld"]
 load_factor = CRIT["load_factor"]
 point_loads = CRIT["point_loads"]
@@ -94,15 +100,30 @@ def MOI(y):
     
     return Ixx, Izz
 
+def area(y):
+    chord_y = lambda y: (((WING["taper_ratio"] - 1) / (halfspan)) * abs(y) + 1) * WING["root_chord"] 
+    chord = chord_y(y)
+    area_spars = 0
+    i=0
+    t = thickness_y(y, *WINGBOX["spar_thickness"])
+    area_skin = chord * 0.45 * 2 * WINGBOX["skin_thickness"]
+    while i <= len(spars):
+        area_spars += airfoil_info(spars[i])[0:]*chord*WINGBOX["spar_thickness"]
+        i+=1
+    area_stringers = WINGBOX["stringer_area"]*(len(stringers(y)[0])+len(stringers(y)[1]))
+    return area_skin+area_stringers+area_spars
+
 def sigma_y(y, yspace=y_vals): 
     chord_y = lambda y: (((WING["taper_ratio"] - 1) / (halfspan)) * abs(y) + 1) * WING["root_chord"] 
     z = chord_y(y/halfspan) * 0.0796/2
-    
+   # area=area(y)
     if y == 0:
         M = M_lst[0]
     else:
         M = M_lst[int(round(y*halfspan*300/(WING["span"]/2),0))-1]
     sigma_y = M*z/MOI(y/halfspan)[0]
+   # if y <=0.35:
+    #    sigma_y+= 180000/area
     return sigma_y
 
 def mos(y):
@@ -123,4 +144,4 @@ def mos_plot():
         y+=1/300
     plt.plot(y_lst,mos_lst)
 
-mos_plot()
+area(0)
