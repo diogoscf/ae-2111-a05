@@ -96,3 +96,31 @@ def crit_buckling_str(y):
     
 print(crit_buckling_str(0.3),"MPa")
 
+#applied stress & margin of saftey part
+o_cr_lst=[]
+y_lst=[]
+
+o_app_lst=[100,95,90,80,80,75,70,60,50,40,30,25,20,10,5]
+o_app_lst=np.array(o_app_lst)
+print(len(o_app_lst))
+
+dy=1/len(o_app_lst)
+y=0
+for i in range(0,len(o_app_lst)):
+    o_cr_lst.append(crit_buckling_str(y))
+    y_lst.append(y*WING["span"]/2)
+    y=y+dy
+  
+o_cr_lst=np.array(o_cr_lst)
+print(len(o_cr_lst))
+print(y_lst)
+
+m_of_s=np.divide(o_cr_lst,o_app_lst)
+#print(m_of_s)
+
+#plot graphs
+plt.plot(y_lst,m_of_s)
+plt.xlabel("Half wing span (y position)")
+plt.ylabel("Margin of safety")
+
+plt.show()
