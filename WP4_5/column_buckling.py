@@ -3,6 +3,8 @@ import matplotlib.pyplot as plt
 from math import pi
 import scipy as sp
 from scipy import interpolate
+from params import *
+from compression_failure import *
 
 #numbers below are arbitrary
 STRINGER = {
@@ -12,13 +14,6 @@ STRINGER = {
     "number": [60,40,20],
     "area_(wanted)": 480, #mm^2
     "E_AL6061-T6": 68*10**9 #Pa
-}
-
-WING = {
-    "span": 43.58,  # meter
-    "root_chord": 6.86,  # meter
-    "taper_ratio": 0.27,
-    "LE_sweep": 39.2,  # deg
 }
 
 #code for producing moment of inertia vs thickness
@@ -61,29 +56,23 @@ D1= [(25,10), 10, 480, (7,5), (100,80,40)]
 D2= [(25,10), 21, 80, (5,3), (20,20,20)]
 D3= [(37.5,15), 15, 480, (10,5), (60,40,20)]
 
-Ribs_pos=[0,0.2,0.4,0.6,0.8,1]
+Ribs_pos=[0,0.1,0.2,0.3,0.4,1]
 Index=[0,1,2,3,4,5]
 
-def Ixx(t,Lv,Lh):
+def Ixx(t,Lv,Lh): #of one stringer
     t=float(t)
     Lh=float(Lh)
     Lv=float(Lv)
     y=(0.5*Lv*Lv*t)/(Lh*t+Lv*t)
 
     Ixx= Lh*t*y**2 + 1/12*t*Lv**3 + Lv*t*(0.5*Lv-y)**2
-    return Ixx 
+    return Ixx
+ 
 #print(Ixx(t,vl,hl))
     
 
 #o crit of segment @ y/(b/2) for chosen design
-def crit_buckling_str(y):
-    if y <= 0.4:
-        n=D3[4][0]
-    elif y <= 0.65:
-        n=D3[4][1]    
-    else:
-        n=D3[4][2]
-        
+def crit_buckling_str(y):        
     g=sp.interpolate.interp1d(Ribs_pos,Index,kind="next",fill_value="extrapolate")
     L= (Ribs_pos[int(g(y))]-Ribs_pos[int(g(y)-1)])*(WING["span"]*1000)/2 #mm; unsupported length
     E= STRINGER["E_AL6061-T6"]
@@ -91,17 +80,33 @@ def crit_buckling_str(y):
     I=Ixx(t,vl,hl) 
     
     o_cr= (K*pi**2*E*I)/(L**2*A) *10**-6 #MPa
-#?    o_cr_all=o_cr * n #o_cr of one stringer times number of stringers
     return o_cr
     
 #print(crit_buckling_str(0.3),"MPa")
 
-#applied stress & margin of saftey part
+#applied stress
 o_cr_lst=[]
 y_lst=[]
 
-o_app_lst=[100,95,90,80,80,75,70,60,50,40,30,25,20,10,5]
-o_app_lst=np.array(o_app_lst)
+def sigma_y_lst():
+    y=0
+    i=0
+    a=0
+    sigma_y_lst=[]
+    y_lst=[]
+    while i <=300 and a<=1:
+        a= sigma_y(y)
+        i+=1
+        sigma_y_lst.append(a)
+        y_lst.append(y*halfspan)
+        y+=1/300
+    sigma_y_lst=np.array(sigma_y_lst)
+    sigma_y_lst=sigma_y_lst/-10**6
+    return sigma_y_lst
+
+o_app_lst=np.delete(sigma_y_lst(),-1)
+#o_app_lst=np.array(o_app_lst)
+#print(o_app_lst)
 #print(len(o_app_lst))
 
 dy=1/len(o_app_lst)
@@ -112,9 +117,10 @@ for i in range(0,len(o_app_lst)):
     y=y+dy
   
 o_cr_lst=np.array(o_cr_lst)
-#print(len(o_cr_lst))
+#print(o_cr_lst)
 #print(y_lst)
 
+#margin of safety & plot
 m_of_s=np.divide(o_cr_lst,o_app_lst)
 #print(m_of_s)
 
@@ -122,5 +128,6 @@ m_of_s=np.divide(o_cr_lst,o_app_lst)
 plt.plot(y_lst,m_of_s)
 plt.xlabel("Half wing span (y position)")
 plt.ylabel("Margin of safety")
-
+plt.xlim([0,6]) #so far it is reasonable only for small y distances 
+plt.ylim([0,5]) #past some point (~15m) mos goes really high
 plt.show()
