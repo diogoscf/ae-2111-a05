@@ -130,6 +130,21 @@ def mos(y):
     mos = sigma_yield/abs(sigma_y(y))
     return mos
 
+def sigma_y_plot():
+    y=0
+    i=0
+    a=0
+    sigma_y_lst=[]
+    y_lst=[]
+    while i <=150 and a<=1:
+        a= sigma_y(y)
+        i+=1
+        sigma_y_lst.append(a)
+        y_lst.append(y*halfspan)
+        y+=1/300
+    plt.plot(y_lst,sigma_y_lst)
+    plt.show()
+    
 def mos_plot():
     y=0
     i=0
@@ -143,4 +158,7 @@ def mos_plot():
         y_lst.append(y*halfspan)
         y+=1/300
     plt.plot(y_lst,mos_lst)
+    plt.show()
 
+sigma_y_plot()
+mos_plot()
