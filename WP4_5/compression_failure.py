@@ -197,7 +197,7 @@ def sigma_y_plot_tension():
     sigma_y_lst=[]
     y_lst=[]
     while i <=150 and a<=1:
-        a= sigma_y(y)
+        a= sigma_y_tension(y)
         i+=1
         sigma_y_lst.append(a)
         y_lst.append(y*halfspan)
