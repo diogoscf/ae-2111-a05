@@ -5,7 +5,7 @@ from scipy import interpolate
 import matplotlib.pyplot as plt
 from math import pi
 
-import Distributions
+import distributions
 from params import *
 
 G = 9.80665
@@ -25,7 +25,7 @@ def shear_force_calc(
     y_pos=y_space,
 ):
     f_tab = []
-    normal = Distributions.N_prime(cl_d, (0.028 + cl_d**2 / (pi * 10 * 0.51)), y_pos, dyn_p)
+    normal = distributions.N_prime(cl_d, (0.028 + cl_d**2 / (pi * 10 * 0.51)), y_pos, dyn_p)
     function = sp.interpolate.interp1d(y_pos, normal, kind="cubic", fill_value="extrapolate")
     for y in y_pos:
         estimate_f, _ = sp.integrate.quad(function, y, y_pos[-1])
@@ -111,8 +111,8 @@ def distance_flexural_axis(y):
 
 def torque_calc(cl_d, point_loads=[], load_factor=1, dyn_p=10000, y_pos=y_space):
     t_tab = []
-    normal = Distributions.N_prime(cl_d, (0.028 + cl_d**2 / (pi * 10 * 0.51)), y_pos, dyn_p)
-    cm_function = Distributions.M_prime(Distributions.CM_at_AOA(Distributions.AOA_specific_flight_regime(cl_d)), y_pos, dyn_p)
+    normal = distributions.N_prime(cl_d, (0.028 + cl_d**2 / (pi * 10 * 0.51)), y_pos, dyn_p)
+    cm_function = distributions.M_prime(distributions.CM_at_AOA(distributions.AOA_specific_flight_regime(cl_d)), y_pos, dyn_p)
     intpl_cm = sp.interpolate.interp1d(y_pos, cm_function , kind="cubic", fill_value="extrapolate")
     intpl = sp.interpolate.interp1d(y_pos, normal, kind="cubic", fill_value="extrapolate")
     function = lambda y: intpl(y) * distance_flexural_axis(y) + intpl_cm(y)
