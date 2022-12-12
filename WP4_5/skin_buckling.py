@@ -1,8 +1,4 @@
 from math import pi
-import sys
-import os
-
-sys.path.insert(1, os.path.join(os.path.dirname(__file__), "../WP4/"))
 import diagrams
 
 k_c = 4  # based on four simply supported edges and an a/b of >3

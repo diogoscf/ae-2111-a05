@@ -38,9 +38,9 @@ for stringer in stringers_bottom:
     z = np.interp(stringer, (l_spar, r_spar), (airfoil_info(l_spar)[3], airfoil_info(r_spar)[3]))
     ax.plot(stringer*chord, z*chord, marker=".", color="blue") # Bottom Stringers
 
-centroid = centroid(y, stringers_top, stringers_bottom)
-ax.plot(centroid[0], centroid[1], marker="x", color="green") # Centroid
-ax.plot(centroid[0], centroid[1]-0.05, marker="$C.G.$", color="green")
+centroid_pos = centroid(y, stringers_top, stringers_bottom)
+ax.plot(centroid_pos[0], centroid_pos[1], marker="x", color="green") # Centroid
+ax.plot(centroid_pos[0], centroid_pos[1]-0.05, marker="$C.G.$", color="green")
 
 plt.xlim([0, chord])
 plt.ylim([-chord/4, chord/4])

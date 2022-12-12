@@ -3,11 +3,6 @@ import numpy as np
 import scipy as sp
 from scipy import interpolate
 
-import sys
-import os
-
-sys.path.insert(1, os.path.join(os.path.dirname(__file__), "../WP4/"))
-
 from params import *
 from stiffness import *
 from diagrams import moment_calc
@@ -15,7 +10,7 @@ from deflections import *
 
 sigma_yield = 276e6
 
-def plot_stresses(Cld, ptloads, distloads, load_factor, dynp, yspace=y_vals):
+def stresses_along_wing(Cld, ptloads, distloads, load_factor, dynp, yspace=y_vals):
     m_vals = moment_calc(Cld, ptloads, distloads, load_factor, dynp, yspace)
     m_estimate = sp.interpolate.interp1d(
         yspace, m_vals, kind="cubic", fill_value="extrapolate"
@@ -27,16 +22,9 @@ def plot_stresses(Cld, ptloads, distloads, load_factor, dynp, yspace=y_vals):
     )
 
     sigma_vals = np.array([sigma_y(y, m_estimate(y), Ixx_estimate(y)) for y in yspace])
+
+    return sigma_vals
     
-    #print(v_vals[-1], f"{100*v_vals[-1]/WING['span']:.2f}%")
-    plot_diagram_threshold(
-        y_vals,
-        sigma_vals[:,0],
-        sigma_yield*1e-6,
-        "y (m)",
-        "σ (Pa)",
-        f"Maximum Compressive Stress along wing span at load factor {load_factor}",
-    )
 
 # Returns maximum compressive and tensile stresses at a given y value (sigma_compressive, sigma_tensile)
 def sigma_y(y, M, Ixx):
@@ -53,5 +41,13 @@ def sigma_y(y, M, Ixx):
     
 
 if __name__ == "__main__":
-    plot_stresses(CL_d, point_loads, distributed_loads, load_factor, dynp)
+    sigma_vals = stresses_along_wing(CL_d, point_loads, distributed_loads, load_factor, dynp)
+    plot_diagram_threshold(
+        y_vals,
+        sigma_vals[:,0],
+        sigma_yield*1e-6,
+        "y (m)",
+        "σ (Pa)",
+        f"Maximum Compressive Stress along wing span at load factor {load_factor}",
+    )
     plt.show()
