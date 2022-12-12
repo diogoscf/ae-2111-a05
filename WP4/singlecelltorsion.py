@@ -11,6 +11,24 @@ import Diagrams
 from params import *
 
 
+def torque_calc(cl_d, point_loads=[], load_factor=1, dyn_p=10000, y_pos=Diagrams.y_space):
+    t_tab = []
+    normal = Distributions.N_prime(cl_d, (0.028 + cl_d**2 / (pi * 10 * 0.51)), y_pos, dyn_p)
+    cm_function = Distributions.M_prime(Distributions.CM_at_AOA(Distributions.AOA_specific_flight_regime(cl_d)), y_pos, dyn_p)
+    intpl_cm = sp.interpolate.interp1d(y_pos, cm_function , kind="cubic", fill_value="extrapolate")
+    intpl = sp.interpolate.interp1d(y_pos, normal, kind="cubic", fill_value="extrapolate")
+    function = lambda y: intpl(y) * Diagrams.distance_flexural_axis(y) + intpl_cm(y)
+    for y in y_pos:
+        estimate_t, _ = sp.integrate.quad(function, y, y_pos[-1])
+        estimate_t *= load_factor
+        for load, pos in point_loads:
+            if y <= pos:
+                estimate_t += load
+        t_tab.append(estimate_t)
+    return t_tab
+
+
+
 def multicell_shear_stress(y):
     chord = stiffness.chord_y(y)
     t_spar = stiffness.thickness_y(y, *WINGBOX["spar_thickness"])
@@ -52,3 +70,9 @@ def multicell_shear_stress(y):
 
 print(multicell_shear_stress(1))
 
+def shear_flow_with_torque(cl_d, point_loads=[], load_factor=1, dyn_p=10000, y_pos=y_space)
+shear_torque_lst = []
+for i in range(0, 300):
+    shear_torque = multicell_shear_stress(i/299)*torque_calc(cl_d, point_loads=[], load_factor=1, dyn_p=10000, y_pos=Diagrams.y_space)[i]
+    shear_torque_lst.append(shear_torque)
+print(shear_torque_lst[2])
