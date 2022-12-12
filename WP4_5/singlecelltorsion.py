@@ -75,7 +75,7 @@ def shear_torque_stress_calc(cl_d, point_loads=[], load_factor=1, dyn_p=10000, y
     shear_torque_lst = []
     torque = torque_calc(cl_d, point_loads, load_factor, dyn_p, y_pos)
     for i in range(0,1):
-        shear_torque = list(multicell_shear_stress(i/299)*torque[i]/25e-3)
+        shear_torque = list(multicell_shear_stress(i/299)*torque[i])
         shear_torque_lst.append(shear_torque)
     return shear_torque_lst
 
