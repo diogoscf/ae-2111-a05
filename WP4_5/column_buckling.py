@@ -70,8 +70,7 @@ def Ixx(t,Lv,Lh):
     y=(0.5*Lv*Lv*t)/(Lh*t+Lv*t)
 
     Ixx= Lh*t*y**2 + 1/12*t*Lv**3 + Lv*t*(0.5*Lv-y)**2
-    return Ixx
- 
+    return Ixx 
 #print(Ixx(t,vl,hl))
     
 
