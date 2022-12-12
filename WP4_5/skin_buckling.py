@@ -3,7 +3,7 @@ import sys
 import os
 
 sys.path.insert(1, os.path.join(os.path.dirname(__file__), "../WP4/"))
-import Diagrams
+import diagrams
 
 k_c = 4  # based on four simply supported edges and an a/b of >3
 root_chord = 6.86  # m
@@ -62,8 +62,8 @@ critical_spacing = [
 ]
 print(critical_spacing)
 
-moment = Diagrams.moment_calc(
-    0.908, [Diagrams.engine_mass], [Diagrams.wing_mass], 3.75, 8328.245793
+moment = diagrams.moment_calc(
+    0.908, [diagrams.engine_mass], [diagrams.wing_mass], 3.75, 8328.245793
 )
 
 

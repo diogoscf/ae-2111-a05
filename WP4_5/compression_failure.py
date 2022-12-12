@@ -1,11 +1,9 @@
 import sys
 import os
 
-sys.path.insert(1, os.path.join(os.path.dirname(__file__), "../WP4/"))
-
 from params import *
 from stiffness import *
-from Diagrams import moment_calc
+from diagrams import moment_calc
 from deflections import *
 import matplotlib.pyplot as plt
 from plot_wingbox import *

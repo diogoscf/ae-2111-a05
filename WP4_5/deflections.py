@@ -6,7 +6,7 @@ import numpy as np
 
 import stiffness
 from params import *
-from Diagrams import moment_calc, torque_calc
+from diagrams import moment_calc, torque_calc
 
 rel = lambda y: y / (WING["span"] / 2)
 
