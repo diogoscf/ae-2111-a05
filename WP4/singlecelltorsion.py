@@ -6,8 +6,7 @@ import matplotlib.pyplot as plt
 from math import pi
 import stiffness
 import Distributions 
-import Diagrams 
-
+import Diagrams
 from params import *
 
 
@@ -68,11 +67,13 @@ def multicell_shear_stress(y):
     shear_stress = solution/t_spar
     return shear_stress[0:-1]
 
-print(multicell_shear_stress(1))
+print(multicell_shear_stress(0))
 
-def shear_flow_with_torque(cl_d, point_loads=[], load_factor=1, dyn_p=10000, y_pos=y_space)
 shear_torque_lst = []
-for i in range(0, 300):
-    shear_torque = multicell_shear_stress(i/299)*torque_calc(cl_d, point_loads=[], load_factor=1, dyn_p=10000, y_pos=Diagrams.y_space)[i]
+torque = torque_calc(2.27,[],-1.5,1481)
+for i in range(290, 300):
+    shear_torque = list(multicell_shear_stress(i/299)*torque[i])
     shear_torque_lst.append(shear_torque)
-print(shear_torque_lst[2])
+print(shear_torque_lst)
+
+
