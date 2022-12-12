@@ -107,8 +107,8 @@ def area(y):
     i=0
     t = thickness_y(y, *WINGBOX["spar_thickness"])
     area_skin = chord * 0.45 * 2 * WINGBOX["skin_thickness"]
-    while i <= len(spars):
-        area_spars += airfoil_info(spars[i])[0:]*chord*WINGBOX["spar_thickness"]
+    while i <= len(spars)-1:
+        area_spars += airfoil_info(spars[i])[0]*chord*t
         i+=1
     area_stringers = WINGBOX["stringer_area"]*(len(stringers(y)[0])+len(stringers(y)[1]))
     return area_skin+area_stringers+area_spars
