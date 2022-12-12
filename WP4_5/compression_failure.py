@@ -6,8 +6,11 @@ from stiffness import *
 from diagrams import moment_calc
 from deflections import *
 import matplotlib.pyplot as plt
-from plot_wingbox import *
-    
+
+
+
+y = 0
+spars = sorted([WINGBOX["front_spar"], WINGBOX["rear_spar"], *[s[0] for s in WINGBOX["other_spars"] if s[1] >= abs(y)]])    
 CL_d = CRIT["cld"]
 load_factor = CRIT["load_factor"]
 point_loads = CRIT["point_loads"]
@@ -141,4 +144,3 @@ def mos_plot():
         y+=1/300
     plt.plot(y_lst,mos_lst)
 
-print(sigma_y(0.1))
