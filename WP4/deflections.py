@@ -44,8 +44,15 @@ def plot_diagram_threshold(x_vals, y_vals, maxval, xlab, ylab, plottitle):
         return
     fig, ax = plt.subplots()
 
-    cmap = ListedColormap(["blue", "red"])
-    norm = BoundaryNorm([np.min(y_vals), maxval, np.max(y_vals)], cmap.N)
+    if np.max(y_vals) >= maxval and np.min(y_vals) <= -maxval:
+        cmap = ListedColormap(["red", "blue", "red"])
+        norm = BoundaryNorm([np.min(y_vals), -maxval, maxval, np.max(y_vals)], cmap.N)
+    elif np.max(y_vals) <= maxval and np.min(y_vals) <= -maxval:
+        cmap = ListedColormap(["red", "blue"])
+        norm = BoundaryNorm([np.min(y_vals), -maxval, np.max(y_vals)], cmap.N)
+    else:
+        cmap = ListedColormap(["blue", "red"])
+        norm = BoundaryNorm([np.min(y_vals), maxval, np.max(y_vals)], cmap.N)
 
     points = np.array([x_vals, y_vals]).T.reshape(-1, 1, 2)
     segments = np.concatenate([points[:-1], points[1:]], axis=1)
