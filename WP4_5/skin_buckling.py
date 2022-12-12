@@ -1,82 +1,43 @@
-from math import pi
-import sys
-import os
-
-sys.path.insert(1, os.path.join(os.path.dirname(__file__), "../WP4/"))
-import diagrams
+import numpy as np
+from stresses import stresses_along_wing
+from params import *
+from stiffness import chord_y, stringers
 
 k_c = 4  # based on four simply supported edges and an a/b of >3
-root_chord = 6.86  # m
-tip_chord = 1.85  # m
-wingbox_root_length = root_chord * 0.45  # m
-wingbox_tip_length = tip_chord * 0.45  # m
-half_span = 43.58 / 2  # m
-skin_thickness_1 = 0.01  # m
-skin_thickness_2 = 0.021  # m
-skin_thickness_3 = 0.01  # m
-t_over_c = 7.96
-wingbox_root_thickness = root_chord * t_over_c / 100  # m
-wingbox_tip_thickness = tip_chord * t_over_c / 100  # m
-E = 6.89e10  # Pa
-nu = 0.33
-shear_modulus = 2.6e10  # Pa
-I_skin = 0.0001  # m^4
+E = MAT["E"]
+nu = MAT["nu"]
+halfspan = WING["span"] / 2
 
+rel = lambda y: y / (WING["span"] / 2)
 
-def chord_at_span(span):
-    return wingbox_root_length - (wingbox_root_length - wingbox_tip_length) * (
-        span / half_span
-    )
+CL_d = CRIT["cld"]
+load_factor = CRIT["load_factor"]
+point_loads = CRIT["point_loads"]
+point_torques = CRIT["point_torques"]
+distributed_loads = CRIT["distributed_loads"]
+dynp = CRIT["dynp"]
+points = 300
 
+y_vals = np.linspace(0, WING["span"] / 2, points)
 
-def thickness_at_span(span):
-    return wingbox_root_thickness - (wingbox_root_thickness - wingbox_tip_thickness) * (
-        span / half_span
-    )
+# Critical Buckling Stress
+def sigma_crit_skin(t, b):
+    return ((np.pi**2) * k_c * E / (12 * (1 - (nu**2)))) * ((t / b)**2)
 
-
-def stringer_spacing(span, stringers):
-    return chord_at_span(span) / stringers
-
-
-stringer_spacing_1 = [
-    stringer_spacing(0, 50),
-    stringer_spacing(half_span * 0.4, 40),
-    stringer_spacing(half_span * 0.65, 20),
-]
-stringer_spacing_2 = [
-    stringer_spacing(0, 10),
-    stringer_spacing(half_span * 0.4, 10),
-    stringer_spacing(half_span * 0.65, 10),
-]
-stringer_spacing_3 = [
-    stringer_spacing(0, 30),
-    stringer_spacing(half_span * 0.4, 20),
-    stringer_spacing(half_span * 0.65, 10),
-]
-
-critical_spacing = [
-    max(stringer_spacing_1),
-    max(stringer_spacing_2),
-    max(stringer_spacing_3),
-]
-print(critical_spacing)
-
-moment = diagrams.moment_calc(
-    0.908, [diagrams.engine_mass], [diagrams.wing_mass], 3.75, 8328.245793
-)
-
-
-def critical_buckling_stress(thickness, width):
-    return pi**2 * k_c * E / (12 * (1 - nu**2)) * (thickness / width) ** 2
-
-
-print(
-    f"{critical_buckling_stress(skin_thickness_1, max(stringer_spacing_1))/1e6:.2f} MPa with {max(stringer_spacing_1):.2f} m stringer spacing"
-)
-print(
-    f"{critical_buckling_stress(skin_thickness_2, max(stringer_spacing_2))/1e6:.2f} MPa with {max(stringer_spacing_2):.2f} m stringer spacing"
-)
-print(
-    f"{critical_buckling_stress(skin_thickness_3, max(stringer_spacing_3))/1e6:.2f} MPa with {max(stringer_spacing_3):.2f} m stringer spacing"
-)
+def skin_mos_calc(Cld, ptloads, distloads, load_factor, dynp, yspace=y_vals):
+    sigma_vals = stresses_along_wing(Cld, ptloads, distloads, load_factor, dynp, yspace)[:, 0]
+    ribs = WINGBOX["ribs"]
+    mos_vals = []
+    for rstart, rend in zip(ribs, ribs[1:]):
+        stringers_top, stringers_bottom = stringers(rstart)
+        nstringers = len([*stringers_top, *stringers_bottom])
+        max_width = chord_y(rstart) * 0.45 / nstringers
+        crit = sigma_crit_skin(WINGBOX["skin_thickness"], max_width)
+        idx_start, idx_end = (np.floor((rstart * points))), np.ceil((rend * points)) - 1
+        max_stress = np.max(sigma_vals[int(idx_start):int(idx_end)])
+        mos = abs(crit*1e-6 / max_stress)
+        mos_vals.append([rstart*halfspan, rend*halfspan, mos])
+    
+    return mos_vals
+if __name__ == "__main__":
+    print(skin_mos_calc(CL_d, point_loads, distributed_loads, load_factor, dynp))
