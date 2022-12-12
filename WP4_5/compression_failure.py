@@ -114,14 +114,13 @@ def area(y):
 def sigma_y(y, yspace=y_vals): 
     chord_y = lambda y: (((WING["taper_ratio"] - 1) / (halfspan)) * abs(y) + 1) * WING["root_chord"] 
     z = chord_y(y/halfspan) * 0.0796/2
-   # area=area(y)
     if y == 0:
         M = M_lst[0]
     else:
         M = M_lst[int(round(y*halfspan*300/(WING["span"]/2),0))-1]
     sigma_y = M*z/MOI(y/halfspan)[0]
-   # if y <=0.35:
-    #    sigma_y+= 180000/area
+    if y <=0.35:
+        sigma_y+= 180000/area(y)
     return sigma_y
 
 def mos(y):
@@ -142,4 +141,4 @@ def mos_plot():
         y+=1/300
     plt.plot(y_lst,mos_lst)
 
-area(0)
+print(sigma_y(0.1))
