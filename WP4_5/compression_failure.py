@@ -136,7 +136,7 @@ def sigma_y_plot():
     a=0
     sigma_y_lst=[]
     y_lst=[]
-    while i <=150 and a<=1:
+    while i <=300 and a<=1:
         a= sigma_y(y)
         i+=1
         sigma_y_lst.append(a)
@@ -151,7 +151,7 @@ def mos_plot():
     a=0
     mos_lst=[]
     y_lst=[]
-    while i <=150 and a<=1:
+    while i <=300 and a<=1:
         a= mos(y)
         i+=1
         mos_lst.append(a)
@@ -182,7 +182,7 @@ def mos_plot_tension():
     a=0
     mos_lst=[]
     y_lst=[]
-    while i <=150 and a<=1:
+    while i <=300 and a<=1:
         a= mos_tension(y)
         i+=1
         mos_lst.append(a)
@@ -196,7 +196,7 @@ def sigma_y_plot_tension():
     a=0
     sigma_y_lst=[]
     y_lst=[]
-    while i <=150 and a<=1:
+    while i <=300 and a<=1:
         a= sigma_y_tension(y)
         i+=1
         sigma_y_lst.append(a)
