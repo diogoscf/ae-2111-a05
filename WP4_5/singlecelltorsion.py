@@ -67,13 +67,23 @@ def multicell_shear_stress(y):
     shear_stress = solution/t_spar
     return shear_stress[0:-1]
 
-print(multicell_shear_stress(0))
 
-shear_torque_lst = []
-torque = torque_calc(2.27,[],-1.5,1481)
-for i in range(290, 300):
-    shear_torque = list(multicell_shear_stress(i/299)*torque[i])
-    shear_torque_lst.append(shear_torque)
-print(shear_torque_lst)
+#print(multicell_shear_stress(2/299)*torque_calc(2.27,[],-1.5,1481)[2])
+
+
+def shear_torque_stress_calc(cl_d, point_loads=[], load_factor=1, dyn_p=10000, y_pos=diagrams.y_space):
+    shear_torque_lst = []
+    torque = torque_calc(cl_d, point_loads, load_factor, dyn_p, y_pos)
+    for i in range(0,1):
+        shear_torque = list(multicell_shear_stress(i/299)*torque[i]/25e-3)
+        shear_torque_lst.append(shear_torque)
+    return shear_torque_lst
+
+print(shear_torque_stress_calc(0.9,[], 3.75 ,8328)[0][0])
+
+
+
+
+
 
 
