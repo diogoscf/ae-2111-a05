@@ -121,7 +121,7 @@ def sigma_y(y, yspace=y_vals):
         M = M_lst[0]
     else:
         M = M_lst[int(round(y*halfspan*300/(WING["span"]/2),0))-1]
-    sigma_y = M*z/MOI(y/halfspan)[0]
+    sigma_y = M*z/MOI(y)[0]
     if y <=0.35:
         sigma_y+= 180000/area(y)
     return sigma_y
@@ -167,7 +167,7 @@ def sigma_y_tension(y, yspace=y_vals):
         M = M_lst[0]
     else:
         M = M_lst[int(round(y*halfspan*300/(WING["span"]/2),0))-1]
-    sigma_y = M*-z/MOI(y/halfspan)[0]
+    sigma_y = M*-z/MOI(y)[0]
     if y <=0.35:
         sigma_y-= 180000/area(y)
     return sigma_y
