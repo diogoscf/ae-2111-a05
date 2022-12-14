@@ -1,9 +1,8 @@
 from params import *
 import numpy as np
 import matplotlib.pyplot as plt
-import bisect
 
-from stiffness import airfoil_info, airfoil_data, chord_y, centroid, stringers
+from stiffness import chord_y
 
 wbox = WINGBOX
 

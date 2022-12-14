@@ -4,7 +4,8 @@ import scipy as sp
 from scipy import interpolate
 
 from params import *
-from stiffness import airfoil_info, chord_y, MOI, stringers, thickness_y
+import design_options
+from stiffness import airfoil_info, centroid, chord_y, MOI, stringers, thickness_y
 from diagrams import moment_calc
 from deflections import plot_diagram_threshold
 
@@ -17,8 +18,8 @@ point_torques = CRIT["point_torques"]
 distributed_loads = CRIT["distributed_loads"]
 dynp = CRIT["dynp"]
 points = 300
-
-y_vals = np.linspace(0, WING["span"] / 2, points)
+halfspan = WING["span"] / 2
+y_vals = np.linspace(0, halfspan, points)
 
 def stresses_along_wing(Cld, ptloads, distloads, load_factor, dynp, yspace=y_vals, wbox = WINGBOX):
     m_vals = moment_calc(Cld, ptloads, distloads, load_factor, dynp, yspace)
@@ -61,20 +62,24 @@ def sigma_y(y, M, Ixx, wbox = WINGBOX):
     spars = sorted([wbox["front_spar"], wbox["rear_spar"], *[s[0] for s in wbox["other_spars"] if s[1] >= abs(rel(y))]])
     chord = chord_y(rel(y))
     dists = [[*airfoil_info(s)[2:]] for s in spars]
+    centroid_z = centroid(y/halfspan, wbox = wbox)[1]
     max_pos = max([d[0] for d in dists])*chord
+    max_pos -= centroid_z
     min_pos = min([d[1] for d in dists])*chord
+    min_pos -= centroid_z
 
-    axial_load = -375000 * np.sin(WING["LE_sweep"]) if y < 8.374 else 0 # Compressive
+    axial_load = -375000 * np.sin(WING["LE_sweep"]) if y < 8.374 else 0 # Effect of Engine Thrust
     axial_stress = (axial_load / area(rel(y), wbox))*(1e-6)
 
     if M < 0:
+        #print(M*max_pos*(1e-6)/Ixx, M, Ixx, max_pos, axial_stress)
         return (M*max_pos*(1e-6)/Ixx)+axial_stress, (M*min_pos*(1e-6)/Ixx)+axial_stress
     else:
         return (M*min_pos*(1e-6)/Ixx)+axial_stress, (M*max_pos*(1e-6)/Ixx)+axial_stress
     
 
 if __name__ == "__main__":
-    sigma_vals = stresses_along_wing(CL_d, point_loads, distributed_loads, load_factor, dynp)
+    sigma_vals = stresses_along_wing(CL_d, point_loads, distributed_loads, load_factor, dynp, wbox = design_options.option_new)
     plot_diagram_threshold(
         y_vals,
         sigma_vals[:,0],

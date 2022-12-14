@@ -52,3 +52,19 @@ option_3 = {
     "stringers_bottom": [(30, 0.4), (20, 0.65), (10, 1)],  # same as above
     "ribs": (0, 0.4, 0.65, 1), # y/(b/2) values of rib positions
 }
+
+option_new = {
+    "front_spar": 0.2,
+    "rear_spar": 0.65,
+    "other_spars": [
+        (0.3, 0.4),
+        (0.4, 1),
+        (0.5, 0.4),
+    ],  # (x/c position value, y/(b/2) value of end of spar)
+    "spar_thickness": (37.5e-3, 15e-3),  # (t_root, t_tip) interpolated linearly. [meter]
+    "skin_thickness": 35e-3,  # meter
+    "stringer_area": 720e-6,  # square meter
+    "stringers_top": [(20, 1)],  # *Ordered* List: (nstringers, y/(b/2) value of end) - start is end of previous or root
+    "stringers_bottom": [(20, 1)],  # same as above
+    "ribs": (0, 0.4, 0.65, 1), # y/(b/2) values of rib positions
+}
