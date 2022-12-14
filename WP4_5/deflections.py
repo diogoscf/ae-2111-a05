@@ -21,9 +21,9 @@ points = 300
 y_vals = np.linspace(0, WING["span"] / 2, points)
 
 
-def dvdy(y, M, MOI):
+def dvdy(y, M, MOI, wbox = WINGBOX):
     result, _ = sp.integrate.quad(
-        lambda x: -M(x) / (MAT["E"] * MOI(x, WINGBOX)), 0, y, limit=100
+        lambda x: -M(x) / (MAT["E"] * MOI(x, wbox)), 0, y, limit=100
     )
     return result
 
@@ -87,7 +87,7 @@ def plot_diagram(x_vals, y_vals, maxval, xlab, ylab, plottitle):
     ax.grid()
 
 
-def plot_deflection(Cld, ptloads, distloads, load_factor, dynp, yspace=y_vals):
+def plot_deflection(Cld, ptloads, distloads, load_factor, dynp, yspace=y_vals, wbox=WINGBOX):
     m_vals = moment_calc(Cld, ptloads, distloads, load_factor, dynp, yspace)
     m_estimate = sp.interpolate.interp1d(
         yspace, m_vals, kind="cubic", fill_value="extrapolate"
@@ -98,7 +98,7 @@ def plot_deflection(Cld, ptloads, distloads, load_factor, dynp, yspace=y_vals):
         yspace, Ixx_vals, kind="cubic", fill_value="extrapolate"
     )
 
-    dv_vals = np.array([dvdy(y, m_estimate, Ixx_estimate) for y in y_vals])
+    dv_vals = np.array([dvdy(y, m_estimate, Ixx_estimate, wbox) for y in y_vals])
     dv_estimate = sp.interpolate.interp1d(
         y_vals, dv_vals, kind="cubic", fill_value="extrapolate"
     )
@@ -115,13 +115,13 @@ def plot_deflection(Cld, ptloads, distloads, load_factor, dynp, yspace=y_vals):
     )
 
 
-def plot_twist(Cld, ptloads, load_factor, dynp, yspace=y_vals):
+def plot_twist(Cld, ptloads, load_factor, dynp, yspace=y_vals, wbox=WINGBOX):
     t_vals = torque_calc(Cld, ptloads, load_factor, dynp, yspace)
     t_estimate = sp.interpolate.interp1d(
         yspace, t_vals, kind="cubic", fill_value="extrapolate"
     )
 
-    J_vals = np.array([stiffness.torsional_constant(rel(y), WINGBOX) for y in yspace])
+    J_vals = np.array([stiffness.torsional_constant(rel(y), wbox) for y in yspace])
     J_estimate = sp.interpolate.interp1d(
         yspace, J_vals, kind="cubic", fill_value="extrapolate"
     )
@@ -139,6 +139,6 @@ def plot_twist(Cld, ptloads, load_factor, dynp, yspace=y_vals):
 
 
 if __name__ == "__main__":
-    plot_deflection(CL_d, point_loads, distributed_loads, load_factor, dynp)
-    plot_twist(CL_d, point_torques, load_factor, dynp)
+    plot_deflection(CL_d, point_loads, distributed_loads, load_factor, dynp, wbox = WINGBOX)
+    plot_twist(CL_d, point_torques, load_factor, dynp, wbox = WINGBOX)
     plt.show()

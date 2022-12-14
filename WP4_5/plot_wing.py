@@ -5,10 +5,12 @@ import bisect
 
 from stiffness import airfoil_info, airfoil_data, chord_y, centroid, stringers
 
+wbox = WINGBOX
+
 sweep = WING["LE_sweep"] * np.pi / 180
 halfspan = WING["span"] / 2
 
-spars = sorted([(WINGBOX["front_spar"], 1), (WINGBOX["rear_spar"], 1), *WINGBOX["other_spars"]])
+spars = sorted([(wbox["front_spar"], 1), (wbox["rear_spar"], 1), *wbox["other_spars"]])
 
 """Unswept Wing"""
 
