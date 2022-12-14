@@ -117,6 +117,25 @@ def total_stress_calc(cl_d, point_loads=[], distributed_loads=[], load_factor=1,
         stress_list.append(stresses)
     return stress_list
 
+def critical_shear_stress():
+    stress_list = []
+    k_s=9
+    v=1/3
+    for i in range(0,300):
+        thickness = stiffness.thickness_y(i/299, *WINGBOX["spar_thickness"])
+        chord = stiffness.chord_y(i/299)
+        spars = sorted([WINGBOX["front_spar"], WINGBOX["rear_spar"], *[s[0] for s in WINGBOX["other_spars"] if s[1] >= abs(i/299)]])
+        heights = []
+        for spar in spars:
+            heights.append(chord*stiffness.airfoil_info(spar)[0])
+        stresses = []
+        for j in range(len(spars)):
+            crit_stress = pi()**2*k_s*MAT['E']/(12*(1-v**2))*(thickness/heights[j])**2
+            stresses.append(crit_stress)
+        stress_list.append(stresses)
+
+print(critical_shear_stress()[0])
+
 print(total_stress_calc(0.9,[], [], 3.75 ,8328)[0])
 
 
