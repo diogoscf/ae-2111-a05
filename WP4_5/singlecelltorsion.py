@@ -130,9 +130,10 @@ def critical_shear_stress():
             heights.append(chord*stiffness.airfoil_info(spar)[0])
         stresses = []
         for j in range(len(spars)):
-            crit_stress = pi()**2*k_s*MAT['E']/(12*(1-v**2))*(thickness/heights[j])**2
+            crit_stress = pi**2*k_s*MAT['E']/(12*(1-v**2))*(thickness/heights[j])**2
             stresses.append(crit_stress)
         stress_list.append(stresses)
+    return stress_list
 
 print(critical_shear_stress()[0])
 
