@@ -16,46 +16,16 @@ STRINGER = {
     "E_AL6061-T6": 68.9*10**9 #Pa
 }
 
-#code for producing moment of inertia vs thickness
-'''
-vertical_l = L
-horizontal_l = b
-thickness = t
-number = N
-area_(wanted) = A
-
-
-#calculation in mm
-def MOI(t,A):
-    t = float(t)
-    A = float(A)
-    b = 10*t
-    L = (10*A/b)-b
-    MOI_ind = (b*t*(L**2/(0.5*(L+b)))**2) + (0.5*t*L**3) + (L**2*t/2)+(L*t/4*((L**2)/(L+b))**2) + ((b*t + L*t)*(0.5*(L**2 + b*t)/(L+b))**2)
-    return MOI_ind
-
-xtab = []
-y1tab = []
-for t in np.arange(0.1,20,0.2):
-    xtab.append(t)
-    y1 = MOI(t,4.8) #Assumed the total area is 480 [mm] and 100 stringer is used so the individual stringer's area is 4.8
-    y1tab.append(y1)
-
-plt.plot(xtab,y1tab)
-plt.show()
-print(y1tab)
-'''
-
 #area of one stringer
 vl,hl=STRINGER["vertical_l"],STRINGER["horizontal_l"]
 t=STRINGER["thickness"]
 A=vl*t+(hl-t)*t
 #print('stringer area:',A, 'mm^2')
 
-#Ribs_pos=option_3["ribs"]
+#Ribs_pos=WINGBOX["ribs"]
 Ribs_pos=(0,0.04,0.09,0.14,0.2,0.26,0.33,0.4,0.48,0.56,0.65,0.8,1)
 Index=range(0,len(Ribs_pos))
-print("nr of ribs:",len(Ribs_pos))
+#print("nr of ribs:",len(Ribs_pos))
 
 def Ixx(t,Lv,Lh): #of one stringer
     t=float(t)
@@ -69,12 +39,12 @@ def Ixx(t,Lv,Lh): #of one stringer
 
 #o crit of segment @ y/(b/2) for chosen design
 def crit_buckling_str(y):
-    if y<= option_2["stringers_top"][0][1]:
-        n= option_2["stringers_top"][0][0]
-    elif y<= option_2["stringers_top"][1][1]:
-        n= option_2["stringers_top"][1][0]
+    if y<= WINGBOX["stringers_top"][0][1]:
+        n= WINGBOX["stringers_top"][0][0]
+    elif y<= WINGBOX["stringers_top"][1][1]:
+        n= WINGBOX["stringers_top"][1][0]
     else:
-        n= option_2["stringers_top"][2][0]
+        n= WINGBOX["stringers_top"][2][0]
   
     g=sp.interpolate.interp1d(Ribs_pos,Index,kind="next",fill_value="extrapolate")
     L= (Ribs_pos[int(g(y))]-Ribs_pos[int(g(y)-1)])*(WING["span"]*1000)/2 #mm; unsupported length
