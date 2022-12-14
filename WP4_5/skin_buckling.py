@@ -69,12 +69,10 @@ if __name__ == "__main__":
     plot_mos_vals(mos_vals, ax, "Design Option 1")
 
     # Design Option 2
-    WINGBOX = design_options.option_2
     mos_vals = skin_mos_calc(CL_d, point_loads, distributed_loads, load_factor, dynp, wbox=design_options.option_2)
     plot_mos_vals(mos_vals, ax, "Design Option 2")
 
     # Design Option 2
-    WINGBOX = design_options.option_3
     mos_vals = skin_mos_calc(CL_d, point_loads, distributed_loads, load_factor, dynp, wbox=design_options.option_3)
     plot_mos_vals(mos_vals, ax, "Design Option 3")
 
