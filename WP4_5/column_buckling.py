@@ -53,8 +53,9 @@ A=vl*t+(hl-t)*t
 #print('stringer area:',A, 'mm^2')
 
 #Ribs_pos=option_3["ribs"]
-Ribs_pos=(0,0.19,0.4,0.65,1)
+Ribs_pos=(0,0.04,0.09,0.14,0.2,0.26,0.33,0.4,0.48,0.56,0.65,0.8,1)
 Index=range(0,len(Ribs_pos))
+print("nr of ribs:",len(Ribs_pos))
 
 def Ixx(t,Lv,Lh): #of one stringer
     t=float(t)
@@ -68,12 +69,12 @@ def Ixx(t,Lv,Lh): #of one stringer
 
 #o crit of segment @ y/(b/2) for chosen design
 def crit_buckling_str(y):
-    if y<= option_3["stringers_top"][0][1]:
-        n= option_3["stringers_top"][0][0]
-    elif y<= option_3["stringers_top"][1][1]:
-        n= option_3["stringers_top"][1][0]
+    if y<= option_2["stringers_top"][0][1]:
+        n= option_2["stringers_top"][0][0]
+    elif y<= option_2["stringers_top"][1][1]:
+        n= option_2["stringers_top"][1][0]
     else:
-        n= option_3["stringers_top"][2][0]
+        n= option_2["stringers_top"][2][0]
   
     g=sp.interpolate.interp1d(Ribs_pos,Index,kind="next",fill_value="extrapolate")
     L= (Ribs_pos[int(g(y))]-Ribs_pos[int(g(y)-1)])*(WING["span"]*1000)/2 #mm; unsupported length
@@ -81,7 +82,7 @@ def crit_buckling_str(y):
     K=4 #assume rib at the very end
     I=Ixx(t,vl,hl) 
 
-    o_cr= (K*pi**2*E*n*I)/(L**2*A) *10**-6 #MPa -> check n with someone!
+    o_cr= (K*pi**2*E*I)/(L**2*A) *10**-6 #MPa -> check n with someone!
     return o_cr
 
 
@@ -125,8 +126,9 @@ def plot_m_of_s():
     plt.plot(y_lst,m_of_s)
     plt.ylabel("Margin of safety")
     plt.xlabel("Half wing span (y position)")
+    plt.axhline(y=1, color='r', linestyle='-')
     plt.xlim([0,17]) #so far it is reasonable only for small y distances 
-    plt.ylim([0,10]) #past some point (~17m) mos goes really high (because loads are very small?)
+    plt.ylim([0,4]) #past some point (~17m) mos goes really high (because loads are very small?)
     plt.grid(True)
 
     plt.subplot(122)
