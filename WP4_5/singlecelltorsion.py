@@ -84,13 +84,15 @@ def shear_stress_calc(cl_d, point_loads=[], distributed_loads=[], load_factor=1,
     shear_lst = []
     shear = diagrams.shear_force_calc(cl_d, point_loads, distributed_loads, load_factor, dyn_p, y_pos)
     for i in range(0,300):
+        thickness = stiffness.thickness_y(i/299, tr, tt)
+        chord = stiffness.chord_y(i/299)
         spars = sorted([WINGBOX["front_spar"], WINGBOX["rear_spar"], *[s[0] for s in WINGBOX["other_spars"] if s[1] >= abs(i/299)]])
         heights = []
         for spar in spars:
-            heights.append(stiffness.airfoil_info(spar)[0])
+            heights.append(chord*stiffness.airfoil_info(spar)[0])
         sum_heights = sum(heights)
         avg_height = sum_heights/len(heights)
-        tau_avg = shear[i]/(stiffness.thickness_y(i/299, tr, tt)*sum_heights)
+        tau_avg = shear[i]/(thickness*sum_heights)
         shear_section = []
         for j in range(len(spars)):
             k_v = 3/2*(heights[j]/avg_height)**2
@@ -99,15 +101,23 @@ def shear_stress_calc(cl_d, point_loads=[], distributed_loads=[], load_factor=1,
         shear_lst.append(shear_section)
     return shear_lst 
 
-def total_shear_calc(cl_d, point_loads=[], distributed_loads=[], load_factor=1, dyn_p=10000, y_pos=diagrams.y_space):
+def total_stress_calc(cl_d, point_loads=[], distributed_loads=[], load_factor=1, dyn_p=10000, y_pos=diagrams.y_space):
     torque = shear_torque_stress_calc(cl_d, point_loads, load_factor, dyn_p, y_pos)
     shear = shear_stress_calc(cl_d, point_loads, distributed_loads, load_factor, dyn_p, y_pos)
-    
-    
+    stress_list = []
+    for i in range(300):
+        spars = sorted([WINGBOX["front_spar"], WINGBOX["rear_spar"], *[s[0] for s in WINGBOX["other_spars"] if s[1] >= abs(i/299)]])
+        spar_num = len(spars)
+        stresses = []
+        stresses.append(shear[i][0]-torque[i][0])
+        if spar_num >= 3:
+            for j in range(1,spar_num-1):
+                stresses.append(shear[i][j]+torque[i][j-1]-torque[i][j])
+        stresses.append(shear[i][spar_num-1]+torque[i][spar_num-2])
+        stress_list.append(stresses)
+    return stress_list
 
-print(shear_stress_calc(0.9))
-
-print(shear_torque_stress_calc(0.9,[], 3.75 ,8328)[0][0])
+print(total_stress_calc(0.9,[], [], 3.75 ,8328)[0])
 
 
 
