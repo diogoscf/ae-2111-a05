@@ -3,22 +3,17 @@ import matplotlib.pyplot as plt
 from math import pi
 import scipy as sp
 from scipy import interpolate
+from params import *
+from compression_failure import *
+from design_options import *
 
 #numbers below are arbitrary
 STRINGER = {
-    "vertical_l": 100, #mm
-    "horizontal_l": 100, #mm
+    "vertical_l": 50, #mm
+    "horizontal_l": 50, #mm
     "thickness": 5, #mm
-    "number": [60,40,20],
     "area_(wanted)": 480, #mm^2
-    "E_AL6061-T6": 68*10**9 #Pa
-}
-
-WING = {
-    "span": 43.58,  # meter
-    "root_chord": 6.86,  # meter
-    "taper_ratio": 0.27,
-    "LE_sweep": 39.2,  # deg
+    "E_AL6061-T6": 68.9*10**9 #Pa
 }
 
 #code for producing moment of inertia vs thickness
@@ -50,77 +45,97 @@ plt.plot(xtab,y1tab)
 plt.show()
 print(y1tab)
 '''
+
 #area of one stringer
 vl,hl=STRINGER["vertical_l"],STRINGER["horizontal_l"]
 t=STRINGER["thickness"]
 A=vl*t+(hl-t)*t
-#print(A)
+#print('stringer area:',A, 'mm^2')
 
-#Design options [spar thickness(root,tip), skin thickness, stringer area, spar nr, stringer nr]
-D1= [(25,10), 10, 480, (7,5), (100,80,40)]
-D2= [(25,10), 21, 80, (5,3), (20,20,20)]
-D3= [(37.5,15), 15, 480, (10,5), (60,40,20)]
+#Ribs_pos=option_3["ribs"]
+Ribs_pos=(0,0.19,0.4,0.65,1)
+Index=range(0,len(Ribs_pos))
 
-Ribs_pos=[0,0.2,0.4,0.6,0.8,1]
-Index=[0,1,2,3,4,5]
-
-def Ixx(t,Lv,Lh):
+def Ixx(t,Lv,Lh): #of one stringer
     t=float(t)
     Lh=float(Lh)
     Lv=float(Lv)
     y=(0.5*Lv*Lv*t)/(Lh*t+Lv*t)
 
     Ixx= Lh*t*y**2 + 1/12*t*Lv**3 + Lv*t*(0.5*Lv-y)**2
-    return Ixx 
-#print(Ixx(t,vl,hl))
+    return Ixx
     
 
 #o crit of segment @ y/(b/2) for chosen design
 def crit_buckling_str(y):
-    if y <= 0.4:
-        n=D3[4][0]
-    elif y <= 0.65:
-        n=D3[4][1]    
+    if y<= option_3["stringers_top"][0][1]:
+        n= option_3["stringers_top"][0][0]
+    elif y<= option_3["stringers_top"][1][1]:
+        n= option_3["stringers_top"][1][0]
     else:
-        n=D3[4][2]
-        
+        n= option_3["stringers_top"][2][0]
+  
     g=sp.interpolate.interp1d(Ribs_pos,Index,kind="next",fill_value="extrapolate")
     L= (Ribs_pos[int(g(y))]-Ribs_pos[int(g(y)-1)])*(WING["span"]*1000)/2 #mm; unsupported length
     E= STRINGER["E_AL6061-T6"]
     K=4 #assume rib at the very end
     I=Ixx(t,vl,hl) 
-    
-    o_cr= (K*pi**2*E*I)/(L**2*A) *10**-6 #MPa
-#?    o_cr_all=o_cr * n #o_cr of one stringer times number of stringers
-    return o_cr
-    
-#print(crit_buckling_str(0.3),"MPa")
 
-#applied stress & margin of saftey part
+    o_cr= (K*pi**2*E*n*I)/(L**2*A) *10**-6 #MPa -> check n with someone!
+    return o_cr
+
+
+#applied stress
 o_cr_lst=[]
 y_lst=[]
 
-o_app_lst=[100,95,90,80,80,75,70,60,50,40,30,25,20,10,5]
-o_app_lst=np.array(o_app_lst)
-#print(len(o_app_lst))
+def sigma_y_lst():
+    y=0
+    i=0
+    a=0
+    sigma_y_lst=[]
+    y_lst=[]
+    while i <=300 and a<=1:
+        a= sigma_y(y)
+        i+=1
+        sigma_y_lst.append(a)
+        y_lst.append(y*halfspan)
+        y+=1/300
+    sigma_y_lst=np.array(sigma_y_lst)
+    sigma_y_lst=sigma_y_lst/-10**6
+    return sigma_y_lst
+
+o_app_lst=np.delete(sigma_y_lst(),-1)
 
 dy=1/len(o_app_lst)
-y=0
+y=dy #for y=0 o_cr is also 0 so start from dy?
 for i in range(0,len(o_app_lst)):
     o_cr_lst.append(crit_buckling_str(y))
     y_lst.append(y*WING["span"]/2)
     y=y+dy
   
 o_cr_lst=np.array(o_cr_lst)
-#print(len(o_cr_lst))
-#print(y_lst)
 
+#margin of safety & plot
 m_of_s=np.divide(o_cr_lst,o_app_lst)
-#print(m_of_s)
 
-#plot graphs
-plt.plot(y_lst,m_of_s)
-plt.xlabel("Half wing span (y position)")
-plt.ylabel("Margin of safety")
+def plot_m_of_s():
 
-plt.show()
+    plt.subplot(121)
+    plt.plot(y_lst,m_of_s)
+    plt.ylabel("Margin of safety")
+    plt.xlabel("Half wing span (y position)")
+    plt.xlim([0,17]) #so far it is reasonable only for small y distances 
+    plt.ylim([0,10]) #past some point (~17m) mos goes really high (because loads are very small?)
+    plt.grid(True)
+
+    plt.subplot(122)
+    plt.plot(y_lst,o_app_lst)
+    plt.plot(y_lst,o_cr_lst)
+    plt.legend(('Applied','Critical'))
+    plt.xlabel("Half wing span (y position)")
+    plt.grid(True)
+
+    plt.show()
+    
+plot_m_of_s()

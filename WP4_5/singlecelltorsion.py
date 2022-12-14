@@ -27,11 +27,11 @@ def torque_calc(cl_d, point_loads=[], load_factor=1, dyn_p=10000, y_pos=diagrams
 
 
 
-def multicell_shear_stress(y):
+def multicell_shear_stress(y, wbox = WINGBOX):
     chord = stiffness.chord_y(y)
-    t_spar = stiffness.thickness_y(y, *WINGBOX["spar_thickness"])
-    t_skin = WINGBOX["skin_thickness"]
-    spars = sorted([WINGBOX["front_spar"], WINGBOX["rear_spar"], *[s[0] for s in WINGBOX["other_spars"] if s[1] >= abs(y)]])
+    t_spar = stiffness.thickness_y(y, *wbox["spar_thickness"])
+    t_skin = wbox["skin_thickness"]
+    spars = sorted([wbox["front_spar"], wbox["rear_spar"], *[s[0] for s in wbox["other_spars"] if s[1] >= abs(y)]])
     areas = np.array(stiffness.enclosed_areas(y, spars))
 
     if len(spars) == 2:

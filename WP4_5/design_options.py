@@ -27,8 +27,8 @@ option_2 = {
     "spar_thickness": (25e-3, 10e-3),  # (t_root, t_tip) interpolated linearly. [meter]
     "skin_thickness": 21e-3,  # meter
     "stringer_area": 80e-6,  # square meter
-    "stringers_top": [(20, 1)],  # *Ordered* List: (nstringers, y/(b/2) value of end) - start is end of previous or root
-    "stringers_bottom": [(20, 1)],  # same as above
+    "stringers_top": [(10, 1)],  # *Ordered* List: (nstringers, y/(b/2) value of end) - start is end of previous or root
+    "stringers_bottom": [(10, 1)],  # same as above
     "ribs": (0, 0.4, 0.65, 1), # y/(b/2) values of rib positions
 }
 

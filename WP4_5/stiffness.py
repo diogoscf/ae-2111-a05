@@ -37,14 +37,14 @@ def distribute_stringers(fspar, rspar, nstringers):
         stringers.append(fspar + (i+(1/2))*dist)
     return stringers
 
-def stringers(y):
-    fspar, rspar = WINGBOX["front_spar"], WINGBOX["rear_spar"]
+def stringers(y, wbox = WINGBOX):
+    fspar, rspar = wbox["front_spar"], wbox["rear_spar"]
     nstringers_top, nstringers_bottom = 0, 0
-    for n, loc in WINGBOX["stringers_top"]:
+    for n, loc in wbox["stringers_top"]:
         if y <= loc:
             nstringers_top = n
             break
-    for n, loc in WINGBOX["stringers_bottom"]:
+    for n, loc in wbox["stringers_bottom"]:
         if y <= loc:
             nstringers_bottom = n
             break
@@ -55,12 +55,12 @@ def stringers(y):
 
 # Centroid coordinates at a position y/(b/2) along the span (from wing root), using parameters in WINGBOX
 # Coordinates given with (x,z) = (0,0) at leading edge (camber line)
-def centroid(y, stringers_top=[], stringers_bottom=[]):
+def centroid(y, stringers_top=[], stringers_bottom=[], wbox = WINGBOX):
     chord = chord_y(y)
-    t_spar = thickness_y(y, *WINGBOX["spar_thickness"])
-    t_skin = WINGBOX["skin_thickness"]
+    t_spar = thickness_y(y, *wbox["spar_thickness"])
+    t_skin = wbox["skin_thickness"]
     centroids = [] # list of (x,z,A)
-    spars = sorted([WINGBOX["front_spar"], WINGBOX["rear_spar"], *[s[0] for s in WINGBOX["other_spars"] if s[1] >= abs(y)]])
+    spars = sorted([wbox["front_spar"], wbox["rear_spar"], *[s[0] for s in wbox["other_spars"] if s[1] >= abs(y)]])
     # Spars
     for spar_pos in spars:
         h, z, *rest = airfoil_info(spar_pos)
@@ -86,13 +86,13 @@ def centroid(y, stringers_top=[], stringers_bottom=[]):
         #print(spars, stringer, l_spar_idx)
         l_spar, r_spar = spars[l_spar_idx], spars[l_spar_idx + 1]
         z = np.interp(stringer, (l_spar, r_spar), (airfoil_info(l_spar)[2], airfoil_info(r_spar)[2]))
-        centroids.append([stringer*chord, z*chord, WINGBOX["stringer_area"]])
+        centroids.append([stringer*chord, z*chord, wbox["stringer_area"]])
 
     for stringer in stringers_bottom:
         l_spar_idx = bisect.bisect_left(spars, stringer) - 1
         l_spar, r_spar = spars[l_spar_idx], spars[l_spar_idx + 1]
         z = np.interp(stringer, (l_spar, r_spar), (airfoil_info(l_spar)[3], airfoil_info(r_spar)[3]))
-        centroids.append([stringer*chord, z*chord, WINGBOX["stringer_area"]])
+        centroids.append([stringer*chord, z*chord, wbox["stringer_area"]])
 
     centroids = np.array(centroids)
     c_x = np.sum(centroids[:,0]*centroids[:,2]) / np.sum(centroids[:,2])
@@ -112,11 +112,11 @@ def enclosed_areas(y, spars):
 
     return areas
 
-def torsional_constant(y):
+def torsional_constant(y, wbox = WINGBOX):
     chord = chord_y(y)
-    t_spar = thickness_y(y, *WINGBOX["spar_thickness"])
-    t_skin = WINGBOX["skin_thickness"]
-    spars = sorted([WINGBOX["front_spar"], WINGBOX["rear_spar"], *[s[0] for s in WINGBOX["other_spars"] if s[1] >= abs(y)]])
+    t_spar = thickness_y(y, *wbox["spar_thickness"])
+    t_skin = wbox["skin_thickness"]
+    spars = sorted([wbox["front_spar"], wbox["rear_spar"], *[s[0] for s in wbox["other_spars"] if s[1] >= abs(y)]])
     areas = np.array(enclosed_areas(y, spars))
 
     if len(spars) == 2:
@@ -155,11 +155,11 @@ def torsional_constant(y):
 #print(torsional_constant(1))
 
 #Moment of inertia at a position y/(b/2) along the span
-def MOI(y):
-    stringers_top, stringers_bottom = stringers(y)
+def MOI(y, wbox = WINGBOX):
+    stringers_top, stringers_bottom = stringers(y, wbox)
     chord = ((WING["taper_ratio"] - 1)*abs(y) + 1) * WING["root_chord"]
-    spars = sorted([WINGBOX["front_spar"], WINGBOX["rear_spar"], *[s[0] for s in WINGBOX["other_spars"] if s[1] >= abs(y)]])
-    centroid_y = centroid(y, stringers_top, stringers_bottom)
+    spars = sorted([wbox["front_spar"], wbox["rear_spar"], *[s[0] for s in wbox["other_spars"] if s[1] >= abs(y)]])
+    centroid_y = centroid(y, stringers_top, stringers_bottom, wbox)
     Ixx = 0
     Izz = 0
 
@@ -170,8 +170,8 @@ def MOI(y):
         z_coord = np.interp(stringer, (l_spar, r_spar), (airfoil_info(l_spar)[2], airfoil_info(r_spar)[2]))
         position = (chord * stringer, chord * z_coord) # coordinates converted to meters 
         rel_position = (position[0] - centroid_y[0], position[1] - centroid_y[1]) # relative position to centroid
-        Ixx += WINGBOX["stringer_area"] * (rel_position[1]**2)
-        Izz += WINGBOX["stringer_area"] * (rel_position[0]**2)
+        Ixx += wbox["stringer_area"] * (rel_position[1]**2)
+        Izz += wbox["stringer_area"] * (rel_position[0]**2)
     
     # for bottom stringers
     for stringer in stringers_bottom:
@@ -180,15 +180,15 @@ def MOI(y):
         z_coord = np.interp(stringer, (l_spar, r_spar), (airfoil_info(l_spar)[3], airfoil_info(r_spar)[3]))
         position = (chord * stringer, chord * z_coord) # coordinates converted to meters 
         rel_position = (position[0] - centroid_y[0], position[1] - centroid_y[1]) # relative position to centroid
-        Ixx += WINGBOX["stringer_area"] * (rel_position[1]**2)
-        Izz += WINGBOX["stringer_area"] * (rel_position[0]**2)
+        Ixx += wbox["stringer_area"] * (rel_position[1]**2)
+        Izz += wbox["stringer_area"] * (rel_position[0]**2)
         #print(stringer, l_spar, r_spar, rel_position)
 
     # for spars
     for x in spars:
         position = (chord * x, chord * airfoil_info(x)[1]) # coordinates converted to meters 
         rel_position = (position[0] - centroid_y[0], position[1] - centroid_y[1]) # relative position to centroid
-        t = thickness_y(y, *WINGBOX["spar_thickness"])
+        t = thickness_y(y, *wbox["spar_thickness"])
         h = airfoil_info(x)[0] * chord
         Ixx += t*(h**3)/12 + t*h*(rel_position[1]**2)
         Izz += (t**3)*h/12 + t*h*(rel_position[0]**2)
@@ -197,7 +197,7 @@ def MOI(y):
     for i in range(len(spars)-1):
         left_spar = spars[i]
         right_spar = spars[i+1]
-        t = WINGBOX["skin_thickness"]
+        t = wbox["skin_thickness"]
 
         # top element
         center = ((left_spar + right_spar)/2 , (airfoil_info(left_spar)[2] + airfoil_info(right_spar)[2])/2)                              #center of skin element                              
