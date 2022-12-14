@@ -13,7 +13,7 @@ fig, ax = plt.subplots(figsize=(12, 6))
 ax.plot(airfoil_data[:,0]*chord, airfoil_data[:,1]*chord, color="black") # Airfoil
 
 spars = sorted([WINGBOX["front_spar"], WINGBOX["rear_spar"], *[s[0] for s in WINGBOX["other_spars"] if s[1] >= abs(y)]])
-stringers_top, stringers_bottom = stringers(y)
+stringers_top, stringers_bottom = stringers(y, WINGBOX)
 
 show_centroids = False
 
@@ -39,7 +39,7 @@ for stringer in stringers_bottom:
     ax.plot(stringer*chord, z*chord, marker=".", color="blue") # Bottom Stringers
 
 
-centroid_pos = centroid(y, stringers_top, stringers_bottom)
+centroid_pos = centroid(y, stringers_top, stringers_bottom, WINGBOX)
 ax.plot(centroid_pos[0], centroid_pos[1], marker="x", color="green") # Centroid
 ax.plot(centroid_pos[0], centroid_pos[1]-0.05, marker="$C.G.$", color="green")
 

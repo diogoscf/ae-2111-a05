@@ -23,7 +23,7 @@ y_vals = np.linspace(0, WING["span"] / 2, points)
 
 def dvdy(y, M, MOI):
     result, _ = sp.integrate.quad(
-        lambda x: -M(x) / (MAT["E"] * MOI(x)), 0, y, limit=100
+        lambda x: -M(x) / (MAT["E"] * MOI(x, WINGBOX)), 0, y, limit=100
     )
     return result
 
@@ -121,7 +121,7 @@ def plot_twist(Cld, ptloads, load_factor, dynp, yspace=y_vals):
         yspace, t_vals, kind="cubic", fill_value="extrapolate"
     )
 
-    J_vals = np.array([stiffness.torsional_constant(rel(y)) for y in yspace])
+    J_vals = np.array([stiffness.torsional_constant(rel(y), WINGBOX) for y in yspace])
     J_estimate = sp.interpolate.interp1d(
         yspace, J_vals, kind="cubic", fill_value="extrapolate"
     )
