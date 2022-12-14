@@ -10,9 +10,8 @@ from design_options import *
 #numbers below are arbitrary
 STRINGER = {
     "vertical_l": 50, #mm
-    "horizontal_l": 50, #mm
-    "thickness": 5, #mm
-    "area_(wanted)": 480, #mm^2
+    "horizontal_l": 13, #mm
+    "thickness": 1.3, #mm
     "E_AL6061-T6": 68.9*10**9 #Pa
 }
 
@@ -22,8 +21,8 @@ t=STRINGER["thickness"]
 A=vl*t+(hl-t)*t
 #print('stringer area:',A, 'mm^2')
 
-#Ribs_pos=WINGBOX["ribs"]
-Ribs_pos=(0,0.04,0.09,0.14,0.2,0.26,0.33,0.4,0.48,0.56,0.65,0.8,1)
+#Ribs_pos=WINGBOX["ribs"] -> 0.4 and 0.65
+Ribs_pos=(0,0.05,0.1,0.15,0.21,0.27,0.33,0.4,0.48,0.56,0.65,0.8,1)
 Index=range(0,len(Ribs_pos))
 #print("nr of ribs:",len(Ribs_pos))
 
@@ -105,7 +104,7 @@ def plot_m_of_s():
     plt.plot(y_lst,o_app_lst)
     plt.plot(y_lst,o_cr_lst)
     plt.legend(('Applied','Critical'))
-    plt.xlabel("Half wing span (y position)")
+    plt.xlabel("Half wing span [m]")
     plt.grid(True)
 
     plt.show()
