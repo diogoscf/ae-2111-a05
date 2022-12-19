@@ -101,9 +101,9 @@ def shear_stress_calc(cl_d, point_loads=[], distributed_loads=[], load_factor=1,
         shear_lst.append(shear_section)
     return shear_lst 
 
-def total_stress_calc(cl_d, point_loads=[], distributed_loads=[], load_factor=1, dyn_p=10000, y_pos=diagrams.y_space):
-    torque = shear_torque_stress_calc(cl_d, point_loads, load_factor, dyn_p, y_pos)
-    shear = shear_stress_calc(cl_d, point_loads, distributed_loads, load_factor, dyn_p, y_pos)
+def total_stress_calc(cl_d, torque_point_loads=[], shear_point_loads=[], shear_distributed_loads=[], load_factor=1, dyn_p=10000, y_pos=diagrams.y_space):
+    torque = shear_torque_stress_calc(cl_d, torque_point_loads, load_factor, dyn_p, y_pos)
+    shear = shear_stress_calc(cl_d, shear_point_loads, shear_distributed_loads, load_factor, dyn_p, y_pos)
     stress_list = []
     for i in range(300):
         spars = sorted([WINGBOX["front_spar"], WINGBOX["rear_spar"], *[s[0] for s in WINGBOX["other_spars"] if s[1] >= abs(i/299)]])
@@ -135,12 +135,12 @@ def critical_shear_stress():
         stress_list.append(stresses)
     return stress_list
 
-print(total_stress_calc(0.9,[], [], 3.75 ,8328)[0])
+#print(total_stress_calc(0.9,[], [], 3.75 ,8328)[0])
 
-def margin_safety(cl_d, point_loads=[], distributed_loads=[], load_factor=1, dyn_p=10000, y_pos=diagrams.y_space):
+def margin_safety(cl_d, torque_point_loads=[], shear_point_loads=[], shear_distributed_loads=[], load_factor=1, dyn_p=10000, y_pos=diagrams.y_space):
     margin_safety_list=[]
     critical = critical_shear_stress()
-    total = total_stress_calc(cl_d, point_loads, distributed_loads, load_factor, dyn_p, y_pos)
+    total = total_stress_calc(cl_d, torque_point_loads, shear_point_loads, shear_distributed_loads, load_factor, dyn_p, y_pos)
     for i in range(299):
         margin_per_spar = []
         spars = sorted([WINGBOX["front_spar"], WINGBOX["rear_spar"], *[s[0] for s in WINGBOX["other_spars"] if s[1] >= abs(i/299)]])
@@ -150,8 +150,8 @@ def margin_safety(cl_d, point_loads=[], distributed_loads=[], load_factor=1, dyn
         margin_safety_list.append(margin_per_spar)
     return margin_safety_list
 
-def margin_of_safety_plot(cl_d, point_loads=[], distributed_loads=[], load_factor=1, dyn_p=10000, y_pos=diagrams.y_space):
-    margin_of_safety = margin_safety(cl_d, point_loads, distributed_loads, load_factor, dyn_p, y_pos)
+def margin_of_safety_plot(cl_d, torque_point_loads=[], shear_point_loads=[], shear_distributed_loads=[], load_factor=1, dyn_p=10000, y_pos=diagrams.y_space):
+    margin_of_safety = margin_safety(cl_d, torque_point_loads, shear_point_loads, shear_distributed_loads, load_factor, dyn_p, y_pos)
     transition_points = []
     prev_spar_num = len(margin_of_safety[0])
     for i in range(1,len(margin_of_safety)):
@@ -172,8 +172,17 @@ def margin_of_safety_plot(cl_d, point_loads=[], distributed_loads=[], load_facto
         local_margin_list = truncated_margin_list[i]
         local_y_pos = truncated_y_pos[i]
         for j in range(local_margin_list.shape[1]):
-            plt.semilogy(local_y_pos,list(local_margin_list[:,j]))
-    plt.show()
-                    
+            plt.semilogy(local_y_pos,list(local_margin_list[:,j]), label = 'Section {}, spar {}'.format(i+1,j+1))
+            plt.legend()
             
+    #plt.yticks([10e0, 10e1, 10e2, 10e3])
+    plt.title('')
+    plt.xlabel('y [m]')
+    plt.ylabel('Margin of Safety [-]')
+    plt.ylim([1, 10e6])
+    plt.show()
+
+#margin_of_safety_plot(0.906,[diagrams.engine_thrust], [diagrams.engine_mass], [diagrams.wing_mass], 3.75 ,8328.2)
+margin_of_safety_plot(2.27,[diagrams.engine_thrust], [diagrams.engine_mass], [diagrams.wing_mass], -1.5 ,3331.3)
+                    
 
