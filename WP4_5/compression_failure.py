@@ -159,6 +159,8 @@ def mos_plot_short():
         y_lst.append(y*halfspan)
         y+=1/300
     plt.plot(y_lst,mos_lst)
+    plt.xlabel("y (m)")
+    plt.ylabel("MOS (-)")
     plt.show()
     
 def mos_plot_long():
@@ -174,6 +176,8 @@ def mos_plot_long():
         y_lst.append(y*halfspan)
         y+=1/300
     plt.plot(y_lst,mos_lst)
+    plt.xlabel("y (m)")
+    plt.ylabel("MOS (-)")
     plt.show()
     
 
@@ -206,6 +210,9 @@ def mos_plot_tension():
         y_lst.append(y*halfspan)
         y+=1/300
     plt.plot(y_lst,mos_lst)
+    plt.xlabel("y (m)")
+    plt.ylabel("MOS (-)")
+    plt.show()
     
 def sigma_y_plot_tension():
     y=0
