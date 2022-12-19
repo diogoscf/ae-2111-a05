@@ -6,11 +6,11 @@ from stiffness import *
 from diagrams import moment_calc
 from deflections import *
 import matplotlib.pyplot as plt
+from design_options import *
 
-
-
+option=option_1
 y = 0
-spars = sorted([WINGBOX["front_spar"], WINGBOX["rear_spar"], *[s[0] for s in WINGBOX["other_spars"] if s[1] >= abs(y)]])    
+spars = sorted([option["front_spar"], option["rear_spar"], *[s[0] for s in option["other_spars"] if s[1] >= abs(y)]])    
 CL_d = CRIT["cld"]
 load_factor = CRIT["load_factor"]
 point_loads = CRIT["point_loads"]
@@ -32,7 +32,7 @@ def stringer_c(h,w,t):
 def MOI(y):
     stringers_top, stringers_bottom = stringers(y)
     chord = ((WING["taper_ratio"] - 1)*abs(y) + 1) * WING["root_chord"]
-    spars = sorted([WINGBOX["front_spar"], WINGBOX["rear_spar"], *[s[0] for s in WINGBOX["other_spars"] if s[1] >= abs(y)]])
+    spars = sorted([option["front_spar"], option["rear_spar"], *[s[0] for s in option["other_spars"] if s[1] >= abs(y)]])
     centroid_y = centroid(y, stringers_top, stringers_bottom)
     Ixx = 0
     Izz = 0
@@ -46,11 +46,11 @@ def MOI(y):
         rel_position = (position[0] - centroid_y[0], position[1] - centroid_y[1]) # relative position to centroid
        
        
-        h = (5*WINGBOX["stringer_area"])**0.5
+        h = (5*option["stringer_area"])**0.5
         w=h
         t = w/10 #meter
-        Ixx += WINGBOX["stringer_area"] * ((rel_position[1]-(stringer_c(h,w,t)))**2) + (t*h**3)/12
-        Izz += WINGBOX["stringer_area"] * (rel_position[0]**2)
+        Ixx += option["stringer_area"] * ((rel_position[1]-(stringer_c(h,w,t)))**2) + (t*h**3)/12
+        Izz += option["stringer_area"] * (rel_position[0]**2)
     
     # for bottom stringers
     for stringer in stringers_bottom:
@@ -62,15 +62,15 @@ def MOI(y):
         t = 0.005 #meter
         w= 0.05
         h = 0.05
-        Ixx += WINGBOX["stringer_area"] * ((rel_position[1]-(stringer_c(h,w,t)))**2) + (t*h**3)/12
-        Izz += WINGBOX["stringer_area"] * (rel_position[0]**2)
+        Ixx += option["stringer_area"] * ((rel_position[1]-(stringer_c(h,w,t)))**2) + (t*h**3)/12
+        Izz += option["stringer_area"] * (rel_position[0]**2)
         #print(stringer, l_spar, r_spar, rel_position)
 
     # for spars
     for x in spars:
         position = (chord * x, chord * airfoil_info(x)[1]) # coordinates converted to meters 
         rel_position = (position[0] - centroid_y[0], position[1] - centroid_y[1]) # relative position to centroid
-        t = thickness_y(y, *WINGBOX["spar_thickness"])
+        t = thickness_y(y, *option["spar_thickness"])
         h = airfoil_info(x)[0] * chord
         Ixx += t*(h**3)/12 + t*h*(rel_position[1]**2)
         Izz += (t**3)*h/12 + t*h*(rel_position[0]**2)
@@ -79,7 +79,7 @@ def MOI(y):
     for i in range(len(spars)-1):
         left_spar = spars[i]
         right_spar = spars[i+1]
-        t = WINGBOX["skin_thickness"]
+        t = option["skin_thickness"]
 
         # top element
         center = ((left_spar + right_spar)/2 , (airfoil_info(left_spar)[2] + airfoil_info(right_spar)[2])/2)                              #center of skin element                              
@@ -106,12 +106,12 @@ def area(y):
     chord = chord_y(y)
     area_spars = 0
     i=0
-    t = thickness_y(y, *WINGBOX["spar_thickness"])
-    area_skin = chord * 0.45 * 2 * WINGBOX["skin_thickness"]
+    t = thickness_y(y, *option["spar_thickness"])
+    area_skin = chord * 0.45 * 2 * option["skin_thickness"]
     while i <= len(spars)-1:
         area_spars += airfoil_info(spars[i])[0]*chord*t
         i+=1
-    area_stringers = WINGBOX["stringer_area"]*(len(stringers(y)[0])+len(stringers(y)[1]))
+    area_stringers = option["stringer_area"]*(len(stringers(y)[0])+len(stringers(y)[1]))
     return area_skin+area_stringers+area_spars
 
 def sigma_y(y, yspace=y_vals): 
@@ -227,5 +227,27 @@ def sigma_y_plot_tension():
         y_lst.append(y*halfspan)
         y+=1/300
     plt.plot(y_lst,sigma_y_lst)
+    plt.show()
+    
+def mos_plot_multi():
+    a=1
+    while a<=3:
+        global option
+        option=("option_{a}")
+        y=0
+        i=0
+        mos_lst=[]
+        y_lst=[]
+        while i <=270:
+            a= mos(y)
+            i+=1
+            mos_lst.append(a)
+            y_lst.append(y*halfspan)
+            y+=1/300
+        a+=1
+       
+        plt.plot(y_lst,mos_lst)
+    plt.xlabel("y (m)")
+    plt.ylabel("MOS (-)")
     plt.show()
 
