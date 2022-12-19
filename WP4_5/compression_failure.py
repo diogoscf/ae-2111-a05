@@ -152,8 +152,9 @@ def mos_plot_short():
     a=0
     mos_lst=[]
     y_lst=[]
+    option=option_1
     while i <=300 and a<=1:
-        a= mos(y)
+        a= mos(y,option)
         i+=1
         mos_lst.append(a)
         y_lst.append(y*halfspan)
@@ -161,6 +162,7 @@ def mos_plot_short():
     plt.plot(y_lst,mos_lst)
     plt.xlabel("y (m)")
     plt.ylabel("MOS (-)")
+    plt.title("Spanwise MOS")
     plt.show()
     
 def mos_plot_long():
@@ -169,13 +171,15 @@ def mos_plot_long():
     a=0
     mos_lst=[]
     y_lst=[]
+    option=option_1
     while i <=270:
-        a= mos(y)
+        a= mos(y,option)
         i+=1
         mos_lst.append(a)
         y_lst.append(y*halfspan)
         y+=1/300
     plt.plot(y_lst,mos_lst)
+    plt.title("Spanwise MOS")
     plt.xlabel("y (m)")
     plt.ylabel("MOS (-)")
     plt.show()
@@ -232,6 +236,7 @@ def sigma_y_plot_tension():
 def mos_plot_multi():
     b=1
     while b<=3:
+        a=0
         if b==1:
             option=option_1
         if b==2:
@@ -242,14 +247,14 @@ def mos_plot_multi():
         i=0
         mos_lst=[]
         y_lst=[]
-        while i <=270:
+        while i <=270 and a<=1:
             a= mos(y,option)
             i+=1
             mos_lst.append(a)
             y_lst.append(y*halfspan)
             y+=1/300
         b+=1
-       
+        print(y)
         plt.plot(y_lst,mos_lst, label = "Design Option "+str(b-1))          
     plt.xlabel("y (m)")
     plt.ylabel("MOS (-)")
