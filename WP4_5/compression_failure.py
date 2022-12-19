@@ -29,7 +29,7 @@ def stringer_c(h,w,t):
 
 
 
-def MOI(y):
+def MOI(y,option):
     stringers_top, stringers_bottom = stringers(y)
     chord = ((WING["taper_ratio"] - 1)*abs(y) + 1) * WING["root_chord"]
     spars = sorted([option["front_spar"], option["rear_spar"], *[s[0] for s in option["other_spars"] if s[1] >= abs(y)]])
@@ -114,21 +114,21 @@ def area(y):
     area_stringers = option["stringer_area"]*(len(stringers(y)[0])+len(stringers(y)[1]))
     return area_skin+area_stringers+area_spars
 
-def sigma_y(y, yspace=y_vals): 
+def sigma_y(y, option, yspace=y_vals ): 
     chord_y = lambda y: (((WING["taper_ratio"] - 1) / (halfspan)) * abs(y) + 1) * WING["root_chord"] 
     z = chord_y(y) * 0.0796/2
     if y == 0:
         M = M_lst[0]
     else:
         M = M_lst[int(round(y*300,0))-1]
-    sigma_y = M*z/MOI(y)[0]
+    sigma_y = M*z/MOI(y,option)[0]
     #print(sigma_y, M, MOI(y)[0], z, 180000/area(y))
     if y <=0.35:
         sigma_y+= 180000/area(y)
     return sigma_y
 
-def mos(y):
-    mos = sigma_yield/abs(sigma_y(y))
+def mos(y,option):
+    mos = sigma_yield/abs(sigma_y(y,option))
     return mos
 
 def sigma_y_plot():
@@ -230,24 +230,30 @@ def sigma_y_plot_tension():
     plt.show()
     
 def mos_plot_multi():
-    a=1
-    while a<=3:
-        global option
-        option=("option_{a}")
+    b=1
+    while b<=3:
+        if b==1:
+            option=option_1
+        if b==2:
+            option=option_2
+        if b==3:
+            option=option_3
         y=0
         i=0
         mos_lst=[]
         y_lst=[]
         while i <=270:
-            a= mos(y)
+            a= mos(y,option)
             i+=1
             mos_lst.append(a)
             y_lst.append(y*halfspan)
             y+=1/300
-        a+=1
+        b+=1
        
-        plt.plot(y_lst,mos_lst)
+        plt.plot(y_lst,mos_lst, label = "Design Option "+str(b-1))          
     plt.xlabel("y (m)")
     plt.ylabel("MOS (-)")
+    plt.title("Spanwise MOS of the initial design options")
+    plt.legend(loc="upper left")
     plt.show()
 
