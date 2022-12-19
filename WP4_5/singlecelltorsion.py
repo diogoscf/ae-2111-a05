@@ -174,8 +174,6 @@ def margin_of_safety_plot(cl_d, point_loads=[], distributed_loads=[], load_facto
         for j in range(local_margin_list.shape[1]):
             plt.semilogy(local_y_pos,list(local_margin_list[:,j]))
     plt.show()
-
-print(margin_of_safety_plot(0.9,[], [], 3.75 ,8328))
                     
             
 
