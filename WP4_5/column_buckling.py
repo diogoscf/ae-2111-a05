@@ -10,8 +10,8 @@ from design_options import *
 #numbers below are arbitrary
 STRINGER = {
     "vertical_l": 50, #mm
-    "horizontal_l": 13, #mm
-    "thickness": 1.3, #mm
+    "horizontal_l": 40, #mm
+    "thickness": 4, #mm
     "E_AL6061-T6": 68.9*10**9 #Pa
 }
 
@@ -21,8 +21,8 @@ t=STRINGER["thickness"]
 A=vl*t+(hl-t)*t
 #print('stringer area:',A, 'mm^2')
 
-#Ribs_pos=WINGBOX["ribs"] -> 0.4 and 0.65
-Ribs_pos=(0,0.05,0.1,0.15,0.21,0.27,0.33,0.4,0.48,0.56,0.65,0.8,1)
+#Ribs_pos=WINGBOX["ribs"]# -> 0.4 and 0.65
+Ribs_pos=(0,0.05,0.1,0.15,0.21,0.27,0.33,0.4,0.47,0.56,0.65,0.79,1)
 Index=range(0,len(Ribs_pos))
 #print("nr of ribs:",len(Ribs_pos))
 
@@ -38,12 +38,6 @@ def Ixx(t,Lv,Lh): #of one stringer
 
 #o crit of segment @ y/(b/2) for chosen design
 def crit_buckling_str(y):
-    if y<= WINGBOX["stringers_top"][0][1]:
-        n= WINGBOX["stringers_top"][0][0]
-    elif y<= WINGBOX["stringers_top"][1][1]:
-        n= WINGBOX["stringers_top"][1][0]
-    else:
-        n= WINGBOX["stringers_top"][2][0]
   
     g=sp.interpolate.interp1d(Ribs_pos,Index,kind="next",fill_value="extrapolate")
     L= (Ribs_pos[int(g(y))]-Ribs_pos[int(g(y)-1)])*(WING["span"]*1000)/2 #mm; unsupported length
@@ -65,12 +59,12 @@ def sigma_y_lst():
     a=0
     sigma_y_lst=[]
     y_lst=[]
-    while i <=300 and a<=1:
+    while i <=1000 and a<=1:
         a= sigma_y(y)
         i+=1
         sigma_y_lst.append(a)
         y_lst.append(y*halfspan)
-        y+=1/300
+        y+=1/1000
     sigma_y_lst=np.array(sigma_y_lst)
     sigma_y_lst=sigma_y_lst/-10**6
     return sigma_y_lst
@@ -78,7 +72,7 @@ def sigma_y_lst():
 o_app_lst=np.delete(sigma_y_lst(),-1)
 
 dy=1/len(o_app_lst)
-y=dy #for y=0 o_cr is also 0 so start from dy?
+y=dy #start from dy?
 for i in range(0,len(o_app_lst)):
     o_cr_lst.append(crit_buckling_str(y))
     y_lst.append(y*WING["span"]/2)
@@ -96,7 +90,7 @@ def plot_m_of_s():
     plt.ylabel("Margin of safety")
     plt.xlabel("Half wing span (y position)")
     plt.axhline(y=1, color='r', linestyle='-')
-    plt.xlim([0,17]) #so far it is reasonable only for small y distances 
+    plt.xlim([0,20]) #so far it is reasonable only for small y distances 
     plt.ylim([0,4]) #past some point (~17m) mos goes really high (because loads are very small?)
     plt.grid(True)
 
@@ -108,5 +102,6 @@ def plot_m_of_s():
     plt.grid(True)
 
     plt.show()
-    
+
+print(dy)
 plot_m_of_s()
