@@ -139,8 +139,25 @@ print(critical_shear_stress()[0])
 
 print(total_stress_calc(0.9,[], [], 3.75 ,8328)[0])
 
+def margin_safety(cl_d, point_loads=[], distributed_loads=[], load_factor=1, dyn_p=10000, y_pos=diagrams.y_space):
+    margin_safety_list=[]
+    critical = critical_shear_stress()
+    total = total_stress_calc(cl_d, point_loads, distributed_loads, load_factor, dyn_p, y_pos)
+    for i in range(300):
+        margin_per_spar = []
+        spars = sorted([WINGBOX["front_spar"], WINGBOX["rear_spar"], *[s[0] for s in WINGBOX["other_spars"] if s[1] >= abs(i/299)]])
+        for j in range(len(spars)):
+            margin = critical[i][j]/total[i][j]
+            margin_per_spar.append(margin)
+        margin_safety_list.append(margin_per_spar)
+    return margin_safety_list
+
+#def margin_of_safety_plot(spar):
+    #margin_of_safety = margin_of_safety(cl_d, point_loads, distributed_loads, load_factor, dyn_p, y_pos)
+    #y = margin_of_safety[spar]
+    #x = diagrams.y_space
 
 
-
-
+                    
+            
 
