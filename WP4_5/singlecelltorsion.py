@@ -163,11 +163,17 @@ def margin_of_safety_plot(cl_d, point_loads=[], distributed_loads=[], load_facto
     start_point = 0
     truncated_margin_list = []
     truncated_y_pos = []
-    for point in transition_points:
-        margin_list = np.array(margin_of_safety[start_point:point-1])
+    for i in transition_points:
+        margin_list = np.array(margin_of_safety[start_point:i-1])
         truncated_margin_list.append(margin_list)
-        truncated_y_pos.append(y_pos[start_point:point-1])
-        start_point = point
+        truncated_y_pos.append(y_pos[start_point:i-1])
+        start_point = i
+    for i in range(len(truncated_margin_list)):
+        local_margin_list = truncated_margin_list[i]
+        local_y_pos = truncated_y_pos[i]
+        for j in range(local_margin_list.shape[1]):
+            plt.semilogy(local_y_pos,list(local_margin_list[:,j]))
+    plt.show()
 
 print(margin_of_safety_plot(0.9,[], [], 3.75 ,8328))
                     
