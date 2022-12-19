@@ -120,9 +120,9 @@ def sigma_y(y, yspace=y_vals):
     if y == 0:
         M = M_lst[0]
     else:
-        M = M_lst[int(round(y*halfspan*300,0))-1]
+        M = M_lst[int(round(y*300,0))-1]
     sigma_y = M*z/MOI(y)[0]
-    print(sigma_y, M, MOI(y)[0], z, 180000/area(y))
+    #print(sigma_y, M, MOI(y)[0], z, 180000/area(y))
     if y <=0.35:
         sigma_y+= 180000/area(y)
     return sigma_y
@@ -146,7 +146,7 @@ def sigma_y_plot():
     plt.plot(y_lst,sigma_y_lst)
     plt.show()
     
-def mos_plot():
+def mos_plot_short():
     y=0
     i=0
     a=0
@@ -160,6 +160,22 @@ def mos_plot():
         y+=1/300
     plt.plot(y_lst,mos_lst)
     plt.show()
+    
+def mos_plot_long():
+    y=0
+    i=0
+    a=0
+    mos_lst=[]
+    y_lst=[]
+    while i <=270:
+        a= mos(y)
+        i+=1
+        mos_lst.append(a)
+        y_lst.append(y*halfspan)
+        y+=1/300
+    plt.plot(y_lst,mos_lst)
+    plt.show()
+    
 
 def sigma_y_tension(y, yspace=y_vals): 
     chord_y = lambda y: (((WING["taper_ratio"] - 1) / (halfspan)) * abs(y) + 1) * WING["root_chord"] 
@@ -206,4 +222,3 @@ def sigma_y_plot_tension():
     plt.plot(y_lst,sigma_y_lst)
     plt.show()
 
-print(sigma_y(0)*1e-6)
