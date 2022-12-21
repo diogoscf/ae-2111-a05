@@ -109,11 +109,11 @@ def total_stress_calc(cl_d, torque_point_loads=[], shear_point_loads=[], shear_d
         spars = sorted([WINGBOX["front_spar"], WINGBOX["rear_spar"], *[s[0] for s in WINGBOX["other_spars"] if s[1] >= abs(i/299)]])
         spar_num = len(spars)
         stresses = []
-        stresses.append(shear[i][0]-torque[i][0])
+        stresses.append(shear[i][0]+torque[i][0])
         if spar_num >= 3:
             for j in range(1,spar_num-1):
-                stresses.append(shear[i][j]+torque[i][j-1]-torque[i][j])
-        stresses.append(shear[i][spar_num-1]+torque[i][spar_num-2])
+                stresses.append(shear[i][j]-torque[i][j-1]+torque[i][j])
+        stresses.append(shear[i][spar_num-1]-torque[i][spar_num-2])
         stress_list.append(stresses)
     return stress_list
 
