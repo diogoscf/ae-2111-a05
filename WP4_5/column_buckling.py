@@ -18,34 +18,28 @@ STRINGER = {
 #option=[option_1,option_2,option_3] #WP4 designs
 option=WINGBOX #current design
 
-#area of one stringer
-vl,hl=STRINGER["vertical_l"],STRINGER["horizontal_l"]
-t=STRINGER["thickness"]
-A=vl*t+hl*t
-#print('stringer area:',A, 'mm^2')
-
 Ribs_pos=WINGBOX["ribs"]# -> 0.4 and 0.65
-#Ribs_pos=option[0]["ribs"]  
-#Ribs_pos=(0, 0.06 ,0.13, 0.2, 0.27, 0.35, 0.4 ,0.52, 0.65, 0.75, 0.85, 0.9, 1)
+#Ribs_pos=option[0]["ribs"]
 Index=range(0,len(Ribs_pos))
 
-def Ixx(t,Lv,Lh): #of one stringer
+def Ixx(t,Lv): #of one stringer
     t=float(t)
-    Lh=float(Lh)
     Lv=float(Lv)
-    y=(0.5*Lv*Lv*t)/(Lh*t+Lv*t)
+    y=0.5*Lv
 
-    Ixx= Lh*t*y**2 + 1/12*t*Lv**3 + Lv*t*(0.5*Lv-y)**2
+    Ixx= 1/12*t*Lv**3 + 2*Lv*t*y**2 #consistent with comp. failure 
     return Ixx
 
 #o crit of segment @ y/(b/2) for chosen design
 def crit_buckling_str(y):
-  
+    vl,hl=STRINGER["vertical_l"],STRINGER["horizontal_l"]
+    t=STRINGER["thickness"]
+    A=vl*t+hl*t
     g=sp.interpolate.interp1d(Ribs_pos,Index,kind="next",fill_value="extrapolate")
     L= (Ribs_pos[int(g(y))]-Ribs_pos[int(g(y)-1)])*(WING["span"]*1000)/2 #mm; unsupported length
     E= STRINGER["E_AL6061-T6"]
     K=4 #assume rib at the very end
-    I=Ixx(t,vl,hl) 
+    I=Ixx(t,vl) 
 
     o_cr= (K*pi**2*E*I)/(L**2*A) *10**-6 #MPa
     return o_cr
@@ -95,7 +89,6 @@ def plot_m_of_s():
     plt.subplot(122)
     plt.plot(y_lst,o_app_lst)
     plt.plot(y_lst,o_cr_lst)
-    plt.ylim([0,400])
     plt.legend(('Applied','Critical'))
     plt.xlabel("Half wing span [m]")
     plt.grid(True)
