@@ -27,7 +27,7 @@ def maxlength(stress, K, E, I, A):
     return np.sqrt(K * (np.pi**2) * E * I / (abs(stress) * A))
 
 if __name__ == "__main__":
-    wbox = design_options.option_new_2
+    wbox = design_options.option_new_1
     cutoff = -1
     sigma_vals = stresses_along_wing(CL_d, point_loads, distributed_loads, load_factor, dynp, y_vals, wbox)[:cutoff, 0]*1e6 # Pa
     t = stringer["thickness"]

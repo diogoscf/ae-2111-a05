@@ -79,7 +79,7 @@ def sigma_y(y, M, Ixx, wbox = WINGBOX):
     
 
 if __name__ == "__main__":
-    sigma_vals = stresses_along_wing(CL_d, point_loads, distributed_loads, load_factor, dynp, wbox = design_options.option_new_2)
+    sigma_vals = stresses_along_wing(CL_d, point_loads, distributed_loads, load_factor, dynp, wbox = design_options.option_new_1)
     # plot_diagram_threshold(
     #     y_vals,
     #     sigma_vals[:,0],
