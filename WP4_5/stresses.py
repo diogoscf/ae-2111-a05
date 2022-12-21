@@ -7,7 +7,7 @@ from params import *
 import design_options
 from stiffness import airfoil_info, centroid, chord_y, MOI, stringers, thickness_y
 from diagrams import moment_calc
-from deflections import plot_diagram_threshold
+from deflections import plot_diagram_threshold, plot_diagram
 
 rel = lambda y: y / (WING["span"] / 2)
 
@@ -57,7 +57,7 @@ def area(y, wbox = WINGBOX):
     return area
 
 
-# Returns maximum compressive and tensile stresses at a given y value (sigma_compressive, sigma_tensile)
+# Returns maximum compressive and tensile stresses at a given y value (sigma_compressive, sigma_tensile), in MPa
 def sigma_y(y, M, Ixx, wbox = WINGBOX):
     spars = sorted([wbox["front_spar"], wbox["rear_spar"], *[s[0] for s in wbox["other_spars"] if s[1] >= abs(rel(y))]])
     chord = chord_y(rel(y))
@@ -79,13 +79,17 @@ def sigma_y(y, M, Ixx, wbox = WINGBOX):
     
 
 if __name__ == "__main__":
-    sigma_vals = stresses_along_wing(CL_d, point_loads, distributed_loads, load_factor, dynp, wbox = design_options.option_new)
-    plot_diagram_threshold(
-        y_vals,
-        sigma_vals[:,0],
-        MAT["sigma_y"]*1e-6,
-        "y (m)",
-        "σ (MPa)",
-        f"Maximum Compressive Stress along wing span at load factor {load_factor}",
-    )
+    sigma_vals = stresses_along_wing(CL_d, point_loads, distributed_loads, load_factor, dynp, wbox = design_options.option_new_2)
+    # plot_diagram_threshold(
+    #     y_vals,
+    #     sigma_vals[:,0],
+    #     MAT["sigma_y"]*1e-6,
+    #     "y (m)",
+    #     "σ (MPa)",
+    #     f"Maximum Compressive Stress along wing span at load factor {load_factor}",
+    # )
+    cutoff = -50
+    mos_vals = -MAT["sigma_y"]*1e-6/sigma_vals[:cutoff,0]
+    plot_diagram_threshold(y_vals[:cutoff], mos_vals, 1, "y (m)", "MoS", "Margin of Safety along wing span", invert = True)
+    print(np.min(mos_vals))
     plt.show()

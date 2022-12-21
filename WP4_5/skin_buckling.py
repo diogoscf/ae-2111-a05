@@ -32,7 +32,7 @@ def skin_mos_calc(Cld, ptloads, distloads, load_factor, dynp, yspace=y_vals, wbo
     ribs = wbox["ribs"]
     mos_vals = []
     for rstart, rend in zip(ribs, ribs[1:]):
-        stringers_top, stringers_bottom = stringers(rstart, wbox)
+        stringers_top, stringers_bottom = stringers((rstart+rend)/2, wbox)
         nstringers = len([*stringers_top, *stringers_bottom])
         #print(nstringers)
         max_width = chord_y(rstart) * 0.45 / nstringers
@@ -42,6 +42,7 @@ def skin_mos_calc(Cld, ptloads, distloads, load_factor, dynp, yspace=y_vals, wbo
         mos = abs(crit*1e-6 / max_stress)
         #print(crit*1e-6, max_stress, mos)
         mos_vals.append([rstart*halfspan, rend*halfspan, mos])
+        print(rstart*halfspan, rend*halfspan, mos, max_stress, crit*1e-6)
     
     return mos_vals
 
@@ -64,17 +65,23 @@ def plot_mos_vals(mos_list, ax = False, graphlabel = "", title = "Margin of Safe
 if __name__ == "__main__":
     fig, ax = plt.subplots()
 
+    # Old Options
     # Design Option 1
-    mos_vals = skin_mos_calc(CL_d, point_loads, distributed_loads, load_factor, dynp, wbox=design_options.option_1)
+    # mos_vals = skin_mos_calc(CL_d, point_loads, distributed_loads, load_factor, dynp, wbox=design_options.option_1)
+    # plot_mos_vals(mos_vals, ax, "Design Option 1")
+
+    # Design Option 2
+    # mos_vals = skin_mos_calc(CL_d, point_loads, distributed_loads, load_factor, dynp, wbox=design_options.option_2)
+    # plot_mos_vals(mos_vals, ax, "Design Option 2")
+
+    # Design Option 2
+    # mos_vals = skin_mos_calc(CL_d, point_loads, distributed_loads, load_factor, dynp, wbox=design_options.option_3)
+    # plot_mos_vals(mos_vals, ax, "Design Option 3")
+
+    # New Options
+
+    mos_vals = skin_mos_calc(CL_d, point_loads, distributed_loads, load_factor, dynp, wbox=design_options.option_new_1)
     plot_mos_vals(mos_vals, ax, "Design Option 1")
-
-    # Design Option 2
-    mos_vals = skin_mos_calc(CL_d, point_loads, distributed_loads, load_factor, dynp, wbox=design_options.option_2)
-    plot_mos_vals(mos_vals, ax, "Design Option 2")
-
-    # Design Option 2
-    mos_vals = skin_mos_calc(CL_d, point_loads, distributed_loads, load_factor, dynp, wbox=design_options.option_3)
-    plot_mos_vals(mos_vals, ax, "Design Option 3")
 
     ax.set(title="Margin of Safety along Wing Span", xlabel="y [m]", ylabel="MoS")
     ax.legend()

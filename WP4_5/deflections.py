@@ -6,6 +6,7 @@ import numpy as np
 
 import stiffness
 from params import *
+import design_options
 from diagrams import moment_calc, torque_calc
 
 rel = lambda y: y / (WING["span"] / 2)
@@ -21,9 +22,9 @@ points = 300
 y_vals = np.linspace(0, WING["span"] / 2, points)
 
 
-def dvdy(y, M, MOI, wbox = WINGBOX):
+def dvdy(y, M, Ixx):
     result, _ = sp.integrate.quad(
-        lambda x: -M(x) / (MAT["E"] * MOI(x, wbox)), 0, y, limit=100
+        lambda x: -M(x) / (MAT["E"] * Ixx(x)), 0, y, limit=100
     )
     return result
 
@@ -38,20 +39,20 @@ def theta(y, T, J):
     return result
 
 
-def plot_diagram_threshold(x_vals, y_vals, maxval, xlab, ylab, plottitle):
-    if np.max(y_vals) < maxval and np.min(y_vals) > -maxval:
-        plot_diagram(x_vals, y_vals, maxval, xlab, ylab, plottitle)
+def plot_diagram_threshold(x_vals, y_vals, maxval, xlab, ylab, plottitle, invert = False):
+    if (np.max(y_vals) < maxval and np.min(y_vals) > -maxval) or np.min(y_vals) > maxval or np.min(y_vals) < -maxval:
+        plot_diagram(x_vals, y_vals, xlab, ylab, plottitle, maxval)
         return
     fig, ax = plt.subplots()
 
     if np.max(y_vals) >= maxval and np.min(y_vals) <= -maxval:
-        cmap = ListedColormap(["red", "blue", "red"])
+        cmap = ListedColormap(["red", "blue", "red"]) if invert == False else ListedColormap(["blue", "red", "blue"])
         norm = BoundaryNorm([np.min(y_vals), -maxval, maxval, np.max(y_vals)], cmap.N)
     elif np.max(y_vals) <= maxval and np.min(y_vals) <= -maxval:
-        cmap = ListedColormap(["red", "blue"])
+        cmap = ListedColormap(["red", "blue"]) if invert == False else ListedColormap(["blue", "red"])
         norm = BoundaryNorm([np.min(y_vals), -maxval, np.max(y_vals)], cmap.N)
     else:
-        cmap = ListedColormap(["blue", "red"])
+        cmap = ListedColormap(["blue", "red"]) if invert == False else ListedColormap(["red", "blue"])
         norm = BoundaryNorm([np.min(y_vals), maxval, np.max(y_vals)], cmap.N)
 
     points = np.array([x_vals, y_vals]).T.reshape(-1, 1, 2)
@@ -61,7 +62,8 @@ def plot_diagram_threshold(x_vals, y_vals, maxval, xlab, ylab, plottitle):
 
     ax.add_collection(lc)
     ax.set_xlim(np.min(x_vals), np.max(x_vals))
-    ax.set_ylim(np.min(y_vals) * 1.1, np.max(y_vals) * 1.1)
+    nfactor, pfactor = 1.1 if np.min(y_vals) < 0 else 0, 1.1 if np.max(y_vals) > 0 else 0
+    ax.set_ylim(np.min(y_vals) * nfactor, np.max(y_vals) * pfactor)
 
     ax.set(xlabel=xlab, ylabel=ylab, title=plottitle)
     ax.grid()
@@ -75,15 +77,16 @@ def plot_diagram_threshold(x_vals, y_vals, maxval, xlab, ylab, plottitle):
         ax.axhline(-maxval, color="k", ls="--")
 
 
-def plot_diagram(x_vals, y_vals, maxval, xlab, ylab, plottitle):
+def plot_diagram(x_vals, y_vals, xlab, ylab, plottitle, maxval = None):
     fig, ax = plt.subplots()
     ax.plot(x_vals, y_vals, color="blue")
     ax.set(xlabel=xlab, ylabel=ylab, title=plottitle)
 
-    if np.max(y_vals) > 0 and abs(np.min(y_vals)) < abs(np.max(y_vals)):
-        ax.axhline(maxval, color="k", ls="--")
-    if np.min(y_vals) < 0 and abs(np.min(y_vals)) > abs(np.max(y_vals)):
-        ax.axhline(-maxval, color="k", ls="--")
+    if maxval is not None:
+        if np.max(y_vals) > 0 and abs(np.min(y_vals)) < abs(np.max(y_vals)):
+            ax.axhline(maxval, color="k", ls="--")
+        if np.min(y_vals) < 0 and abs(np.min(y_vals)) > abs(np.max(y_vals)):
+            ax.axhline(-maxval, color="k", ls="--")
     ax.grid()
 
 
@@ -98,7 +101,7 @@ def plot_deflection(Cld, ptloads, distloads, load_factor, dynp, yspace=y_vals, w
         yspace, Ixx_vals, kind="cubic", fill_value="extrapolate"
     )
 
-    dv_vals = np.array([dvdy(y, m_estimate, Ixx_estimate, wbox) for y in y_vals])
+    dv_vals = np.array([dvdy(y, m_estimate, Ixx_estimate) for y in y_vals])
     dv_estimate = sp.interpolate.interp1d(
         y_vals, dv_vals, kind="cubic", fill_value="extrapolate"
     )
@@ -139,6 +142,6 @@ def plot_twist(Cld, ptloads, load_factor, dynp, yspace=y_vals, wbox=WINGBOX):
 
 
 if __name__ == "__main__":
-    plot_deflection(CL_d, point_loads, distributed_loads, load_factor, dynp, wbox = WINGBOX)
-    plot_twist(CL_d, point_torques, load_factor, dynp, wbox = WINGBOX)
+    plot_deflection(CL_d, point_loads, distributed_loads, load_factor, dynp, wbox = design_options.option_new_2)
+    plot_twist(CL_d, point_torques, load_factor, dynp, wbox = design_options.option_new_2)
     plt.show()

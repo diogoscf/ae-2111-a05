@@ -9,7 +9,7 @@ WING = {
 }
 
 # Parametric Description of Wingbox
-WINGBOX = option_2
+WINGBOX = option_new_1
 
 # Wingbox Material Parameters (in SI)
 MAT = {
