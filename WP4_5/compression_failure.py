@@ -247,7 +247,7 @@ def mos_plot_multi():
         i=0
         mos_lst=[]
         y_lst=[]
-        while i <=270 and a<=1:
+        while i <=270:
             a= mos(y,option)
             i+=1
             mos_lst.append(a)
@@ -257,8 +257,8 @@ def mos_plot_multi():
         print(y)
         plt.plot(y_lst,mos_lst, label = "Design Option "+str(b-1))          
     plt.xlabel("y (m)")
-    plt.ylabel("MOS (-)")
-    plt.title("Spanwise MOS of the initial design options")
+    plt.ylabel("MoS (-)")
+    plt.title("Margin of Safety Along Wing Span")
     plt.legend(loc="upper left")
     plt.show()
 
