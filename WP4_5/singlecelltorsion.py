@@ -119,7 +119,7 @@ def total_stress_calc(cl_d, torque_point_loads=[], shear_point_loads=[], shear_d
 
 def critical_shear_stress():
     stress_list = []
-    k_s=9
+    k_s=9.5
     v=1/3
     for i in range(0,300):
         thickness = stiffness.thickness_y(i/299, *WINGBOX["spar_thickness"])
@@ -182,7 +182,7 @@ def margin_of_safety_plot(cl_d, torque_point_loads=[], shear_point_loads=[], she
     plt.ylim([1, 10e6])
     plt.show()
 
-#margin_of_safety_plot(0.906,[diagrams.engine_thrust], [diagrams.engine_mass], [diagrams.wing_mass], 3.75 ,8328.2)
+margin_of_safety_plot(0.906,[diagrams.engine_thrust], [diagrams.engine_mass], [diagrams.wing_mass], 3.75 ,8328.2)
 margin_of_safety_plot(2.27,[diagrams.engine_thrust], [diagrams.engine_mass], [diagrams.wing_mass], -1.5 ,3331.3)
                     
 
