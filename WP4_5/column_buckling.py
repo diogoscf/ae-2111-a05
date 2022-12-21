@@ -95,6 +95,7 @@ def plot_m_of_s():
     plt.subplot(122)
     plt.plot(y_lst,o_app_lst)
     plt.plot(y_lst,o_cr_lst)
+    plt.ylim([0,400])
     plt.legend(('Applied','Critical'))
     plt.xlabel("Half wing span [m]")
     plt.grid(True)
