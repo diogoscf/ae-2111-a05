@@ -4,7 +4,8 @@ from math import pi
 import scipy as sp
 from scipy import interpolate
 from params import *
-from compression_failure import *
+#from compression_failure import * #with stresses from Tim
+from stresses import * #with stresses from Diogo
 from design_options import *
 
 STRINGER = {
@@ -20,12 +21,12 @@ option=WINGBOX #current design
 #area of one stringer
 vl,hl=STRINGER["vertical_l"],STRINGER["horizontal_l"]
 t=STRINGER["thickness"]
-A=vl**2/5
+A=vl*t+hl*t
 #print('stringer area:',A, 'mm^2')
 
 Ribs_pos=WINGBOX["ribs"]# -> 0.4 and 0.65
-#Ribs_pos=option[0]["ribs"]
-#Ribs_pos=(0,0.05,0.1,0.15,0.21,0.27,0.33,0.4,0.47,0.56,0.65,0.79,1)
+#Ribs_pos=option[0]["ribs"]  
+#Ribs_pos=(0, 0.06 ,0.13, 0.2, 0.27, 0.35, 0.4 ,0.52, 0.65, 0.75, 0.85, 0.9, 1)
 Index=range(0,len(Ribs_pos))
 
 def Ixx(t,Lv,Lh): #of one stringer
@@ -57,14 +58,26 @@ o_cr_lst=[]
 y=0
 dy=1/300
 for i in range(0,300):
-    sigma_y_lst.append(sigma_y(y,option))
+   # sigma_y_lst.append(sigma_y(y,option))
     o_cr_lst.append(crit_buckling_str(y))
     y_lst.append(y*WING["span"]/2)
     y=y+dy
 
-sigma_y_lst=np.array(sigma_y_lst)
-o_app_lst=np.divide(sigma_y_lst,-1000000)
+y_lst=np.array(y_lst)
+y_lst=np.delete(y_lst,0)
+y_lst=np.delete(y_lst,-1)
+
+#sigma_y_lst=np.array(sigma_y_lst)
+#sigma_y_lst=np.delete(sigma_y_lst,0)
+#o_app_lst=np.divide(sigma_y_lst,-1000000) #turn to Mpa
+sigma_y_lst=stresses_along_wing(CL_d, point_loads, distributed_loads, load_factor, dynp, wbox = design_options.option_new_1)
+o_app_lst=np.divide(sigma_y_lst[:,0],-1)
+o_app_lst=np.delete(o_app_lst,0)
+o_app_lst=np.delete(o_app_lst,-1)
+
 o_cr_lst=np.array(o_cr_lst)
+o_cr_lst=np.delete(o_cr_lst,0)
+o_cr_lst=np.delete(o_cr_lst,-1)
 
 #margin of safety & plot
 m_of_s=np.divide(o_cr_lst,o_app_lst)
@@ -75,9 +88,8 @@ def plot_m_of_s():
     plt.plot(y_lst,m_of_s)
     plt.ylabel("Margin of safety")
     plt.xlabel("Half wing span (y position)")
-    plt.axhline(y=1, color='r', linestyle='-')
-#    plt.xlim([0,20]) #so far it is reasonable only for small y distances 
-    plt.ylim([0,4]) #past some point (~17m) mos goes really high (because loads are very small?)
+    plt.axhline(y=1, color='r', linestyle='-') 
+    plt.ylim([0,4])
     plt.grid(True)
 
     plt.subplot(122)
