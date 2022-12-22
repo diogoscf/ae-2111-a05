@@ -96,7 +96,7 @@ def plot_deflection(Cld, ptloads, distloads, load_factor, dynp, yspace=y_vals, w
         yspace, m_vals, kind="cubic", fill_value="extrapolate"
     )
 
-    Ixx_vals = np.array([stiffness.MOI(rel(y))[0] for y in yspace])
+    Ixx_vals = np.array([stiffness.MOI(rel(y), wbox)[0] for y in yspace])
     Ixx_estimate = sp.interpolate.interp1d(
         yspace, Ixx_vals, kind="cubic", fill_value="extrapolate"
     )

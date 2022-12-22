@@ -109,8 +109,8 @@ option_new_1 = {
     "spar_thickness": (37.5e-3, 15e-3),  # (t_root, t_tip) interpolated linearly. [meter]
     "skin_thickness": 39e-3,  # meter
     "stringer_area": 720e-6,  # square meter
-    "stringers_top": [(20, 0.2), (10, 0.4)],  # *Ordered* List: (nstringers, y/(b/2) value of end) - start is end of previous or root
-    "stringers_bottom": [(20, 0.2), (10, 0.4)],  # same as above
+    "stringers_top": [(18, 0.2), (10, 0.4), (1, 0.65)],  # *Ordered* List: (nstringers, y/(b/2) value of end) - start is end of previous or root
+    "stringers_bottom": [(18, 0.2), (10, 0.4), (1, 0.65)],  # same as above
     "ribs": (0, 0.1, 0.2, 0.3, 0.4, 0.52, 0.65, 0.75, 0.85, 0.9, 1), # y/(b/2) values of rib positions
 }
 
@@ -121,7 +121,7 @@ option_new_2 = {
     "spar_thickness": (37.5e-3, 15e-3),  # (t_root, t_tip) interpolated linearly. [meter]
     "skin_thickness": 24e-3,  # meter
     "stringer_area": 720e-6,  # square meter
-    "stringers_top": [(20, 0.2), (14, 0.4), (7, 0.52), (3, 0.65), (0, 1)],  # *Ordered* List: (nstringers, y/(b/2) value of end) - start is end of previous or root
-    "stringers_bottom": [(20, 0.2), (14, 0.4),(7, 0.52), (3, 0.65), (0, 1)],  # same as above
+    "stringers_top": [(20, 0.2), (14, 0.4), (7, 0.52), (3, 0.65), (1, 0.85)],  # *Ordered* List: (nstringers, y/(b/2) value of end) - start is end of previous or root
+    "stringers_bottom": [(20, 0.2), (14, 0.4),(7, 0.52), (3, 0.65), (1, 0.85)],  # same as above
     "ribs": (0, 0.1, 0.2, 0.3, 0.4, 0.52, 0.65, 0.75, 0.85, 0.9, 1), # y/(b/2) values of rib positions
 }

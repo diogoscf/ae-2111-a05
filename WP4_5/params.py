@@ -10,7 +10,7 @@ WING = {
 }
 
 # Parametric Description of Wingbox
-WINGBOX = option_new_1
+WINGBOX = option_new_2
 
 # Wingbox Material Parameters (in SI)
 MAT = {
@@ -18,6 +18,7 @@ MAT = {
         "G": 26e9, # Pa
         "nu": 0.33,
         "sigma_y": 276e6, # Pa
+        "density": 2700, # kg/m^3
     }
 
 G = 9.80665 # m/s^2
