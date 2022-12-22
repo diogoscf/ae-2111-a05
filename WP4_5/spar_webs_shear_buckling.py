@@ -33,15 +33,6 @@ def multicell_shear_stress(y, wbox = WINGBOX):
     t_skin = wbox["skin_thickness"]
     spars = sorted([wbox["front_spar"], wbox["rear_spar"], *[s[0] for s in wbox["other_spars"] if s[1] >= abs(y)]])
     areas = np.array(stiffness.enclosed_areas(y, spars))
-
-    if len(spars) == 2:
-        start, end = spars[0], spars[1]
-        z_start, z_end = stiffness.airfoil_info(start)[2:], stiffness.airfoil_info(end)[2:]
-        hl, hr = stiffness.airfoil_info(start)[0]*chord, stiffness.airfoil_info(end)[0]*chord
-        lu = np.sqrt((end - start)**2 + (z_start[0] - z_end[0])**2)*chord
-        ll = np.sqrt((end - start)**2 + (z_start[1] - z_end[1])**2)*chord
-        J = 4*(areas[0]**2) / (((hl+hr)/(t_spar)) + ((ll+lu)/(t_skin)))
-        return J
     
     ncells = len(spars) - 1
     matrix = np.zeros((ncells+1, ncells+1))
