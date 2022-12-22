@@ -6,6 +6,7 @@ WING = {
     "root_chord": 6.86,  # meter
     "taper_ratio": 0.27,
     "LE_sweep": 39.2,  # deg
+    "c/2_sweep": 35.02, # deg
 }
 
 # Parametric Description of Wingbox

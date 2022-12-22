@@ -8,7 +8,7 @@ from deflections import *
 import matplotlib.pyplot as plt
 from design_options import *
 
-option=option_1
+option=option_new_1
 y = 0
 spars = sorted([option["front_spar"], option["rear_spar"], *[s[0] for s in option["other_spars"] if s[1] >= abs(y)]])    
 CL_d = CRIT["cld"]
@@ -115,7 +115,7 @@ def area(y):
     return area_skin+area_stringers+area_spars
 
 def sigma_y(y, option, yspace=y_vals ): 
-    chord_y = lambda y: (((WING["taper_ratio"] - 1) / (halfspan)) * abs(y) + 1) * WING["root_chord"] 
+    chord_y = lambda y: (((WING["taper_ratio"] - 1)) * abs(y) + 1) * WING["root_chord"] 
     z = chord_y(y) * 0.0796/2
     if y == 0:
         M = M_lst[0]
@@ -124,7 +124,7 @@ def sigma_y(y, option, yspace=y_vals ):
     sigma_y = M*z/MOI(y,option)[0]
     #print(sigma_y, M, MOI(y)[0], z, 180000/area(y))
     if y <=0.35:
-        sigma_y+= 180000/area(y)
+        sigma_y -= 180000/area(y)
     return sigma_y
 
 def mos(y,option):
@@ -138,7 +138,7 @@ def sigma_y_plot():
     sigma_y_lst=[]
     y_lst=[]
     while i <=300 and a<=1:
-        a= sigma_y(y)
+        a= sigma_y(y, option)
         i+=1
         sigma_y_lst.append(a)
         y_lst.append(y*halfspan)
@@ -261,4 +261,3 @@ def mos_plot_multi():
     plt.title("Margin of Safety Along Wing Span")
     plt.legend(loc="upper left")
     plt.show()
-

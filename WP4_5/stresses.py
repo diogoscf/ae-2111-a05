@@ -68,11 +68,10 @@ def sigma_y(y, M, Ixx, wbox = WINGBOX):
     min_pos = min([d[1] for d in dists])*chord
     min_pos -= centroid_z
 
-    axial_load = -375000 * np.sin(WING["LE_sweep"]) if y < 8.374 else 0 # Effect of Engine Thrust
+    axial_load = -375000 * np.sin(WING["c/2_sweep"]*np.pi/180) if y < 8.374 else 0 # Effect of Engine Thrust
     axial_stress = (axial_load / area(rel(y), wbox))*(1e-6)
 
     if M < 0:
-        #print(M*max_pos*(1e-6)/Ixx, M, Ixx, max_pos, axial_stress)
         return (M*max_pos*(1e-6)/Ixx)+axial_stress, (M*min_pos*(1e-6)/Ixx)+axial_stress
     else:
         return (M*min_pos*(1e-6)/Ixx)+axial_stress, (M*max_pos*(1e-6)/Ixx)+axial_stress
