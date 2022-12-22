@@ -83,15 +83,20 @@ if __name__ == "__main__":
 
     # New Options
 
-    mos_vals = skin_mos_calc(CL_d, point_loads, distributed_loads, load_factor, dynp, wbox=design_options.option_new_1)
-    plot_mos_vals(mos_vals, ax, "Design Option 1", "blue", True)
+    mos_vals = skin_mos_calc(CL_d, point_loads, distributed_loads, load_factor, dynp, wbox=design_options.option_new_2)
+    plot_mos_vals(mos_vals, ax, f"Load Factor: {load_factor}", "blue", True)
     print(f"Option 1: {np.min(np.array(mos_vals)[:,2])}")
 
-    mos_vals = skin_mos_calc(CL_d, point_loads, distributed_loads, load_factor, dynp, wbox=design_options.option_new_2)
-    plot_mos_vals(mos_vals, ax, "Design Option 2", "green", True)
-    print(f"Option 2: {np.min(np.array(mos_vals)[:,2])}")
+    mos_vals = skin_mos_calc(2.27, point_loads, distributed_loads, -1.5, 3331.298316, wbox=design_options.option_new_2)
+    plot_mos_vals(mos_vals, ax, f"Load Factor: {-1.5}", "green", True)
 
-    ax.set(title="Margin of Safety along Wing Span", xlabel="y [m]", ylabel="MoS")
+    # mos_vals = skin_mos_calc(CL_d, point_loads, distributed_loads, load_factor, dynp, wbox=design_options.option_new_2)
+    # plot_mos_vals(mos_vals, ax, "Design Option 2", "green", True)
+    # print(f"Option 2: {np.min(np.array(mos_vals)[:,2])}")
+
+    ax.axhline(1, color="k", ls="--")
+    ax.set(xlabel="y [m]", ylabel="MoS")
+    ax.set_xlim(0, 22)
     ax.legend()
     ax.grid()
 

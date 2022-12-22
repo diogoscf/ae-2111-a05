@@ -22,7 +22,7 @@ def crit_buckling_str(y,option):
     A=option["stringer_area"]*10**6 #mm^2
     vl=(5*A)**0.5 #mm
     t=A/(2*vl) #mm
-    I= 1/12*t*vl**3 + A*(0.5*vl)**2 #mm^4
+    I= 1/12*t*vl**3 + t*vl*(0.5*vl)**2 #mm^4
     
     g=sp.interpolate.interp1d(Ribs_pos,Index,kind="next",fill_value="extrapolate")
     L= (Ribs_pos[int(g(y))]-Ribs_pos[int(g(y)-1)])*(WING["span"]*1000)/2 #mm
@@ -83,4 +83,6 @@ def plot_m_of_s_old(): #three (old) designs
     plt.show()
     
 
-plot_m_of_s_old()
+#plot_m_of_s_old()
+
+plot_m_of_s_current()

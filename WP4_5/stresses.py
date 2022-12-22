@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import scipy as sp
 from scipy import interpolate
+from matplotlib.ticker import ScalarFormatter
 
 from params import *
 import design_options
@@ -78,7 +79,26 @@ def sigma_y(y, M, Ixx, wbox = WINGBOX):
     
 
 if __name__ == "__main__":
-    sigma_vals = stresses_along_wing(CL_d, point_loads, distributed_loads, load_factor, dynp, wbox = design_options.option_new_1)
+    fig, ax = plt.subplots()
+    cutoff = -1
+    mode = "compressive" # tensile or compressive
+    idx = 0 if mode == "compressive" else 1
+
+    sigma_vals = stresses_along_wing(CL_d, point_loads, distributed_loads, load_factor, dynp, wbox = design_options.option_new_2)
+    mos_vals = abs(MAT["sigma_y"]*1e-6/sigma_vals[:cutoff,idx])
+    plot_diagram_threshold(y_vals[:cutoff], mos_vals, 1, invert = True, axis = ax, colours = ("blue", "red"), clabel = f"Load Factor : {load_factor}")
+    print(np.min(mos_vals))
+
+    sigma_vals = stresses_along_wing(2.27, point_loads, distributed_loads, -1.5, 3331.298316, wbox = design_options.option_new_2)
+    mos_vals = abs(MAT["sigma_y"]*1e-6/sigma_vals[:cutoff,idx])
+    plot_diagram_threshold(y_vals[:cutoff], mos_vals, 1, invert = True, axis = ax, colours = ("green", "red"), clabel = f"Load Factor : {-1.5}")
+
+    ax.set(xlabel="y [m]", ylabel="MoS")
+    ax.set_ylim(0, 8)
+    ax.set_xlim(0, 22)
+    ax.legend()
+    ax.grid()
+
     # plot_diagram_threshold(
     #     y_vals,
     #     sigma_vals[:,0],
@@ -87,8 +107,5 @@ if __name__ == "__main__":
     #     "σ (MPa)",
     #     f"Maximum Compressive Stress along wing span at load factor {load_factor}",
     # )
-    cutoff = -50
-    mos_vals = -MAT["sigma_y"]*1e-6/sigma_vals[:cutoff,0]
-    plot_diagram_threshold(y_vals[:cutoff], mos_vals, 1, "y (m)", "MoS", "Margin of Safety along wing span", invert = True)
-    print(np.min(mos_vals))
+
     plt.show()

@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from stiffness import chord_y
 import design_options
 
-wbox = design_options.option_new_1
+wbox = design_options.option_new_2
 
 sweep = WING["LE_sweep"] * np.pi / 180
 halfspan = WING["span"] / 2

@@ -39,20 +39,26 @@ def theta(y, T, J):
     return result
 
 
-def plot_diagram_threshold(x_vals, y_vals, maxval, xlab, ylab, plottitle, invert = False):
-    if (np.max(y_vals) < maxval and np.min(y_vals) > -maxval) or np.min(y_vals) > maxval or np.min(y_vals) < -maxval:
-        plot_diagram(x_vals, y_vals, xlab, ylab, plottitle, maxval)
+def plot_diagram_threshold(x_vals, y_vals, maxval, xlab = None, ylab = None, plottitle = False, invert = False, axis = False, colours = ("blue", "red"), clabel = None):
+    if (np.max(y_vals) < maxval and np.min(y_vals) > -maxval) or np.min(y_vals) > maxval or np.max(y_vals) < -maxval:
+        colour = colours[0] if not invert else colours[1]
+        if np.min(y_vals) > maxval or np.max(y_vals) < -maxval:
+            colour = colours[1] if not invert else colours[0]
+        plot_diagram(x_vals, y_vals, xlab, ylab, plottitle, maxval, axis, colour, clabel)
         return
-    fig, ax = plt.subplots()
+    if not axis:
+        fig, ax = plt.subplots()
+    else:
+        ax = axis
 
     if np.max(y_vals) >= maxval and np.min(y_vals) <= -maxval:
-        cmap = ListedColormap(["red", "blue", "red"]) if invert == False else ListedColormap(["blue", "red", "blue"])
+        cmap = ListedColormap([colours[1], colours[0], colours[1]]) if invert == False else ListedColormap([colours[0], colours[1], colours[0]])
         norm = BoundaryNorm([np.min(y_vals), -maxval, maxval, np.max(y_vals)], cmap.N)
     elif np.max(y_vals) <= maxval and np.min(y_vals) <= -maxval:
-        cmap = ListedColormap(["red", "blue"]) if invert == False else ListedColormap(["blue", "red"])
+        cmap = ListedColormap(colours[::-1]) if invert == False else ListedColormap(colours)
         norm = BoundaryNorm([np.min(y_vals), -maxval, np.max(y_vals)], cmap.N)
     else:
-        cmap = ListedColormap(["blue", "red"]) if invert == False else ListedColormap(["red", "blue"])
+        cmap = ListedColormap(colours) if invert == False else ListedColormap(colours[::-1])
         norm = BoundaryNorm([np.min(y_vals), maxval, np.max(y_vals)], cmap.N)
 
     points = np.array([x_vals, y_vals]).T.reshape(-1, 1, 2)
@@ -61,12 +67,16 @@ def plot_diagram_threshold(x_vals, y_vals, maxval, xlab, ylab, plottitle, invert
     lc.set_array(y_vals)
 
     ax.add_collection(lc)
-    ax.set_xlim(np.min(x_vals), np.max(x_vals))
-    nfactor, pfactor = 1.1 if np.min(y_vals) < 0 else 0, 1.1 if np.max(y_vals) > 0 else 0
-    ax.set_ylim(np.min(y_vals) * nfactor, np.max(y_vals) * pfactor)
 
-    ax.set(xlabel=xlab, ylabel=ylab, title=plottitle)
-    ax.grid()
+    if not axis:
+        ax.set_xlim(np.min(x_vals), np.max(x_vals))
+        nfactor, pfactor = 1.1 if np.min(y_vals) < 0 else 0, 1.1 if np.max(y_vals) > 0 else 0
+        ax.set_ylim(np.min(y_vals) * nfactor, np.max(y_vals) * pfactor)
+        ax.grid()
+        ax.set(xlabel=xlab, ylabel=ylab)
+    
+    if plottitle: ax.set_title(plottitle)
+
     if np.max(y_vals) >= maxval or (
         np.max(y_vals) > 0 and abs(np.min(y_vals)) < abs(np.max(y_vals))
     ):
@@ -77,17 +87,24 @@ def plot_diagram_threshold(x_vals, y_vals, maxval, xlab, ylab, plottitle, invert
         ax.axhline(-maxval, color="k", ls="--")
 
 
-def plot_diagram(x_vals, y_vals, xlab, ylab, plottitle, maxval = None):
-    fig, ax = plt.subplots()
-    ax.plot(x_vals, y_vals, color="blue")
-    ax.set(xlabel=xlab, ylabel=ylab, title=plottitle)
+def plot_diagram(x_vals, y_vals, xlab, ylab, plottitle = False, maxval = None, axis = False, colour = "blue", clabel = None):
+    if not axis:
+        fig, ax = plt.subplots()
+    else:
+        ax = axis
+
+    ax.plot(x_vals, y_vals, color=colour, label = clabel)
+    if not axis:
+        ax.set(xlabel=xlab, ylabel=ylab)
+        ax.grid()
+
+    if plottitle: ax.set_title(plottitle)
 
     if maxval is not None:
         if np.max(y_vals) > 0 and abs(np.min(y_vals)) < abs(np.max(y_vals)):
             ax.axhline(maxval, color="k", ls="--")
         if np.min(y_vals) < 0 and abs(np.min(y_vals)) > abs(np.max(y_vals)):
             ax.axhline(-maxval, color="k", ls="--")
-    ax.grid()
 
 
 def plot_deflection(Cld, ptloads, distloads, load_factor, dynp, yspace=y_vals, wbox=WINGBOX):
