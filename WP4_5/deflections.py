@@ -131,7 +131,7 @@ def plot_deflection(Cld, ptloads, distloads, load_factor, dynp, yspace=y_vals, w
         0.15 * WING["span"],
         "y (m)",
         "v (m)",
-        f"Deflection along wing span at load factor {load_factor}",
+        #f"Deflection along wing span at load factor {load_factor}",
     )
 
 
@@ -154,7 +154,7 @@ def plot_twist(Cld, ptloads, load_factor, dynp, yspace=y_vals, wbox=WINGBOX):
         10,
         "y (m)",
         "θ (°)",
-        f"Twist angle along wing span at load factor {load_factor}",
+        #f"Twist angle along wing span at load factor {load_factor}",
     )
 
 

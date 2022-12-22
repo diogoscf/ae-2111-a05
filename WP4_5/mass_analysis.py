@@ -21,5 +21,5 @@ def volume(wbox):
 if __name__ == "__main__":
     mass1 = volume(design_options.option_new_1)*MAT["density"]
     mass2 = volume(design_options.option_new_2)*MAT["density"]
-    print(f"Option 1: {mass1} kg")
-    print(f"Option 2: {mass2} kg")
+    print(f"Option 1: {mass1:.1f} kg")
+    print(f"Option 2: {mass2:.1f} kg")
