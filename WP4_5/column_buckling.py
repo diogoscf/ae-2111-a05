@@ -4,95 +4,83 @@ from math import pi
 import scipy as sp
 from scipy import interpolate
 from params import *
-#from compression_failure import * #with stresses from Tim
-from stresses import * #with stresses from Diogo
+from compression_failure import *
 from design_options import *
 
-STRINGER = {
+STRINGER = { #current design
     "vertical_l": 60, #mm
     "horizontal_l": 60, #mm
     "thickness": 6, #mm
     "E_AL6061-T6": 68.9*10**9 #Pa
 }
 
-#option=[option_1,option_2,option_3] #WP4 designs
-option=WINGBOX #current design
-
-Ribs_pos=WINGBOX["ribs"]# -> 0.4 and 0.65
-#Ribs_pos=option[0]["ribs"]
-Index=range(0,len(Ribs_pos))
-
-def Ixx(t,Lv): #of one stringer
-    t=float(t)
-    Lv=float(Lv)
-    y=0.5*Lv
-
-    Ixx= 1/12*t*Lv**3 + 2*Lv*t*y**2 #consistent with comp. failure 
-    return Ixx
-
-#o crit of segment @ y/(b/2) for chosen design
-def crit_buckling_str(y):
-    vl,hl=STRINGER["vertical_l"],STRINGER["horizontal_l"]
-    t=STRINGER["thickness"]
-    A=vl*t+hl*t
+#critical sigma of segment at y/(b/2)
+def crit_buckling_str(y,option):
+    Ribs_pos=option["ribs"]
+    Index=range(0,len(Ribs_pos))
+    
+    A=option["stringer_area"]*10**6 #mm^2
+    vl=(5*A)**0.5 #mm
+    t=A/(2*vl) #mm
+    I= 1/12*t*vl**3 + A*(0.5*vl)**2 #mm^4
+    
     g=sp.interpolate.interp1d(Ribs_pos,Index,kind="next",fill_value="extrapolate")
-    L= (Ribs_pos[int(g(y))]-Ribs_pos[int(g(y)-1)])*(WING["span"]*1000)/2 #mm; unsupported length
-    E= STRINGER["E_AL6061-T6"]
-    K=4 #assume rib at the very end
-    I=Ixx(t,vl) 
+    L= (Ribs_pos[int(g(y))]-Ribs_pos[int(g(y)-1)])*(WING["span"]*1000)/2 #mm
+    E= STRINGER["E_AL6061-T6"] #Pa
+    K=4 
 
     o_cr= (K*pi**2*E*I)/(L**2*A) *10**-6 #MPa
     return o_cr
 
+#margin of safety
+def mos(option):
+    y_lst=[] #m
+    sigma_y_lst=[]
+    o_cr_lst=[]
+    y=0
+    dy=1/300
+    for i in range(0,300):
+        sigma_y_lst.append(sigma_y(y,option))
+        o_cr_lst.append(crit_buckling_str(y,option))
+        y_lst.append(y*WING["span"]/2)
+        y=y+dy
 
-#applied stress
-y_lst=[]
-sigma_y_lst=[]
-o_cr_lst=[]
-y=0
-dy=1/300
-for i in range(0,300):
-   # sigma_y_lst.append(sigma_y(y,option))
-    o_cr_lst.append(crit_buckling_str(y))
-    y_lst.append(y*WING["span"]/2)
-    y=y+dy
+    sigma_y_lst=np.array(sigma_y_lst)
+    sigma_y_lst=np.delete(sigma_y_lst,0)
+    o_app_lst=np.divide(sigma_y_lst,-1000000) #Mpa
+    o_cr_lst=np.array(o_cr_lst) 
+    o_cr_lst=np.delete(o_cr_lst,0) #Mpa
 
-y_lst=np.array(y_lst)
-y_lst=np.delete(y_lst,0)
-y_lst=np.delete(y_lst,-1)
+    m_of_s=np.divide(o_cr_lst,o_app_lst) #[-]
+    return y_lst, m_of_s
 
-#sigma_y_lst=np.array(sigma_y_lst)
-#sigma_y_lst=np.delete(sigma_y_lst,0)
-#o_app_lst=np.divide(sigma_y_lst,-1000000) #turn to Mpa
-sigma_y_lst=stresses_along_wing(CL_d, point_loads, distributed_loads, load_factor, dynp, wbox = design_options.option_new_1)
-o_app_lst=np.divide(sigma_y_lst[:,0],-1)
-o_app_lst=np.delete(o_app_lst,0)
-o_app_lst=np.delete(o_app_lst,-1)
 
-o_cr_lst=np.array(o_cr_lst)
-o_cr_lst=np.delete(o_cr_lst,0)
-o_cr_lst=np.delete(o_cr_lst,-1)
-
-#margin of safety & plot
-m_of_s=np.divide(o_cr_lst,o_app_lst)
-
-def plot_m_of_s():
-
-    plt.subplot(121)
-    plt.plot(y_lst,m_of_s)
-    plt.ylabel("Margin of safety")
-    plt.xlabel("Half wing span (y position)")
-    plt.axhline(y=1, color='r', linestyle='-') 
+def plot_m_of_s_current(): #one (current) design
+    y_lst=np.delete(mos(WINGBOX)[0],0)
+    
+    plt.plot(y_lst,mos(WINGBOX)[1])
+    plt.title("Margin of safety along the span")
+    plt.ylabel("MoS [-]")
+    plt.xlabel("y [m]")
     plt.ylim([0,4])
-    plt.grid(True)
-
-    plt.subplot(122)
-    plt.plot(y_lst,o_app_lst)
-    plt.plot(y_lst,o_cr_lst)
-    plt.legend(('Applied','Critical'))
-    plt.xlabel("Half wing span [m]")
     plt.grid(True)
 
     plt.show()
 
-plot_m_of_s()
+def plot_m_of_s_old(): #three (old) designs
+    y_lst=np.delete(mos(option_1)[0],0)
+    
+    plt.plot(y_lst,mos(option_1)[1],color='blue')
+    plt.plot(y_lst,mos(option_2)[1],color='orange')
+    plt.plot(y_lst,mos(option_3)[1],color='green')
+    plt.title("Margin of safety along the span")
+    plt.legend(('Design Option 1','Design Option 2','Design Option 3'))
+    plt.ylabel("MoS [-]")
+    plt.xlabel("y [m]")
+    plt.ylim([0,4])
+    plt.grid(True)
+
+    plt.show()
+    
+
+plot_m_of_s_old()
