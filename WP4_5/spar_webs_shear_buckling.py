@@ -8,6 +8,7 @@ import stiffness
 import distributions 
 import diagrams
 from params import *
+from matplotlib.ticker import ScalarFormatter
 
 def torque_calc(cl_d, point_loads=[], load_factor=1, dyn_p=10000, y_pos=diagrams.y_space):
     t_tab = []
@@ -33,15 +34,6 @@ def multicell_shear_stress(y, wbox = WINGBOX):
     t_skin = wbox["skin_thickness"]
     spars = sorted([wbox["front_spar"], wbox["rear_spar"], *[s[0] for s in wbox["other_spars"] if s[1] >= abs(y)]])
     areas = np.array(stiffness.enclosed_areas(y, spars))
-
-    if len(spars) == 2:
-        start, end = spars[0], spars[1]
-        z_start, z_end = stiffness.airfoil_info(start)[2:], stiffness.airfoil_info(end)[2:]
-        hl, hr = stiffness.airfoil_info(start)[0]*chord, stiffness.airfoil_info(end)[0]*chord
-        lu = np.sqrt((end - start)**2 + (z_start[0] - z_end[0])**2)*chord
-        ll = np.sqrt((end - start)**2 + (z_start[1] - z_end[1])**2)*chord
-        J = 4*(areas[0]**2) / (((hl+hr)/(t_spar)) + ((ll+lu)/(t_skin)))
-        return np.array([J])
     
     ncells = len(spars) - 1
     matrix = np.zeros((ncells+1, ncells+1))
@@ -181,20 +173,36 @@ def margin_of_safety_plot(cl_d, torque_point_loads=[], shear_point_loads=[], she
     plt.ylim([1, 10e6])
     plt.show()
 
-def min_margin_of_safety_plot(cl_d, torque_point_loads=[], shear_point_loads=[], shear_distributed_loads=[], load_factor=1, dyn_p=10000, y_pos=diagrams.y_space):
+def min_margin_of_safety_plot(cl_d, torque_point_loads=[], shear_point_loads=[], shear_distributed_loads=[], load_factor=1, dyn_p=10000, y_pos=diagrams.y_space, axis = None, colour = "blue"):
     margin_of_safety = margin_safety(cl_d, torque_point_loads, shear_point_loads, shear_distributed_loads, load_factor, dyn_p, y_pos)
     min_margin_of_safety = []
     for position in margin_of_safety:
         min_margin_of_safety.append(min(position))
 
-    plt.semilogy(y_pos[:-1], min_margin_of_safety)
-    plt.legend()
-    plt.title('')
-    plt.xlabel('y [m]')
-    plt.ylabel('Minimum Margin of Safety [-]')
-    plt.ylim([1, 10e6])
+    if not axis:
+        plt.semilogy(y_pos[:-1], min_margin_of_safety)
+        plt.legend()
+        plt.title('')
+        plt.xlabel('y [m]')
+        plt.ylabel('Minimum Margin of Safety [-]')
+        plt.ylim([1, 10e6])
+        plt.show()
+    else:
+        axis.semilogy(y_pos[:-1], min_margin_of_safety, label = f"Load factor: {load_factor}", color = colour)
+
+
+if __name__ == "__main__":
+    # min_margin_of_safety_plot(0.906,[diagrams.engine_thrust], [diagrams.engine_mass], [diagrams.wing_mass], 3.75 ,8328.2)
+    # margin_of_safety_plot(0.906,[diagrams.engine_thrust], [diagrams.engine_mass], [diagrams.wing_mass], 3.75 ,8328.2)                    
+    fig, ax = plt.subplots()
+    min_margin_of_safety_plot(0.906,[diagrams.engine_thrust], [diagrams.engine_mass], [diagrams.wing_mass], 3.75, 8328.2, axis = ax, colour = "blue")
+    min_margin_of_safety_plot(2.27,[diagrams.engine_thrust], [diagrams.engine_mass], [diagrams.wing_mass], -1.5, 3331.298316, axis = ax, colour = "green")
+
+    ax.axhline(1, color="k", ls="--")
+    ax.set(xlabel="y [m]", ylabel="MoS")
+    ax.set_xlim(0, 22)
+    ax.yaxis.set_major_formatter(ScalarFormatter())
+    ax.legend()
+    ax.grid()
+
     plt.show()
-
-min_margin_of_safety_plot(0.906,[diagrams.engine_thrust], [diagrams.engine_mass], [diagrams.wing_mass], 3.75 ,8328.2)
-margin_of_safety_plot(0.906,[diagrams.engine_thrust], [diagrams.engine_mass], [diagrams.wing_mass], 3.75 ,8328.2)                    
-
