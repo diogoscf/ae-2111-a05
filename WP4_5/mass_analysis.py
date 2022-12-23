@@ -1,16 +1,8 @@
 from params import *
 import design_options
 from stresses import area
-from stiffness import chord_y
 
-import scipy as sp
-from scipy import interpolate
-import numpy as np
-import matplotlib.pyplot as plt
-
-points = 300
 halfspan = WING["span"] / 2
-y_vals = np.linspace(0, halfspan, points)
 
 def volume(wbox):
     ribs = wbox["ribs"]
